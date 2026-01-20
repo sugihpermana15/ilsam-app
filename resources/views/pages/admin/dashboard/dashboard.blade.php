@@ -1,0 +1,778 @@
+@extends('layouts.master')
+
+@php
+  $isUser = auth()->check() && (
+    (auth()->user()->role?->role_name ?? null) === 'Users' ||
+    (int) auth()->user()->role_id === 3
+  );
+@endphp
+
+@section('title', $isUser ? 'Ilsam - Dashboard Karyawan' : 'Ilsam - Dashboard')
+@section('title-sub', 'Dashboard')
+@section('pagetitle', $isUser ? 'Dashboard Karyawan' : 'Dashboard')
+
+@section('css')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .kpi-card {
+      border: 1px solid rgba(15, 23, 42, 0.14) !important;
+      box-shadow: none;
+    }
+
+    .kpi-card:hover {
+      border-color: rgba(15, 23, 42, 0.22) !important;
+    }
+
+    .kpi-bg-img {
+      opacity: .08;
+      pointer-events: none;
+    }
+  </style>
+@endsection
+
+@section('content')
+  @if($isUser)
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div
+            class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+            <h5 class="card-title mb-0">Dashboard Karyawan</h5>
+            <div class="text-muted small">
+              Halo, {{ auth()->user()->name }}
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-4">
+              <div class="col">
+                <div class="card overflow-hidden h-100 kpi-card">
+                  <div class="card-body position-relative z-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="text-muted">Total Riwayat Seragam</div>
+                        <div class="fs-4 fw-semibold">{{ number_format($totalIssues ?? 0) }}</div>
+                      </div>
+                      <div class="text-primary fs-3"><i class="fas fa-list-check"></i></div>
+                    </div>
+                  </div>
+                  <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card overflow-hidden h-100 kpi-card">
+                  <div class="card-body position-relative z-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="text-muted">Sedang Dipinjam</div>
+                        <div class="fs-4 fw-semibold">{{ number_format($activeIssued ?? 0) }}</div>
+                      </div>
+                      <div class="text-success fs-3"><i class="fas fa-shirt"></i></div>
+                    </div>
+                  </div>
+                  <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
+                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card overflow-hidden h-100 kpi-card">
+                  <div class="card-body position-relative z-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="text-muted">Pengambilan (30 hari)</div>
+                        <div class="fs-4 fw-semibold">{{ number_format($issues30d ?? 0) }}</div>
+                      </div>
+                      <div class="text-info fs-3"><i class="fas fa-calendar-days"></i></div>
+                    </div>
+                  </div>
+                  <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                </div>
+              </div>
+
+              <div class="col">
+                <div class="card overflow-hidden h-100 kpi-card">
+                  <div class="card-body position-relative z-1">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <div class="text-muted">Status Akun</div>
+                        <div class="fs-6 fw-semibold">{{ auth()->user()->role?->role_name ?? '-' }}</div>
+                      </div>
+                      <div class="text-warning fs-3"><i class="fas fa-user"></i></div>
+                    </div>
+                  </div>
+                  <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
+                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                </div>
+              </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="card">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h6 class="mb-0">Riwayat Seragam Terakhir</h6>
+              </div>
+              <div class="card-body table-responsive">
+                @if(($recentIssues ?? collect())->isEmpty())
+                  <div class="alert alert-info mb-0">
+                    Belum ada riwayat pengambilan/pengembalian seragam.
+                  </div>
+                @else
+                  <table class="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Tanggal</th>
+                        <th>Kode</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @foreach($recentIssues as $iss)
+                        <tr>
+                          <td>{{ $iss->issued_at ? \Carbon\Carbon::parse($iss->issued_at)->format('d-m-Y H:i') : '-' }}</td>
+                          <td>{{ $iss->issue_code }}</td>
+                          <td>{{ $iss->item?->item_code }} - {{ $iss->item?->item_name }}</td>
+                          <td>{{ $iss->qty }}</td>
+                          <td>
+                            @php
+                              $badge = match ($iss->status) {
+                                'RETURNED' => 'success',
+                                'LOST' => 'danger',
+                                'DAMAGED' => 'warning',
+                                default => 'primary',
+                              };
+                            @endphp
+                            <span class="badge bg-{{ $badge }}">{{ $iss->status }}</span>
+                          </td>
+                        </tr>
+                      @endforeach
+                    </tbody>
+                  </table>
+                @endif
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  @else
+    @php
+      $canManage = auth()->check() && (int) auth()->user()->role_id === 1;
+      $canManageEmployee = auth()->check() && in_array((int) auth()->user()->role_id, [1, 2], true);
+      $showEmployee = isset($employee) && !empty($employee['kpi']);
+      $showAsset = !empty($permissions['asset']) && (
+        !empty($permissions['asset']['kpi']) ||
+        !empty($permissions['asset']['charts']) ||
+        !empty($permissions['asset']['recent'])
+      );
+      $showUniform = !empty($permissions['uniform']) && (
+        !empty($permissions['uniform']['kpi']) ||
+        !empty($permissions['uniform']['charts']) ||
+        !empty($permissions['uniform']['recent'])
+      );
+
+      $tabs = [];
+      if ($showAsset)
+        $tabs[] = 'asset';
+      if ($showUniform)
+        $tabs[] = 'uniform';
+      if ($showEmployee)
+        $tabs[] = 'employee';
+
+      $activeTab = in_array(($tab ?? ''), $tabs, true) ? $tab : ($tabs[0] ?? null);
+    @endphp
+
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div
+            class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+            <h5 class="card-title mb-0">Dashboard</h5>
+            <div class="d-flex gap-2 flex-wrap">
+              @if($canManage && $showAsset)
+                <a href="{{ route('admin.assets.index') }}" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-box"></i> Asset Management
+                </a>
+              @endif
+              @if($canManage && $showUniform)
+                <a href="{{ route('admin.uniforms.master') }}" class="btn btn-outline-primary btn-sm">
+                  <i class="fas fa-boxes-stacked"></i> Uniform Management
+                </a>
+              @endif
+            </div>
+          </div>
+
+          <div class="card-body">
+            @if(!$showAsset && !$showUniform && !$showEmployee)
+              <div class="alert alert-warning mb-0">
+                Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
+              </div>
+            @else
+              @if(count($tabs) > 1)
+                <ul class="nav nav-tabs mb-3" role="tablist">
+                  @if($showAsset)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'asset' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-asset" type="button" role="tab">
+                        <i class="fas fa-chart-line me-1"></i> Asset
+                      </button>
+                    </li>
+                  @endif
+                  @if($showUniform)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'uniform' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-uniform" type="button" role="tab">
+                        <i class="fas fa-chart-pie me-1"></i> Uniform
+                      </button>
+                    </li>
+                  @endif
+                  @if($showEmployee)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'employee' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-employee" type="button" role="tab">
+                        <i class="fas fa-users me-1"></i> Karyawan
+                      </button>
+                    </li>
+                  @endif
+                </ul>
+              @endif
+
+              <div class="tab-content">
+                @if($showAsset)
+                  <div class="tab-pane fade {{ $activeTab === 'asset' ? 'show active' : '' }}" id="tab-asset" role="tabpanel">
+                    @if(!empty($permissions['asset']['kpi']))
+                      <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5">
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Total Assets</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['total_assets'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-primary fs-3"><i class="fas fa-boxes-stacked"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Active</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['active_assets'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-success fs-3"><i class="fas fa-circle-check"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Inactive / Sold / Disposed</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['inactive_assets'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-warning fs-3"><i class="fas fa-circle-minus"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Total Value</div>
+                                  <div class="fs-4 fw-semibold">Rp
+                                    {{ number_format((float) ($asset['kpi']['total_value'] ?? 0), 0, ',', '.') }}
+                                  </div>
+                                </div>
+                                <div class="text-info fs-3"><i class="fas fa-sack-dollar"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">New (30 days)</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['new_assets_30d'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-primary fs-3"><i class="fas fa-sparkles"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg5.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr class="my-4" />
+                    @endif
+
+                    @if(!empty($permissions['asset']['charts']))
+                      <div class="row g-3">
+                        <div class="col-12 col-xl-6">
+                          <div class="card">
+                            <div class="card-header">
+                              <h6 class="mb-0">Assets by Status</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="assetByStatus" style="min-height: 320px;"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                          <div class="card">
+                            <div class="card-header">
+                              <h6 class="mb-0">Assets by Location</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="assetByLocation" style="min-height: 320px;"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header">
+                              <h6 class="mb-0">New Assets (Monthly)</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="assetMonthlyNew" style="min-height: 320px;"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr class="my-4" />
+                    @endif
+
+                    @if(!empty($permissions['asset']['recent']))
+                      <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                          <h6 class="mb-0">Recently Updated Assets</h6>
+                          <a href="{{ route('admin.assets.index') }}" class="btn btn-outline-secondary btn-sm">Open Assets</a>
+                        </div>
+                        <div class="card-body table-responsive">
+                          <table class="table table-striped table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Location</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach(($asset['recent'] ?? collect()) as $a)
+                                <tr>
+                                  <td>{{ $a->asset_code }}</td>
+                                  <td>{{ $a->asset_name }}</td>
+                                  <td>{{ $a->asset_category }}</td>
+                                  <td>{{ $a->asset_location ?? '-' }}</td>
+                                  <td>{{ $a->asset_status ?? '-' }}</td>
+                                  <td>{{ $a->last_updated ? \Carbon\Carbon::parse($a->last_updated)->format('d-m-Y H:i') : '-' }}
+                                  </td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    @endif
+                  </div>
+                @endif
+
+                @if($showUniform)
+                  <div class="tab-pane fade {{ $activeTab === 'uniform' ? 'show active' : '' }}" id="tab-uniform"
+                    role="tabpanel">
+                    @if(!empty($permissions['uniform']['kpi']))
+                      <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-4">
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Total Items</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['total_items'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-primary fs-3"><i class="fas fa-shirt"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Total Stock</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['total_stock'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-success fs-3"><i class="fas fa-warehouse"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Low Stock Items</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['low_stock_items'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-danger fs-3"><i class="fas fa-triangle-exclamation"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+                        <div class="col">
+                          <div class="card overflow-hidden h-100 kpi-card">
+                            <div class="card-body position-relative z-1">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <div class="text-muted">Issues (30 days)</div>
+                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['issues_30d'] ?? 0) }}</div>
+                                </div>
+                                <div class="text-primary fs-3"><i class="fas fa-paper-plane"></i></div>
+                              </div>
+                            </div>
+                            <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
+                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr class="my-4" />
+                    @endif
+
+                    @if(!empty($permissions['uniform']['charts']))
+                      <div class="row g-3">
+                        <div class="col-12 col-xl-6">
+                          <div class="card">
+                            <div class="card-header">
+                              <h6 class="mb-0">Stock by Location</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="uniformStockByLocation" style="min-height: 320px;"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12 col-xl-6">
+                          <div class="card">
+                            <div class="card-header">
+                              <h6 class="mb-0">Top Categories (Stock)</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="uniformStockByCategory" style="min-height: 320px;"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header">
+                              <h6 class="mb-0">Monthly Movements</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="uniformMonthlyMovements" style="min-height: 320px;"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <hr class="my-4" />
+                    @endif
+
+                    @if(!empty($permissions['uniform']['recent']))
+                      <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                          <h6 class="mb-0">Recent Issues</h6>
+                          <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm">Open
+                            History</a>
+                        </div>
+                        <div class="card-body table-responsive">
+                          <table class="table table-striped table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Date</th>
+                                <th>Issue Code</th>
+                                <th>Item</th>
+                                <th>Employee</th>
+                                <th>Qty</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach(($uniform['recent'] ?? collect()) as $iss)
+                                <tr>
+                                  <td>{{ $iss->issued_at ? \Carbon\Carbon::parse($iss->issued_at)->format('d-m-Y H:i') : '-' }}</td>
+                                  <td>{{ $iss->issue_code }}</td>
+                                  <td>{{ $iss->item?->item_code }} - {{ $iss->item?->item_name }}</td>
+                                  <td>{{ $iss->issuedToEmployee?->name ?? $iss->issuedTo?->name ?? '-' }}</td>
+                                  <td>{{ $iss->qty }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    @endif
+                  </div>
+                @endif
+
+                @if($showEmployee)
+                  <div class="tab-pane fade {{ $activeTab === 'employee' ? 'show active' : '' }}" id="tab-employee"
+                    role="tabpanel">
+                    <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-6">
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Total Karyawan</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['total'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-primary fs-3"><i class="fas fa-users"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Aktif</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['active'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-success fs-3"><i class="fas fa-circle-check"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Non Aktif</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['inactive'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-warning fs-3"><i class="fas fa-circle-minus"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">PKWT (Aktif)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['active_pkwt'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-info fs-3"><i class="fas fa-id-badge"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">PKWTT (Aktif)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['active_pkwtt'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-primary fs-3"><i class="fas fa-user-tie"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg5.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Join (30 hari)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['joined_30d'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-success fs-3"><i class="fas fa-calendar-plus"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+                    </div>
+
+                    @if(!empty($employee['recent']) && $employee['recent']->count())
+                      <hr class="my-4" />
+                      <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                          <h6 class="mb-0">Karyawan Terbaru</h6>
+                          @if($canManageEmployee)
+                            <a href="{{ route('admin.employees.index') }}" class="btn btn-outline-secondary btn-sm">Kelola</a>
+                          @endif
+                        </div>
+                        <div class="card-body table-responsive">
+                          <table class="table table-striped table-bordered">
+                            <thead>
+                              <tr>
+                                <th>No ID</th>
+                                <th>Nama</th>
+                                <th>Departemen</th>
+                                <th>Posisi</th>
+                                <th>Status</th>
+                                <th>Tgl Join</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @foreach($employee['recent'] as $emp)
+                                <tr>
+                                  <td>{{ $emp->no_id ?? '-' }}</td>
+                                  <td>{{ $emp->name ?? '-' }}</td>
+                                  <td>{{ optional($emp->department)->name ?? '-' }}</td>
+                                  <td>{{ optional($emp->position)->name ?? '-' }}</td>
+                                  <td>{{ $emp->employment_status ?? '-' }}</td>
+                                  <td>{{ $emp->join_date ? \Illuminate\Support\Carbon::parse($emp->join_date)->format('d-m-Y') : '-' }}</td>
+                                </tr>
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    @endif
+                  </div>
+                @endif
+              </div>
+            @endif
+          </div>
+        </div>
+      </div>
+    </div>
+  @endif
+@endsection
+
+@section('js')
+  @php
+    $shouldLoadCharts = !$isUser && (
+      !empty($permissions['asset']['charts']) ||
+      !empty($permissions['uniform']['charts'])
+    );
+  @endphp
+
+  @if($shouldLoadCharts)
+    <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+    <script>
+      window.combinedDashboardData = @json([
+        'asset' => $asset['charts'] ?? null,
+        'uniform' => $uniform['charts'] ?? null,
+      ]);
+
+      (function () {
+        if (typeof ApexCharts === 'undefined') return;
+
+        const all = window.combinedDashboardData || {};
+
+        const donut = (el, labels, series) => {
+          const node = document.querySelector(el);
+          if (!node) return;
+          const opt = {
+            chart: { type: 'donut', height: 320 },
+            labels,
+            series,
+            legend: { position: 'bottom' },
+            dataLabels: { enabled: true },
+          };
+          new ApexCharts(node, opt).render();
+        };
+
+        const bar = (el, categories, series, name) => {
+          const node = document.querySelector(el);
+          if (!node) return;
+          const opt = {
+            chart: { type: 'bar', height: 320, toolbar: { show: false } },
+            series: [{ name, data: series }],
+            xaxis: { categories },
+            plotOptions: { bar: { borderRadius: 6, columnWidth: '45%' } },
+          };
+          new ApexCharts(node, opt).render();
+        };
+
+        const line = (el, categories, seriesA, seriesB, nameA, nameB) => {
+          const node = document.querySelector(el);
+          if (!node) return;
+          const series = [];
+          if (Array.isArray(seriesA)) series.push({ name: nameA, data: seriesA });
+          if (Array.isArray(seriesB)) series.push({ name: nameB, data: seriesB });
+          const opt = {
+            chart: { type: 'line', height: 320, toolbar: { show: false } },
+            stroke: { curve: 'smooth', width: 3 },
+            series,
+            xaxis: { categories },
+          };
+          new ApexCharts(node, opt).render();
+        };
+
+        const asset = all.asset || {};
+        donut('#assetByStatus', asset.byStatus?.labels || [], asset.byStatus?.series || []);
+        donut('#assetByLocation', asset.byLocation?.labels || [], asset.byLocation?.series || []);
+        line('#assetMonthlyNew', asset.monthlyNew?.categories || [], asset.monthlyNew?.series || [], null, 'New Assets');
+
+        const uni = all.uniform || {};
+        donut('#uniformStockByLocation', uni.stockByLocation?.labels || [], uni.stockByLocation?.series || []);
+        bar('#uniformStockByCategory', uni.stockByCategory?.categories || [], uni.stockByCategory?.series || [], 'Stock');
+        line('#uniformMonthlyMovements', uni.monthlyMovements?.categories || [], uni.monthlyMovements?.inSeries || [], uni.monthlyMovements?.outSeries || [], 'IN', 'OUT');
+      })();
+    </script>
+  @endif
+  <script type="module" src="{{ asset('assets/js/app.js') }}"></script>
+@endsection
