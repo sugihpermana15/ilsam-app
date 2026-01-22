@@ -9,6 +9,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CareerController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\TechnologyController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserDashboardController;
@@ -45,6 +46,12 @@ Route::get('/lang/{locale}', function ($locale) {
 
 // Main Pages
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Optimized image variants (resize/compress + cache)
+Route::get('/img/{path}', [ImageController::class, 'show'])
+    ->where('path', '.*')
+    ->name('img');
+
 Route::get('/about/company', [AboutController::class, 'index'])->name('aboutus');
 Route::get('/about/ceo', [AboutController::class, 'ceo'])->name('ceo');
 Route::get('/about/philosophy', [AboutController::class, 'philosophy'])->name('philosophy');
@@ -55,6 +62,9 @@ Route::post('/career/apply', [CareerController::class, 'submitApplication'])
     ->middleware('throttle:5,1')
     ->name('career.apply.submit');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact/send', [ContactController::class, 'send'])
+    ->middleware('throttle:10,1')
+    ->name('contact.send');
 Route::get('/products', [ProductsController::class, 'index'])->name('products');
 Route::get('/products/colorants', [ProductsController::class, 'colorants'])->name('products.colorants');
 Route::get('/products/surface-coating-agents', [ProductsController::class, 'surfaceCoatingAgents'])->name('products.surface-coating-agents');

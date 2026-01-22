@@ -12,17 +12,6 @@
         }
     }
 
-    /*-----------------------------------------------------------------------------------
-        Template Name: Ribuild - Construction Company HTML5 Template
-        Author: RRDevs
-        Support: https://support.rrdevs.net
-        Description: Ribuild - Construction Company HTML5 Template.
-        Version: 1.0
-        Developer Github: Sabbir Ahmmed (https://github.com/ahmmedsabbirbd)
-	    Developer Linkedin: Sabbir Ahmmed (https://www.linkedin.com/in/ahmmedsabbirbd)
-    -----------------------------------------------------------------------------------
-
-     */
     /*======================================
    Data Css js
    ========================================*/

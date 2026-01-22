@@ -20,24 +20,29 @@
         </div>
         <div class="mobile-menu fix"></div>
         <div class="offcanvas__social">
-          <h4 class="offcanvas__title mb-20">Subscribe & Follow</h4>
+          <h4 class="offcanvas__title mb-20">Quick Links</h4>
           <p class="mb-30">PT ILSAM GLOBAL INDONESIA provides reliable chemical solutions for industrial partners, with
             a focus on quality consistency and long-term supply reliability.</p>
           <ul class="header-top-socail-menu d-flex">
-            <li><a href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a></li>
-            <li><a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin-in"></i></a></li>
-            <li><a href="https://www.pinterest.com/"><i class="fa-brands fa-pinterest-p"></i></a></li>
-            <li><a href="https://vimeo.com/"><i class="fa-brands fa-vimeo-v"></i></a></li>
+            <li>
+              <a href="https://www.ilsam.com/" target="_blank" rel="noopener" aria-label="Ilsam Website">
+                <i class="fa-solid fa-globe"></i>
+              </a>
+            </li>
+            <li>
+              <a href="mailto:market.ilsamindonesia@yahoo.com" aria-label="Email">
+                <i class="fa-solid fa-envelope"></i>
+              </a>
+            </li>
+            <li>
+              <a href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6" target="_blank" rel="noopener" aria-label="Location">
+                <i class="fa-solid fa-location-dot"></i>
+              </a>
+            </li>
           </ul>
         </div>
         <div class="offcanvas__btn">
           <div class="header__btn-wrap">
-            <a href="{{ route('contact') }}" class="rr-btn__header d-sm-none mb-10 w-100">
-              <span class="btn-wrap">
-                <span class="text-one">Get Started</span>
-                <span class="text-two">Get Started</span>
-              </span>
-            </a>
             <a href="{{ route('contact') }}" class="rr-btn__header w-100">
               <span class="btn-wrap">
                 <span class="text-one">Contact Sales</span>

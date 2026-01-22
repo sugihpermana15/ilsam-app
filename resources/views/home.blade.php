@@ -9,7 +9,7 @@
       <div class="swiper-wrapper">
         <div class="swiper-slide">
           <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ asset('assets/img/img1.jpg') }}"></div>
+            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img1.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
             <div class="container rr-shape-p-c_1">
               <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
                 <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
@@ -36,7 +36,7 @@
 
         <div class="swiper-slide">
           <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ asset('assets/img/img4.jpg') }}"></div>
+            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img4.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
             <div class="container rr-shape-p-c_1">
               <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
                 <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
@@ -63,7 +63,7 @@
 
         <div class="swiper-slide">
           <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ asset('assets/img/img3.jpg') }}"></div>
+            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img3.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
             <div class="container rr-shape-p-c_1">
               <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
                 <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
@@ -89,7 +89,7 @@
         </div>
         <div class="swiper-slide">
           <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ asset('assets/img/img10.jpg') }}"></div>
+            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img10.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
             <div class="container rr-shape-p-c_1">
               <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
                 <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
@@ -115,7 +115,7 @@
         </div>
         <div class="swiper-slide">
           <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ asset('assets/img/img9.jpg') }}"></div>
+            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img9.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
             <div class="container rr-shape-p-c_1">
               <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
                 <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
@@ -184,7 +184,7 @@
         <div class="col-xl-6">
           <div class="about-us--ilsam__figure">
             <div class="about-us--ilsam__media wow clip-a-z">
-              <img src="{{ asset('assets/img/main_who_triangle.png') }}" alt="About Ilsam">
+              <img loading="lazy" decoding="async" src="{{ route('img', ['path' => 'assets/img/main_who_triangle.png', 'w' => 900, 'q' => 80, 'fm' => 'png', 'v' => 3]) }}" alt="About Ilsam">
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@
 
   <!-- Experience -->
   <section class="experience theme-bg-heading-primary section-space-100 position-relative z-1 overflow-hidden">
-    <div class="experience__bg" data-background="{{ asset('assets/img/img6.jpg') }}"></div>
+    <div class="experience__bg" data-background="{{ route('img', ['path' => 'assets/img/img6.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -208,7 +208,7 @@
                 <h2 class="experience__item-text-title color-white">
                   <span class="odometer" data-count="1999">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">Establishment</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">Establishment in Indonesia</h4>
               </div>
             </div>
 
@@ -218,7 +218,7 @@
               </div>
               <div class="experience__item-text">
                 <h2 class="experience__item-text-title color-white">
-                  <span class="odometer" data-count="51">0</span>
+                  <span class="odometer" data-count="20">0</span>
                 </h2>
                 <h4 class="color-white rr-fw-sbold mb-0">Clients</h4>
               </div>
@@ -249,13 +249,13 @@
         <div class="what-we-do-2__text rr-shape-p-s_1">Products</div>
       </div>
       <div class="what-we-do-2__shape-1 rr-shape-p-s_1 rr-upDown"><img
-          src="{{ asset('assets/img/style2/what-we-do-2/shape-2.png') }}" alt="">
+          loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-2.png') }}" alt="">
       </div>
       <div class="what-we-do-2__shape-2 rr-shape-p-s_1 rr-downUp"><img
-          src="{{ asset('assets/img/style2/what-we-do-2/shape-3.png') }}" alt="">
+          loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-3.png') }}" alt="">
       </div>
       <div class="what-we-do-2__shape-3 rr-shape-p-s_1 rr-downUp"><img
-          src="{{ asset('assets/img/style2/what-we-do-2/shape-4.png') }}" alt="">
+          loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-4.png') }}" alt="">
       </div>
       <div class="row">
         <div class="col-12">
@@ -271,7 +271,7 @@
       <div class="row mb-minus-30">
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ asset('assets/img/img4.jpg') }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img4.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -290,7 +290,7 @@
         </div>
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ asset('assets/img/img6.jpg') }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img6.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -310,7 +310,7 @@
         </div>
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ asset('assets/img/img3.jpg') }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img3.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -329,7 +329,7 @@
         </div>
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ asset('assets/img/img1.jpg') }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img1.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -444,7 +444,7 @@
   <!-- lets-talk area start -->
   <section class="lets-talk section-space-115 section-bg-2 overflow-hidden">
     <div class="lets-talk-bg">
-      <div class="overlay"><img src="{{ asset('assets/img/img8.jpeg') }}" alt=""></div>
+      <div class="overlay"><img loading="lazy" decoding="async" src="{{ route('img', ['path' => 'assets/img/img8.jpeg', 'w' => 1600, 'q' => 70]) }}" alt=""></div>
     </div>
     <div class="container">
       <div class="row">
@@ -512,7 +512,8 @@
               long-term industrial performance.</p>
           </div>
 
-          <form id="request-a-quote__form" class="request-a-quote__form home-2" method="POST">
+          <form id="contact-form" class="request-a-quote__form home-2" method="POST" action="{{ route('contact.send') }}">
+            @csrf
             <div class="row">
               <div class="col-xl-6">
                 <div class="request-a-quote__form-input">
@@ -557,6 +558,22 @@
                     <span class="text-two">Send Message</span>
                   </span>
                 </button>
+              </div>
+
+              <div class="col-12">
+                <div class="ajax-response mt-3">
+                  @if (session('success'))
+                    <div class="success">{{ session('success') }}</div>
+                  @endif
+
+                  @if ($errors->any())
+                    <ul class="error mb-0">
+                      @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                      @endforeach
+                    </ul>
+                  @endif
+                </div>
               </div>
             </div>
           </form>

@@ -2,6 +2,9 @@
 .DS_Store
 .phpactor.json
 .phpunit.result.cache
+/.env
+/.env.*
+!/.env.example
 /.fleet
 /.idea
 /.nova
@@ -15,6 +18,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/image-cache
 /vendor
 Homestead.json
 Homestead.yaml

@@ -27,6 +27,18 @@
         [data-sidebar="icon"] .header-greeting {
             display: none !important;
         }
+
+        /* Responsive: keep header/toggle accessible above sidebar overlay */
+        @media (max-width: 991.98px) {
+            .app-header {
+                z-index: 1010;
+            }
+
+            #toggleSidebar {
+                position: relative;
+                z-index: 1011;
+            }
+        }
     </style>
     <div class="container-fluid w-100">
         <div class="d-flex align-items-center">

@@ -112,7 +112,8 @@
                             safety, and long-term industrial performance.</p>
                     </div>
 
-                    <form id="request-a-quote__form" class="request-a-quote__form home-2" method="POST">
+                    <form id="contact-form" class="request-a-quote__form home-2" method="POST" action="{{ route('contact.send') }}">
+                        @csrf
                         <div class="row">
                             <div class="col-xl-6">
                                 <div class="request-a-quote__form-input">
@@ -157,6 +158,22 @@
                                         <span class="text-two">Send Message</span>
                                     </span>
                                 </button>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="ajax-response mt-3">
+                                    @if (session('success'))
+                                        <div class="success">{{ session('success') }}</div>
+                                    @endif
+
+                                    @if ($errors->any())
+                                        <ul class="error mb-0">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     </form>

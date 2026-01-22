@@ -202,10 +202,10 @@ function removeShowClassFromSidebar() {
 toggleButton?.addEventListener("click", () => {
     const currentToggled = htmlElement.getAttribute("data-sidebar");
     if (window.innerWidth < 992) {
-        // Toggle the data-vertical-layout value
+        // Mobile: toggle the sidebar overlay open/close.
         const sidebar = document.getElementById("sidebar");
-        sidebar.classList.add("show");
-        removeHorizontalAttributes()
+        sidebar?.classList.toggle("show");
+        removeHorizontalAttributes();
     } else {
         // Toggle the data-vertical-layout value
         if (currentToggled === "icon") {
