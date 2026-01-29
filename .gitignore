@@ -23,3 +23,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Windows reserved device filenames (can break clone/checkout on Windows)
+NUL

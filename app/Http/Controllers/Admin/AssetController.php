@@ -625,9 +625,12 @@ class AssetController extends Controller
   public function show($id)
   {
     $asset = Asset::findOrFail($id);
+    $categoryName = AssetCategory::query()
+      ->where('code', $asset->asset_category)
+      ->value('name') ?: ($asset->asset_category ?: '-');
     // Ensure photo path is set for the view (if photo column exists)
     // If photo is not set, the Blade will fallback to no-image.png
-    return view('pages.admin.asset.asset_detail', compact('asset'));
+    return view('pages.admin.asset.asset_detail', compact('asset', 'categoryName'));
   }
 
   public function json($id)

@@ -6,6 +6,25 @@
             $isUserRole = ((auth()->user()->role?->role_name ?? null) === 'Users') || ((int) auth()->user()->role_id === 3);
             $headerHomeUrl = $isUserRole ? route('user.dashboard') : route('admin.dashboard');
         }
+
+        $currentLocale = app()->getLocale();
+        $languageOptions = [
+            'en' => __('settings.languages.en'),
+            'id' => __('settings.languages.id'),
+            'ko' => __('settings.languages.ko'),
+        ];
+
+        $greetings = [
+            'morning' => __('common.greeting.morning'),
+            'afternoon' => __('common.greeting.afternoon'),
+            'evening' => __('common.greeting.evening'),
+        ];
+
+        $intlLocale = match ($currentLocale) {
+            'id' => 'id-ID',
+            'ko' => 'ko-KR',
+            default => 'en-US',
+        };
     @endphp
 
     <style>
@@ -66,8 +85,8 @@
                     </button>
 
                     <div class="d-none d-lg-flex flex-column text-start header-greeting">
-                        <span class="fw-semibold" id="navbarSalam">Selamat Datang</span>
-                        <span class="small text-muted" id="navbarDateTime">-</span>
+                        <span class="fw-semibold" id="navbarSalam">{{ __('common.welcome') }}</span>
+                        <span class="small text-muted" id="navbarDateTime">{{ __('common.loading') }}</span>
                     </div>
                 </div>
             </div>
@@ -88,18 +107,44 @@
                         <i class="bi bi-moon-stars"></i>
                     </button>
                 </div>
+
+                <div class="dropdown pe-dropdown-mega d-none d-md-block">
+                    <button class="btn header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-translate"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-mega-md header-dropdown-menu p-0" style="min-width: 220px;">
+                        <div class="p-3 border-bottom">
+                            <h6 class="mb-0">{{ __('settings.choose_language') }}</h6>
+                        </div>
+                        <div class="p-2">
+                            @foreach($languageOptions as $code => $label)
+                                <form action="{{ route('language.update') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="locale" value="{{ $code }}">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center justify-content-between">
+                                        <span>{{ $label }}</span>
+                                        @if($currentLocale === $code)
+                                            <i class="bi bi-check2"></i>
+                                        @endif
+                                    </button>
+                                </form>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <div class="dropdown pe-dropdown-mega d-none d-md-block">
                     <button class="btn header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-bell"></i>
                     </button>
                     <div class="dropdown-menu dropdown-mega-md header-dropdown-menu pe-noti-dropdown-menu p-0">
                         <div class="p-3 border-bottom">
-                            <h6 class="d-flex align-items-center mb-0">Notification <span
+                            <h6 class="d-flex align-items-center mb-0">{{ __('common.notification') }} <span
                                     class="badge bg-secondary rounded-circle align-middle ms-1">0</span></h6>
                         </div>
                         <div class="p-3">
                             <div class="text-center text-muted py-4">
-                                Belum ada notifikasi.
+                                {{ __('common.no_notifications') }}
                             </div>
                         </div>
                     </div>
@@ -223,11 +268,11 @@
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="dropdown-item"><i
-                                                class="bi bi-box-arrow-right me-1"></i> Sign Out</button>
+                                                class="bi bi-box-arrow-right me-1"></i> {{ __('auth.logout') }}</button>
                                     </form>
                                 </li>
                             @else
-                                <li><a class="dropdown-item" href=""><i class="bi bi-box-arrow-right me-1"></i> Sign Out</a>
+                                <li><a class="dropdown-item" href=""><i class="bi bi-box-arrow-right me-1"></i> {{ __('auth.logout') }}</a>
                                 </li>
                             @endif
                         </ul>
@@ -247,20 +292,23 @@
 
         const userName = @json(auth()->check() ? (auth()->user()->name ?? auth()->user()->username ?? null) : null);
 
+        const intlLocale = @json($intlLocale);
+        const greetings = @json($greetings);
+
         function getSalam(hour) {
             // Sesuai request: pagi, siang, sore.
-            if (hour >= 5 && hour < 11) return 'Selamat Pagi';
-            if (hour >= 11 && hour < 15) return 'Selamat Siang';
-            return 'Selamat Sore';
+            if (hour >= 5 && hour < 11) return greetings.morning;
+            if (hour >= 11 && hour < 15) return greetings.afternoon;
+            return greetings.evening;
         }
 
-        const dateFmt = new Intl.DateTimeFormat('id-ID', {
+        const dateFmt = new Intl.DateTimeFormat(intlLocale, {
             weekday: 'long',
             day: '2-digit',
             month: 'long',
             year: 'numeric'
         });
-        const timeFmt = new Intl.DateTimeFormat('id-ID', {
+        const timeFmt = new Intl.DateTimeFormat(intlLocale, {
             hour: '2-digit',
             minute: '2-digit'
         });
@@ -283,7 +331,7 @@
             <div class="d-flex justify-content-between align-items-center bg-body">
                 <div class="d-flex align-items-center border-0 px-3">
                     <i class="bi bi-search me-2"></i>
-                    <input class="d-flex w-full py-3 bg-transparent border-0 focus-ring" placeholder="Search Here.."
+                    <input class="d-flex w-full py-3 bg-transparent border-0 focus-ring" placeholder="{{ __('common.search_here') }}"
                         autocomplete="off" autocorrect="off" spellcheck="false" aria-autocomplete="list" role="combobox"
                         aria-expanded="true" type="text">
                 </div>
@@ -291,7 +339,7 @@
             </div>
             <div class="modal-body bg-body mt-4">
                 <p class="font-normal mb-0 text-muted">
-                    Ketik kata kunci untuk mencari.
+                    {{ __('common.type_to_search') }}
                 </p>
             </div>
         </div>

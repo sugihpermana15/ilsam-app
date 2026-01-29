@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Daftar Lot Seragam | IGI')
-@section('title-sub', ' Dashboard Daftar Lot Seragam ')
-@section('pagetitle', 'Daftar Lot Seragam')
+@section('title', __('uniforms.lots.page_title'))
+@section('title-sub', __('uniforms.lots.title_sub'))
+@section('pagetitle', __('uniforms.lots.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -16,12 +16,12 @@
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Daftar Lot Seragam </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.lots.card_title') }}</h5>
           <div class="d-flex gap-2 flex-wrap">
             <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm"><i
-                class="fas fa-clock"></i> Riwayat</a>
+                class="fas fa-clock"></i> {{ __('uniforms.nav.history') }}</a>
             <a href="{{ route('admin.uniforms.reconcile') }}" class="btn btn-outline-primary btn-sm"><i
-                class="fas fa-scale-balanced"></i> Rekonsiliasi</a>
+                class="fas fa-scale-balanced"></i> {{ __('uniforms.nav.reconcile') }}</a>
           </div>
         </div>
         <div class="card-body">
@@ -34,9 +34,9 @@
 
           <form method="GET" action="{{ route('admin.uniforms.lots') }}" class="row g-3 mb-3">
             <div class="col-md-6">
-              <label class="form-label">Filter Item</label>
+              <label class="form-label">{{ __('uniforms.lots.filters.item') }}</label>
               <select name="uniform_item_id" class="form-select">
-                <option value="">-- semua item --</option>
+                <option value="">{{ __('uniforms.lots.filters.all_items') }}</option>
                 @foreach($items as $item)
                   <option value="{{ $item->id }}" @selected(request('uniform_item_id') == $item->id)>
                     {{ $item->item_code }} - {{ $item->item_name }} - {{ $item->sizeMaster?->code ?? $item->size ?? '-' }} - {{ $item->location }}
@@ -45,31 +45,31 @@
               </select>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Lokasi</label>
+              <label class="form-label">{{ __('uniforms.lots.filters.location') }}</label>
               <select name="location" class="form-select">
-                <option value="">-- semua --</option>
+                <option value="">{{ __('uniforms.lots.filters.all') }}</option>
                 <option value="Jababeka" @selected(request('location') === 'Jababeka')>Jababeka</option>
                 <option value="Karawang" @selected(request('location') === 'Karawang')>Karawang</option>
               </select>
             </div>
             <div class="col-md-3 d-flex align-items-end">
-              <button class="btn btn-primary w-100" type="submit"><i class="fas fa-filter"></i> Filter</button>
+              <button class="btn btn-primary w-100" type="submit"><i class="fas fa-filter"></i> {{ __('uniforms.lots.filters.submit') }}</button>
             </div>
           </form>
 
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Item</th>
-                <th>Ukuran</th>
-                <th>Nomor Lot</th>
-                <th>Qty Masuk</th>
-                <th>Sisa</th>
-                <th>Tanggal Masuk</th>
-                <th>Kedaluwarsa</th>
-                <th>Diterima Oleh</th>
-                <th>Catatan</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('common.item') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('uniforms.lots.table.lot_number') }}</th>
+                <th>{{ __('uniforms.lots.table.qty_in') }}</th>
+                <th>{{ __('uniforms.lots.table.remaining') }}</th>
+                <th>{{ __('uniforms.lots.table.received_at') }}</th>
+                <th>{{ __('common.expired_at') }}</th>
+                <th>{{ __('uniforms.lots.table.received_by') }}</th>
+                <th>{{ __('common.notes') }}</th>
               </tr>
             </thead>
             <tbody>

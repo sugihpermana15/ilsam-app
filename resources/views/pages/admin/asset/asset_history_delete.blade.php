@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Ilsam - History Delete Asset')
-@section('title-sub', 'Asset Management')
-@section('pagetitle', 'History Delete Asset')
+@section('title', __('assets.history_delete.title') . ' - Ilsam')
+@section('title-sub', __('assets.management'))
+@section('pagetitle', __('assets.history_delete.title'))
 @section('css')
   <!--datatable css-->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
@@ -10,6 +10,9 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
 @endsection
 @section('content')
+@php
+  $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'assets_data', 'update');
+@endphp
 <div id="layout-wrapper">
   <div class="row">
     {{-- SweetAlert2 notification --}}
@@ -19,7 +22,7 @@
         @if(session('success'))
           Swal.fire({
             icon: 'success',
-            title: 'Success',
+            title: @json(__('common.success')),
             text: @json(session('success')),
             timer: 2000,
             showConfirmButton: false
@@ -28,7 +31,7 @@
         @if(session('error'))
           Swal.fire({
             icon: 'error',
-            title: 'Error',
+            title: @json(__('common.error')),
             text: @json(session('error')),
             timer: 2500,
             showConfirmButton: false
@@ -40,29 +43,29 @@
       <div class="card">
         <!--start::card-->
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0"> History Delete Asset </h5>
+            <h5 class="card-title mb-0">{{ __('assets.history_delete.title') }}</h5>
         </div>
         <div class="card-body">
           <form method="GET" class="mb-3">
             <div class="input-group">
-              <input type="text" name="search" class="form-control" placeholder="Search deleted assets..."
+                <input type="text" name="search" class="form-control" placeholder="{{ __('assets.history_delete.search_placeholder') }}"
                 value="{{ $search ?? '' }}">
-              <button class="btn btn-primary" type="submit">Search</button>
+                <button class="btn btn-primary" type="submit">{{ __('common.search') }}</button>
             </div>
           </form>
           <div class="table-responsive" style="overflow-x:auto;">
             <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Asset Code</th>
-                  <th>Asset Name</th>
-                  <th>Category</th>
-                  <th>Qty</th>
-                  <th>Satuan</th>
-                  <th>Deleted At</th>
-                  <th>Deleted By</th>
-                  <th>Action</th>
+                  <th>{{ __('assets.history_delete.table.id') }}</th>
+                  <th>{{ __('assets.fields.asset_code') }}</th>
+                  <th>{{ __('assets.fields.asset_name') }}</th>
+                  <th>{{ __('assets.fields.category') }}</th>
+                  <th>{{ __('assets.fields.qty') }}</th>
+                  <th>{{ __('assets.fields.uom') }}</th>
+                  <th>{{ __('assets.fields.deleted_at') }}</th>
+                  <th>{{ __('assets.fields.deleted_by') }}</th>
+                  <th>{{ __('assets.history_delete.table.action') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -86,11 +89,15 @@
                     <form action="{{ route('admin.assets.restore', $asset->id) }}" method="POST"
                       style="display:inline-block" class="form-restore-asset">
                       @csrf
-                      <button type="button" class="btn btn-sm btn-success btn-restore-asset">Restore</button>
+                      <button type="button" class="btn btn-sm btn-success btn-restore-asset" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? __('assets.history_delete.restore') : __('assets.actions.no_access_update') }}">{{ __('assets.history_delete.restore') }}</button>
                     </form>
                   </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                  <td colspan="9" class="text-center text-muted">{{ __('assets.history_delete.empty') }}</td>
+                </tr>
+                @endforelse
               </tbody>
             </table>
           </div>
@@ -138,14 +145,14 @@
         e.preventDefault();
         var form = $(this).closest('form');
         Swal.fire({
-          title: 'Are you sure?',
-          text: "Restore this asset?",
+          title: @json(__('assets.history_delete.alerts.restore_confirm_title')),
+          text: @json(__('assets.history_delete.alerts.restore_confirm_text')),
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel'
+          confirmButtonText: @json(__('common.ok')),
+          cancelButtonText: @json(__('common.cancel'))
         }).then((result) => {
           if (result.isConfirmed) {
             form.submit();

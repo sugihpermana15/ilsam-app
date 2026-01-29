@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Manajemen Master Seragam | IGI')
+@section('title', __('uniforms.master.page_title'))
 
-@section('title-sub', ' Dashboard Manajemen Master Seragam ')
-@section('pagetitle', 'Manajemen Master Seragam')
+@section('title-sub', __('uniforms.master.title_sub'))
+@section('pagetitle', __('uniforms.master.pagetitle'))
 @section('css')
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -35,6 +35,10 @@
   </style>
 @endsection
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_master', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_master', 'update');
+  @endphp
 
   <div class="row">
     {{-- SweetAlert2 notification --}}
@@ -44,7 +48,7 @@
         @if(session('success'))
           Swal.fire({
             icon: 'success',
-            title: 'Berhasil',
+            title: @json(__('common.success')),
             text: @json(session('success')),
             timer: 2000,
             showConfirmButton: false
@@ -53,7 +57,7 @@
         @if(session('error'))
           Swal.fire({
             icon: 'error',
-            title: 'Gagal',
+            title: @json(__('common.error')),
             text: @json(session('error')),
             timer: 2500,
             showConfirmButton: false
@@ -66,16 +70,16 @@
         <!--start::card-->
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Master Seragam </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.master.card_title') }}</h5>
           <div class="igi-actions">
-            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addItemModal">
-              <i class="fas fa-plus"></i> Tambah Item
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addItemModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}">
+              <i class="fas fa-plus"></i> {{ __('uniforms.master.add_item') }}
             </button>
             <a href="{{ route('admin.uniforms.stock') }}" class="btn btn-secondary btn-sm">
-              <i class="fas fa-warehouse"></i> Stok Masuk
+              <i class="fas fa-warehouse"></i> {{ __('uniforms.nav.stock') }}
             </a>
             <a href="{{ route('admin.uniforms.distribution') }}" class="btn btn-primary btn-sm">
-              <i class="fas fa-people-carry-box"></i> Distribusi
+              <i class="fas fa-people-carry-box"></i> {{ __('uniforms.nav.distribution') }}
             </a>
           </div>
         </div>
@@ -83,18 +87,18 @@
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Kode Item</th>
-                <th>Nama Item</th>
-                <th>Kategori</th>
-                <th>Ukuran</th>
-                <th>Warna</th>
-                <th>Lokasi</th>
-                <th>Stok</th>
-                <th>Stok Minimum</th>
-                <th>Status</th>
-                <th>Terakhir Diperbarui</th>
-                <th>Aksi</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('uniforms.master.table.item_code') }}</th>
+                <th>{{ __('uniforms.master.table.item_name') }}</th>
+                <th>{{ __('uniforms.master.table.category') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('uniforms.master.table.color') }}</th>
+                <th>{{ __('common.location') }}</th>
+                <th>{{ __('uniforms.master.table.stock') }}</th>
+                <th>{{ __('uniforms.master.table.min_stock') }}</th>
+                <th>{{ __('common.status') }}</th>
+                <th>{{ __('uniforms.master.table.last_updated') }}</th>
+                <th>{{ __('common.action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -119,7 +123,7 @@
                   <td>
                     <span
                       class="badge {{ $item->is_active ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }}">
-                      {{ $item->is_active ? 'Aktif' : 'Nonaktif' }}
+                      {{ $item->is_active ? __('common.active') : __('common.inactive') }}
                     </span>
                   </td>
                   <td>{{ $item->last_updated ? \Carbon\Carbon::parse($item->last_updated)->format('d-m-Y H:i') : '-' }}</td>
@@ -129,13 +133,14 @@
                       @csrf
                       <button type="submit"
                         class="btn btn-sm {{ $item->is_active ? 'btn-outline-secondary' : 'btn-outline-success' }}"
-                        title="Ubah Status Aktif">
+                        title="{{ $canUpdate ? __('common.change_status') : __('common.no_access_update') }}" {{ $canUpdate ? '' : 'disabled' }}>
                         <i class="fas {{ $item->is_active ? 'fa-ban' : 'fa-check' }}"></i>
                       </button>
                     </form>
 
-                    <button type="button" class="btn btn-sm btn-outline-primary" title="Edit"
+                    <button type="button" class="btn btn-sm btn-outline-primary" title="{{ __('common.edit') }}"
                       data-bs-toggle="modal" data-bs-target="#editItemModal"
+                      {{ $canUpdate ? '' : 'disabled' }}
                       data-id="{{ $item->id }}"
                       data-update-url="{{ route('admin.uniforms.items.update', $item->id) }}"
                       data-item-name="{{ $item->item_name }}"
@@ -165,7 +170,7 @@
           @csrf
           <input type="hidden" name="modal_context" value="create_item">
           <div class="modal-header">
-            <h5 class="modal-title">Tambah Master Seragam</h5>
+            <h5 class="modal-title">{{ __('uniforms.master.modals.add_title') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -180,33 +185,33 @@
             @endif
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label">Nama Item</label>
+                <label class="form-label">{{ __('uniforms.master.fields.item_name') }}</label>
                 <select name="item_name" class="form-select" required>
-                  <option value="">-- pilih nama item --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_item_name') }}</option>
                   @foreach($itemNames as $n)
                     <option value="{{ $n->name }}" {{ old('item_name') === $n->name ? 'selected' : '' }}>
                       {{ $n->name }}
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_item_names.index') }}">Master Data → Nama Item Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_item_names') }} <a href="{{ route('admin.uniform_item_names.index') }}">{{ __('uniforms.master.hints.master_data_item_names') }}</a>.</small> --}}
               </div>
               <div class="col-md-6">
-                <label class="form-label">Kategori</label>
+                <label class="form-label">{{ __('uniforms.master.fields.category') }}</label>
                 <select name="category" class="form-select" required>
-                  <option value="">-- pilih kategori --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_category') }}</option>
                   @foreach($categories as $c)
                     <option value="{{ $c->name }}" {{ old('category', 'Uniform') === $c->name ? 'selected' : '' }}>
                       {{ $c->name }}
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_categories.index') }}">Master Data → Kategori Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_categories') }} <a href="{{ route('admin.uniform_categories.index') }}">{{ __('uniforms.master.hints.master_data_categories') }}</a>.</small> --}}
               </div>
               <div class="col-md-4">
-                <label class="form-label">Ukuran</label>
+                <label class="form-label">{{ __('uniforms.master.fields.size') }}</label>
                 <select name="uniform_size_id" class="form-select" required>
-                  <option value="">-- pilih ukuran --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_size') }}</option>
                   @foreach($sizes as $s)
                     @php
                       $sizeLabel = $s->code;
@@ -219,24 +224,24 @@
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola ukuran di <a href="{{ route('admin.uniform_sizes.index') }}">Master Data → Ukuran Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_sizes') }} <a href="{{ route('admin.uniform_sizes.index') }}">{{ __('uniforms.master.hints.master_data_sizes') }}</a>.</small> --}}
               </div>
               <div class="col-md-4">
-                <label class="form-label">Warna</label>
+                <label class="form-label">{{ __('uniforms.master.fields.color') }}</label>
                 <select name="color" class="form-select">
-                  <option value="">-- (opsional) --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_color_optional') }}</option>
                   @foreach($colors as $c)
                     <option value="{{ $c->name }}" {{ old('color') === $c->name ? 'selected' : '' }}>
                       {{ $c->name }}
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_colors.index') }}">Master Data → Warna Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_colors') }} <a href="{{ route('admin.uniform_colors.index') }}">{{ __('uniforms.master.hints.master_data_colors') }}</a>.</small> --}}
               </div>
               <div class="col-md-4">
-                <label class="form-label">UOM</label>
+                <label class="form-label">{{ __('uniforms.master.fields.uom') }}</label>
                 <select name="uom" class="form-select" required>
-                  <option value="">-- pilih uom --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_uom') }}</option>
                   @foreach($uoms as $u)
                     @php
                       $uomLabel = $u->code;
@@ -249,28 +254,28 @@
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_uoms.index') }}">Master Data → UOM Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_uoms') }} <a href="{{ route('admin.uniform_uoms.index') }}">{{ __('uniforms.master.hints.master_data_uoms') }}</a>.</small> --}}
               </div>
               <div class="col-md-6">
-                <label class="form-label">Lokasi</label>
+                <label class="form-label">{{ __('uniforms.master.fields.location') }}</label>
                 <select name="location" class="form-select" required>
                   <option value="Jababeka" {{ old('location', 'Jababeka') === 'Jababeka' ? 'selected' : '' }}>Jababeka</option>
                   <option value="Karawang" {{ old('location') === 'Karawang' ? 'selected' : '' }}>Karawang</option>
                 </select>
               </div>
               <div class="col-md-6">
-                <label class="form-label">Stok Minimum (Reorder Point)</label>
-                <input type="number" name="min_stock" class="form-control" min="0" placeholder="ex: 5" value="{{ old('min_stock') }}">
+                <label class="form-label">{{ __('uniforms.master.fields.min_stock') }}</label>
+                <input type="number" name="min_stock" class="form-control" min="0" placeholder="{{ __('uniforms.master.placeholders.min_stock_example') }}" value="{{ old('min_stock') }}">
               </div>
               <div class="col-12">
-                <label class="form-label">Catatan</label>
+                <label class="form-label">{{ __('uniforms.master.fields.notes') }}</label>
                 <textarea name="notes" class="form-control" rows="2">{{ old('notes') }}</textarea>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-success">Simpan</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('common.cancel') }}</button>
+            <button type="submit" class="btn btn-success" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}">{{ __('common.save') }}</button>
           </div>
         </form>
       </div>
@@ -290,7 +295,7 @@
           <input type="hidden" name="modal_context" value="edit_item">
           <input type="hidden" name="id" id="edit_id" value="{{ old('id') }}">
           <div class="modal-header">
-            <h5 class="modal-title">Edit Master Seragam</h5>
+            <h5 class="modal-title">{{ __('uniforms.master.modals.edit_title') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -305,45 +310,45 @@
             @endif
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label">Nama Item</label>
+                <label class="form-label">{{ __('uniforms.master.fields.item_name') }}</label>
                 <select name="item_name" id="edit_item_name" class="form-select" required>
-                  <option value="">-- pilih nama item --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_item_name') }}</option>
                   @foreach($itemNames as $n)
                     <option value="{{ $n->name }}" {{ old('item_name') === $n->name ? 'selected' : '' }}>
                       {{ $n->name }}
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_item_names.index') }}">Master Data → Nama Item Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_item_names') }} <a href="{{ route('admin.uniform_item_names.index') }}">{{ __('uniforms.master.hints.master_data_item_names') }}</a>.</small> --}}
               </div>
               <div class="col-md-6">
-                <label class="form-label">Kategori</label>
+                <label class="form-label">{{ __('uniforms.master.fields.category') }}</label>
                 <select name="category" id="edit_category" class="form-select" required>
-                  <option value="">-- pilih kategori --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_category') }}</option>
                   @foreach($categories as $c)
                     <option value="{{ $c->name }}" {{ old('category') === $c->name ? 'selected' : '' }}>
                       {{ $c->name }}
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_categories.index') }}">Master Data → Kategori Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_categories') }} <a href="{{ route('admin.uniform_categories.index') }}">{{ __('uniforms.master.hints.master_data_categories') }}</a>.</small> --}}
               </div>
               <div class="col-md-6">
-                <label class="form-label">Warna</label>
+                <label class="form-label">{{ __('uniforms.master.fields.color') }}</label>
                 <select name="color" id="edit_color" class="form-select">
-                  <option value="">-- (opsional) --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_color_optional') }}</option>
                   @foreach($colors as $c)
                     <option value="{{ $c->name }}" {{ old('color') === $c->name ? 'selected' : '' }}>
                       {{ $c->name }}
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_colors.index') }}">Master Data → Warna Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_colors') }} <a href="{{ route('admin.uniform_colors.index') }}">{{ __('uniforms.master.hints.master_data_colors') }}</a>.</small> --}}
               </div>
               <div class="col-md-6">
-                <label class="form-label">UOM</label>
+                <label class="form-label">{{ __('uniforms.master.fields.uom') }}</label>
                 <select name="uom" id="edit_uom" class="form-select" required>
-                  <option value="">-- pilih uom --</option>
+                  <option value="">{{ __('uniforms.master.placeholders.select_uom') }}</option>
                   @foreach($uoms as $u)
                     @php
                       $uomLabel = $u->code;
@@ -356,26 +361,26 @@
                     </option>
                   @endforeach
                 </select>
-                {{-- <small class="text-muted">Kelola di <a href="{{ route('admin.uniform_uoms.index') }}">Master Data → UOM Seragam</a>.</small> --}}
+                {{-- <small class="text-muted">{{ __('uniforms.master.hints.manage_uoms') }} <a href="{{ route('admin.uniform_uoms.index') }}">{{ __('uniforms.master.hints.master_data_uoms') }}</a>.</small> --}}
               </div>
               <div class="col-md-6">
-                <label class="form-label">Stok Minimum (Reorder Point)</label>
-                <input type="number" name="min_stock" id="edit_min_stock" class="form-control" min="0" placeholder="ex: 5" value="{{ old('min_stock') }}">
+                <label class="form-label">{{ __('uniforms.master.fields.min_stock') }}</label>
+                <input type="number" name="min_stock" id="edit_min_stock" class="form-control" min="0" placeholder="{{ __('uniforms.master.placeholders.min_stock_example') }}" value="{{ old('min_stock') }}">
               </div>
               <div class="col-12">
-                <label class="form-label">Catatan</label>
+                <label class="form-label">{{ __('uniforms.master.fields.notes') }}</label>
                 <textarea name="notes" id="edit_notes" class="form-control" rows="2">{{ old('notes') }}</textarea>
               </div>
               <div class="col-12">
                 <div class="alert alert-info mb-0">
-                  Field yang diubah: <strong>Nama Item</strong>, <strong>Kategori</strong>, <strong>Warna</strong>, <strong>UOM</strong>, <strong>Stok Minimum</strong>, <strong>Catatan</strong>.
+                  {{ __('uniforms.master.alerts.changed_fields') }}
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('common.cancel') }}</button>
+            <button type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('common.save') }}</button>
           </div>
         </form>
       </div>
@@ -412,6 +417,8 @@
       const editModal = document.getElementById('editItemModal');
       if (!editModal) return;
 
+      const notRegisteredSuffix = @json(__('common.not_registered_prefix'));
+
       const ensureOption = (selectEl, value, label) => {
         if (!selectEl) return;
         const v = (value ?? '').toString();
@@ -421,7 +428,7 @@
 
         const opt = document.createElement('option');
         opt.value = v;
-        opt.textContent = label || (v + ' (belum terdaftar)');
+        opt.textContent = label || (v + ' ' + notRegisteredSuffix);
         selectEl.insertBefore(opt, selectEl.options[0] || null);
       };
 
@@ -451,10 +458,10 @@
         const minStockEl = document.getElementById('edit_min_stock');
         const notesEl = document.getElementById('edit_notes');
 
-        ensureOption(itemNameEl, itemName, itemName ? (itemName + ' (belum terdaftar)') : '');
-        ensureOption(categoryEl, category, category ? (category + ' (belum terdaftar)') : '');
-        ensureOption(colorEl, color, color ? (color + ' (belum terdaftar)') : '');
-        ensureOption(uomEl, uom, uom ? (uom + ' (belum terdaftar)') : '');
+        ensureOption(itemNameEl, itemName, itemName ? (itemName + ' ' + notRegisteredSuffix) : '');
+        ensureOption(categoryEl, category, category ? (category + ' ' + notRegisteredSuffix) : '');
+        ensureOption(colorEl, color, color ? (color + ' ' + notRegisteredSuffix) : '');
+        ensureOption(uomEl, uom, uom ? (uom + ' ' + notRegisteredSuffix) : '');
 
         if (itemNameEl) itemNameEl.value = itemName;
         if (categoryEl) categoryEl.value = category;

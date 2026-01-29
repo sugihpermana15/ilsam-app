@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Stok Masuk Seragam | IGI')
-@section('title-sub', ' Dashboard Stok Masuk Seragam ')
-@section('pagetitle', 'Stok Masuk Seragam')
+@section('title', __('uniforms.stock.page_title'))
+@section('title-sub', __('uniforms.stock.title_sub'))
+@section('pagetitle', __('uniforms.stock.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -58,15 +58,18 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'create');
+  @endphp
   <div class="row">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         @if(session('success'))
-          Swal.fire({ icon: 'success', title: 'Berhasil', text: @json(session('success')), timer: 2000, showConfirmButton: false });
+          Swal.fire({ icon: 'success', title: @json(__('common.success')), text: @json(session('success')), timer: 2000, showConfirmButton: false });
         @endif
         @if(session('error'))
-          Swal.fire({ icon: 'error', title: 'Gagal', text: @json(session('error')), timer: 2500, showConfirmButton: false });
+          Swal.fire({ icon: 'error', title: @json(__('common.error')), text: @json(session('error')), timer: 2500, showConfirmButton: false });
         @endif
                             });
     </script>
@@ -75,47 +78,47 @@
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Stok Masuk Seragam </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.stock.card_title') }}</h5>
           <div class="igi-actions">
             <a href="{{ route('admin.uniforms.master') }}" class="btn btn-secondary btn-sm"><i class="fas fa-list"></i>
-              Master</a>
+              {{ __('uniforms.nav.master') }}</a>
             <a href="{{ route('admin.uniforms.distribution') }}" class="btn btn-primary btn-sm"><i
-                class="fas fa-people-carry-box"></i> Distribusi</a>
+                class="fas fa-people-carry-box"></i> {{ __('uniforms.nav.distribution') }}</a>
           </div>
         </div>
         <div class="card-body">
           <form method="POST" action="{{ route('admin.uniforms.stock.in') }}" class="row g-3">
             @csrf
             <div class="col-md-6">
-              <label class="form-label">Item</label>
+              <label class="form-label">{{ __('uniforms.stock.form.item') }}</label>
               <select name="uniform_item_id" class="form-select js-item-select" required>
-                <option value="">-- pilih item --</option>
+                <option value="">{{ __('uniforms.stock.form.select_item') }}</option>
                 @foreach($items as $item)
                   <option value="{{ $item->id }}">{{ $item->item_name }} - {{ $item->sizeMaster?->code ?? $item->size ?? '-' }} - {{ $item->location }}
                   </option>
                 @endforeach
               </select>
-              <small class="text-muted">Klik dropdown lalu ketik untuk mencari item.</small>
+              <small class="text-muted">{{ __('uniforms.stock.form.search_item_hint') }}</small>
             </div>
             <div class="col-md-2">
-              <label class="form-label">Qty</label>
+              <label class="form-label">{{ __('uniforms.stock.form.qty') }}</label>
               <input type="number" name="qty" class="form-control" min="1" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Lot / Batch (opsional)</label>
-              <input type="text" name="lot_number" class="form-control" placeholder="ex: LOT-2026-01">
+              <label class="form-label">{{ __('uniforms.stock.form.lot_batch_optional') }}</label>
+              <input type="text" name="lot_number" class="form-control" placeholder="{{ __('uniforms.stock.form.lot_example') }}">
             </div>
             <div class="col-md-4">
-              <label class="form-label">Tanggal Kedaluwarsa (opsional)</label>
+              <label class="form-label">{{ __('uniforms.stock.form.expired_optional') }}</label>
               <input type="date" name="expired_at" class="form-control">
             </div>
             <div class="col-md-8">
-              <label class="form-label">Catatan</label>
+              <label class="form-label">{{ __('uniforms.stock.form.notes') }}</label>
               <input type="text" name="notes" class="form-control"
-                placeholder="ex: pembelian vendor X / penambahan stok tahunan">
+                placeholder="{{ __('uniforms.stock.form.notes_placeholder') }}">
             </div>
             <div class="col-12">
-              <button type="submit" class="btn btn-success"><i class="fas fa-save"></i> Simpan Stok Masuk</button>
+              <button type="submit" class="btn btn-success" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}"><i class="fas fa-save"></i> {{ __('uniforms.stock.form.submit') }}</button>
             </div>
           </form>
         </div>
@@ -123,25 +126,25 @@
 
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0"> Riwayat Transaksi Terbaru </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.stock.recent_transactions') }}</h5>
           <div class="d-flex gap-2 flex-wrap">
-            <a href="{{ route('admin.uniforms.lots') }}" class="btn btn-outline-primary btn-sm">Lot</a>
-            <a href="{{ route('admin.uniforms.reconcile') }}" class="btn btn-outline-primary btn-sm">Rekonsiliasi</a>
-            <a href="{{ route('admin.uniforms.adjustments') }}" class="btn btn-outline-primary btn-sm">Penyesuaian</a>
-            <a href="{{ route('admin.uniforms.writeoffs') }}" class="btn btn-outline-danger btn-sm">Penghapusan</a>
-            <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm">Buka Riwayat Lengkap</a>
+            <a href="{{ route('admin.uniforms.lots') }}" class="btn btn-outline-primary btn-sm">{{ __('uniforms.nav.lots') }}</a>
+            <a href="{{ route('admin.uniforms.reconcile') }}" class="btn btn-outline-primary btn-sm">{{ __('uniforms.nav.reconcile') }}</a>
+            <a href="{{ route('admin.uniforms.adjustments') }}" class="btn btn-outline-primary btn-sm">{{ __('uniforms.nav.adjustments') }}</a>
+            <a href="{{ route('admin.uniforms.writeoffs') }}" class="btn btn-outline-danger btn-sm">{{ __('uniforms.nav.writeoffs') }}</a>
+            <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm">{{ __('uniforms.nav.open_full_history') }}</a>
           </div>
         </div>
         <div class="card-body">
           @php
             $uniformMovementTypeLabels = [
-              'IN' => 'Stok Masuk',
-              'OUT' => 'Distribusi',
-              'RETURN' => 'Retur',
-              'ADJUSTMENT_IN' => 'Penyesuaian Masuk',
-              'ADJUSTMENT_OUT' => 'Penyesuaian Keluar',
-              'WRITE_OFF' => 'Penghapusan',
-              'REPLACEMENT' => 'Penggantian',
+              'IN' => __('uniforms.movement_types.IN'),
+              'OUT' => __('uniforms.movement_types.OUT'),
+              'RETURN' => __('uniforms.movement_types.RETURN'),
+              'ADJUSTMENT_IN' => __('uniforms.movement_types.ADJUSTMENT_IN'),
+              'ADJUSTMENT_OUT' => __('uniforms.movement_types.ADJUSTMENT_OUT'),
+              'WRITE_OFF' => __('uniforms.movement_types.WRITE_OFF'),
+              'REPLACEMENT' => __('uniforms.movement_types.REPLACEMENT'),
             ];
 
             $uniformMovementTypeBadge = function (?string $movementType): string {
@@ -159,16 +162,16 @@
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Tipe</th>
-                <th>Item</th>
-                <th>Ukuran</th>
-                <th>Perubahan Qty</th>
-                <th>Lot</th>
-                <th>Kedaluwarsa</th>
-                <th>Oleh</th>
-                <th>Catatan</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('common.date') }}</th>
+                <th>{{ __('common.type') }}</th>
+                <th>{{ __('common.item') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('uniforms.stock.table.qty_change') }}</th>
+                <th>{{ __('common.lot') }}</th>
+                <th>{{ __('common.expired_at') }}</th>
+                <th>{{ __('common.by') }}</th>
+                <th>{{ __('common.notes') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -215,7 +218,7 @@
         $select.select2({
           theme: 'bootstrap-5',
           width: '100%',
-          placeholder: '-- pilih item --',
+          placeholder: @json(__('uniforms.stock.form.select_item')),
           allowClear: true,
         });
       }

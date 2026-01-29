@@ -4,7 +4,7 @@
       <div class="section__title-wrapper text-center text-lg-start mb-20">
         <span class="section__subtitle justify-content-start mb-13">
           <span data-width="40px" class="left-separetor"></span>
-          {{ $product['title'] ?? 'Product' }}
+          {{ $product['title'] ?? __('website.products_detail.product') }}
         </span>
 
         @if (!empty($product['tagline']))
@@ -79,17 +79,16 @@
     <div class="ilsam-panel p-4 p-lg-5">
       <div class="row align-items-end g-20">
         <div class="col-lg-7">
-          <h3 class="mb-10">Product Lines</h3>
+          <h3 class="mb-10">{{ __('website.products_detail.product_lines.title') }}</h3>
           <p class="mb-0" style="color: rgba(21, 24, 27, 0.72);">
-            Below are our product line groups and codes. Please contact us to confirm suitability for your process and
-            requirements.
+            {{ __('website.products_detail.product_lines.desc') }}
           </p>
         </div>
         <div class="col-lg-5 d-flex justify-content-lg-end">
           <a href="{{ route('contact') }}" class="rr-btn rr-btn__transparent w-auto">
             <span class="btn-wrap">
-              <span class="text-one">Request Datasheet / COA</span>
-              <span class="text-two">Request Datasheet / COA</span>
+              <span class="text-one">{{ __('website.products_detail.product_lines.cta_request') }}</span>
+              <span class="text-two">{{ __('website.products_detail.product_lines.cta_request') }}</span>
             </span>
           </a>
         </div>
@@ -127,11 +126,11 @@
     <div class="row g-0 align-items-stretch">
       <div class="col-lg-6 p-2 p-md-3 mb-3 mb-lg-0">
         <div class="ilsam-panel p-4 p-lg-5 h-100">
-          <h3 class="mb-12">Typical Applications</h3>
+          <h3 class="mb-12">{{ __('website.products_detail.applications.title') }}</h3>
           @if (!empty($product['applicationsIntro']))
             <p class="mb-18">{{ $product['applicationsIntro'] }}</p>
           @else
-            <p class="mb-18">Common application areas for this product category.</p>
+            <p class="mb-18">{{ __('website.products_detail.applications.desc_fallback') }}</p>
           @endif
 
           @if (!empty($product['applications']))
@@ -146,12 +145,11 @@
 
       <div class="col-lg-6 p-2 p-md-3">
         <div class="ilsam-panel ilsam-panel--soft p-4 p-lg-5 h-100">
-          <h3 class="mb-12">Product Overview</h3>
+          <h3 class="mb-12">{{ __('website.products_detail.overview.title') }}</h3>
           @if (!empty($product['overviewIntro']))
             <p class="mb-18">{{ $product['overviewIntro'] }}</p>
           @else
-            <p class="mb-18">Final specifications depend on your application and process. Contact us to confirm suitability
-              and documentation requirements.</p>
+            <p class="mb-18">{{ __('website.products_detail.overview.desc_fallback') }}</p>
           @endif
 
           @if (!empty($product['specs']))
@@ -178,16 +176,16 @@
   <div class="ilsam-panel ilsam-panel--dark p-4 p-lg-5">
     <div class="row align-items-center g-20">
       <div class="col-lg-8">
-        <h3 class="mb-10">{{ $product['ctaHeading'] ?? 'Need help choosing the right grade?' }}</h3>
+        <h3 class="mb-10">{{ $product['ctaHeading'] ?? __('website.products_detail.cta.heading_fallback') }}</h3>
         <p class="mb-0">
-          {{ $product['ctaText'] ?? 'Share your target application and requirements. Our team will respond with the next recommended steps.' }}
+          {{ $product['ctaText'] ?? __('website.products_detail.cta.text_fallback') }}
         </p>
       </div>
       <div class="col-lg-4 d-flex justify-content-lg-end">
         <a href="{{ route('contact') }}" class="rr-btn rr-btn__white w-auto">
           <span class="btn-wrap">
-            <span class="text-one">Contact Us</span>
-            <span class="text-two">Contact Us</span>
+            <span class="text-one">{{ __('website.common.contact_us') }}</span>
+            <span class="text-two">{{ __('website.common.contact_us') }}</span>
           </span>
         </a>
       </div>

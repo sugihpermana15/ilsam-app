@@ -22,6 +22,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'locale',
         'role_id',
         'dashboard_permissions',
         'menu_permissions',

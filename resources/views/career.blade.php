@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Ilsam - Career')
+@section('title', __('website.titles.career'))
 
 @section('main')
   @php
@@ -23,17 +23,17 @@
       'types' => $openings->map(fn($j) => data_get($j, 'type'))->filter()->unique()->sort()->values()->all(),
       'work_modes' => $openings->map(fn($j) => data_get($j, 'work_mode'))->filter()->unique()->sort()->values()->all(),
       'sorts' => [
-        ['value' => 'title_asc', 'label' => 'Title (A–Z)'],
-        ['value' => 'title_desc', 'label' => 'Title (Z–A)'],
-        ['value' => 'dept_asc', 'label' => 'Department (A–Z)'],
-        ['value' => 'loc_asc', 'label' => 'Location (A–Z)'],
+        ['value' => 'title_asc', 'label' => __('website.career.sorts.title_asc')],
+        ['value' => 'title_desc', 'label' => __('website.career.sorts.title_desc')],
+        ['value' => 'dept_asc', 'label' => __('website.career.sorts.dept_asc')],
+        ['value' => 'loc_asc', 'label' => __('website.career.sorts.loc_asc')],
       ],
     ];
 
     $openingsAllCount = $openingsAllCount ?? $openings->count();
 
     $resultsCount = $openings->count();
-    $resultsLabel = $resultsCount === 1 ? 'result' : 'results';
+    $resultsLabel = trans_choice('website.career.meta.results_word', $resultsCount);
 
     $normalizeLines = function (?string $text) {
       $text = trim((string) $text);
@@ -55,7 +55,7 @@
       @if(session('success'))
         Swal.fire({
           icon: 'success',
-          title: 'Success',
+          title: @json(__('website.common.success')),
           text: @json(session('success')),
           timer: 2200,
           showConfirmButton: false
@@ -64,7 +64,7 @@
       @if(session('error'))
         Swal.fire({
           icon: 'error',
-          title: 'Error',
+          title: @json(__('website.common.error')),
           text: @json(session('error')),
           timer: 2600,
           showConfirmButton: false
@@ -606,7 +606,7 @@
       <div class="row align-items-center justify-content-between">
         <div class="col-12">
           <div class="breadcrumb__content text-center">
-            <h1 class="breadcrumb__title color-white title-animation">Career</h1>
+            <h1 class="breadcrumb__title color-white title-animation">{{ __('website.career.breadcrumb_title') }}</h1>
             <div class="breadcrumb__menu d-inline-flex justify-content-center">
               <nav>
                 <ul>
@@ -620,11 +620,11 @@
                           <path d="M5.33398 15V8H9.66732V15" stroke="white" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round" />
                         </svg>
-                        Home
+                        {{ __('website.common.home') }}
                       </a>
                     </span>
                   </li>
-                  <li class="active"><span>Career</span></li>
+                  <li class="active"><span>{{ __('website.career.breadcrumb_title') }}</span></li>
                 </ul>
               </nav>
             </div>
@@ -639,15 +639,15 @@
     <div class="container">
       <div class="board-header">
         <div>
-          <h2 class="board-title"><span class="accent">Open Positions</span></h2>
-          <p class="board-subtitle">Find roles in operations, maintenance, QA/QC, engineering, and support teams.</p>
+          <h2 class="board-title"><span class="accent">{{ __('website.career.open_positions') }}</span></h2>
+          <p class="board-subtitle">{{ __('website.career.subtitle') }}</p>
         </div>
-        <a class="btn btn-secondary" href="mailto:{{ $companyEmail }}">Send CV</a>
+        <a class="btn btn-secondary" href="mailto:{{ $companyEmail }}">{{ __('website.career.send_cv') }}</a>
       </div>
 
       <div class="board-top">
         <span class="pill pill-results">
-          {{ $resultsCount }} {{ $resultsLabel }} <span style="color: rgba(2, 6, 23, 0.48);">of</span>
+          {{ $resultsCount }} {{ $resultsLabel }} <span style="color: rgba(2, 6, 23, 0.48);">{{ __('website.common.of') }}</span>
           {{ $openingsAllCount }}
         </span>
 
@@ -666,28 +666,28 @@
             @endforeach
           </select>
 
-          <button class="btn btn-primary" type="submit">Sort</button>
+          <button class="btn btn-primary" type="submit">{{ __('website.career.actions.sort') }}</button>
         </form>
       </div>
 
       <div class="board-layout">
         <aside class="filter-card">
           <div class="filter-head">
-            <h3 class="filter-title">Filter</h3>
-            <span class="pill" style="box-shadow:none; background:rgba(255,255,255,.75);">Refine</span>
+            <h3 class="filter-title">{{ __('website.career.filters.title') }}</h3>
+            <span class="pill" style="box-shadow:none; background:rgba(255,255,255,.75);">{{ __('website.career.filters.refine') }}</span>
           </div>
 
           <form method="GET" action="{{ route('career') }}" class="filter-form">
             <div>
-              <div class="label">Search</div>
+              <div class="label">{{ __('website.career.filters.search') }}</div>
               <input class="input" type="text" name="q" value="{{ $filters['q'] }}"
-                placeholder="Search role, dept, location...">
+                placeholder="{{ __('website.career.filters.search_placeholder') }}">
             </div>
 
             <div>
-              <div class="label">Department</div>
+              <div class="label">{{ __('website.career.filters.department') }}</div>
               <select class="input" name="department" style="height: 42px;">
-                <option value="">All departments</option>
+                <option value="">{{ __('website.career.filters.all_departments') }}</option>
                 @foreach(($filterOptions['departments'] ?? []) as $opt)
                   <option value="{{ $opt }}" @selected(($filters['department'] ?? '') === $opt)>{{ $opt }}</option>
                 @endforeach
@@ -695,9 +695,9 @@
             </div>
 
             <div>
-              <div class="label">Location</div>
+              <div class="label">{{ __('website.career.filters.location') }}</div>
               <select class="input" name="location" style="height: 42px;">
-                <option value="">All locations</option>
+                <option value="">{{ __('website.career.filters.all_locations') }}</option>
                 @foreach(($filterOptions['locations'] ?? []) as $opt)
                   <option value="{{ $opt }}" @selected(($filters['location'] ?? '') === $opt)>{{ $opt }}</option>
                 @endforeach
@@ -705,9 +705,9 @@
             </div>
 
             <div>
-              <div class="label">Type</div>
+              <div class="label">{{ __('website.career.filters.type') }}</div>
               <select class="input" name="type" style="height: 42px;">
-                <option value="">All types</option>
+                <option value="">{{ __('website.career.filters.all_types') }}</option>
                 @foreach(($filterOptions['types'] ?? []) as $opt)
                   <option value="{{ $opt }}" @selected(($filters['type'] ?? '') === $opt)>{{ $opt }}</option>
                 @endforeach
@@ -715,9 +715,9 @@
             </div>
 
             <div>
-              <div class="label">Work mode</div>
+              <div class="label">{{ __('website.career.filters.work_mode') }}</div>
               <select class="input" name="work_mode" style="height: 42px;">
-                <option value="">All modes</option>
+                <option value="">{{ __('website.career.filters.all_work_modes') }}</option>
                 @foreach(($filterOptions['work_modes'] ?? []) as $opt)
                   <option value="{{ $opt }}" @selected(($filters['work_mode'] ?? '') === $opt)>{{ $opt }}</option>
                 @endforeach
@@ -725,7 +725,7 @@
             </div>
 
             <div>
-              <div class="label">Sort</div>
+              <div class="label">{{ __('website.career.filters.sort') }}</div>
               <select class="input" name="sort" style="height: 42px;">
                 @foreach(($filterOptions['sorts'] ?? []) as $opt)
                   <option value="{{ $opt['value'] }}" @selected(($filters['sort'] ?? 'title_asc') === $opt['value'])>
@@ -736,28 +736,27 @@
             </div>
 
             <div class="filter-actions">
-              <button class="btn btn-primary" type="submit">Apply</button>
-              <a class="btn btn-outline" href="{{ route('career') }}">Reset</a>
+              <button class="btn btn-primary" type="submit">{{ __('website.career.actions.apply_filters') }}</button>
+              <a class="btn btn-outline" href="{{ route('career') }}">{{ __('website.career.actions.reset') }}</a>
             </div>
           </form>
 
           <div class="filter-note">
-            Don’t see your role? Send your CV to <a href="mailto:{{ $companyEmail }}">{{ $companyEmail }}</a>.
+            {!! __('website.career.note_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}
           </div>
         </aside>
 
         <div>
           @if($openings->isEmpty())
             <div class="empty-state">
-              <div class="empty-title">No openings yet</div>
-              <p class="empty-sub">Please check back soon or send your CV to <a
-                  href="mailto:{{ $companyEmail }}">{{ $companyEmail }}</a>.</p>
+              <div class="empty-title">{{ __('website.career.empty.title') }}</div>
+              <p class="empty-sub">{!! __('website.career.empty.desc_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}</p>
             </div>
           @else
             <div class="jobs">
               @foreach($openings as $job)
                 @php
-                  $title = data_get($job, 'title', 'Position');
+                  $title = data_get($job, 'title', __('website.career.default_position'));
                   $dept = data_get($job, 'department', '');
                   $loc = data_get($job, 'location', '');
                   $type = data_get($job, 'type', '');
@@ -792,7 +791,7 @@
                 <div class="job-card">
                   <div class="job-head">
                     <div class="job-title">{{ $title }}</div>
-                    <a class="btn btn-primary" href="{{ $applyUrl }}">Apply</a>
+                    <a class="btn btn-primary" href="{{ $applyUrl }}">{{ __('website.career.actions.apply') }}</a>
                   </div>
                   <div class="job-meta">
                     @if($type)
@@ -815,29 +814,29 @@
 
                   @if($hasDetails)
                     <details class="job-details">
-                      <summary>Job details</summary>
+                      <summary>{{ __('website.career.details.summary_toggle') }}</summary>
                       <div class="job-details-body">
                         @if($experience !== '' || $deadlineFormatted !== '')
                           <div class="job-kv">
                             @if($experience !== '')
-                              <span class="kv"><b>Experience</b> <span>{{ $experience }}</span></span>
+                              <span class="kv"><b>{{ __('website.career.details.experience') }}</b> <span>{{ $experience }}</span></span>
                             @endif
                             @if($deadlineFormatted !== '')
-                              <span class="kv"><b>Deadline</b> <span>{{ $deadlineFormatted }}</span></span>
+                              <span class="kv"><b>{{ __('website.career.details.deadline') }}</b> <span>{{ $deadlineFormatted }}</span></span>
                             @endif
                           </div>
                         @endif
 
                         @if($summary !== '')
                           <div>
-                            <div class="job-section-title">Summary</div>
+                            <div class="job-section-title">{{ __('website.career.details.summary') }}</div>
                             <div>{!! nl2br(e($summary)) !!}</div>
                           </div>
                         @endif
 
                         @if(!empty($responsibilityLines))
                           <div>
-                            <div class="job-section-title">Responsibilities</div>
+                            <div class="job-section-title">{{ __('website.career.details.responsibilities') }}</div>
                             <ul class="job-list">
                               @foreach($responsibilityLines as $line)
                                 <li>{{ $line }}</li>
@@ -848,7 +847,7 @@
 
                         @if(!empty($requirementLines))
                           <div>
-                            <div class="job-section-title">Requirements</div>
+                            <div class="job-section-title">{{ __('website.career.details.requirements') }}</div>
                             <ul class="job-list">
                               @foreach($requirementLines as $line)
                                 <li>{{ $line }}</li>

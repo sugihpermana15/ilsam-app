@@ -86,7 +86,8 @@ return [
 
     'locales' => [
         'en' => 'English',
-        'kr' => 'Korean',
+        'id' => 'Indonesia',
+        'ko' => 'Korean',
         // ... other languages ​​if necessary.
     ],
 

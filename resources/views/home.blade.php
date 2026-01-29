@@ -24,8 +24,8 @@
                       PT ILSAM GLOBAL INDONESIA
                     </h4>
                     <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-md">
-                      Your Partner in Reliable<br>
-                      Chemical Solutions.
+                      {{ __('website.home.hero.title_line1') }}<br>
+                      {{ __('website.home.hero.title_line2') }}
                     </h1>
                   </div>
                 </div>
@@ -51,8 +51,8 @@
                       PT ILSAM GLOBAL INDONESIA
                     </h4>
                     <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      Your Partner in Reliable<br>
-                      Chemical Solutions.
+                      {{ __('website.home.hero.title_line1') }}<br>
+                      {{ __('website.home.hero.title_line2') }}
                     </h1>
                   </div>
                 </div>
@@ -78,8 +78,8 @@
                       PT ILSAM GLOBAL INDONESIA
                     </h4>
                     <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      Your Partner in Reliable<br>
-                      Chemical Solutions.
+                      {{ __('website.home.hero.title_line1') }}<br>
+                      {{ __('website.home.hero.title_line2') }}
                     </h1>
                   </div>
                 </div>
@@ -104,8 +104,8 @@
                       PT ILSAM GLOBAL INDONESIA
                     </h4>
                     <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      Your Partner in Reliable<br>
-                      Chemical Solutions.
+                      {{ __('website.home.hero.title_line1') }}<br>
+                      {{ __('website.home.hero.title_line2') }}
                     </h1>
                   </div>
                 </div>
@@ -130,8 +130,8 @@
                       PT ILSAM GLOBAL INDONESIA
                     </h4>
                     <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      Your Partner in Reliable<br>
-                      Chemical Solutions.
+                      {{ __('website.home.hero.title_line1') }}<br>
+                      {{ __('website.home.hero.title_line2') }}
                     </h1>
                   </div>
                 </div>
@@ -176,15 +176,15 @@
         <div class="col-xl-6">
           <div class="section__title-wrapper text-center text-xl-start rr-mb-60-lg">
             <span class="section__subtitle justify-content-start mb-13"><span data-width="40px"
-                class="left-separetor"></span>Who we are</span>
+                class="left-separetor"></span>{{ __('website.home.about.subtitle') }}</span>
             <h2 class="section__title title-animation mb-15 mb-xs-10 rr-br-hidden-md" data-cursor="-opaque">Perfect
-              Solution <br> for your Business.</h2>
+              {{ __('website.home.about.title_line1') }} <br> {{ __('website.home.about.title_line2') }}</h2>
           </div>
         </div>
         <div class="col-xl-6">
           <div class="about-us--ilsam__figure">
             <div class="about-us--ilsam__media wow clip-a-z">
-              <img loading="lazy" decoding="async" src="{{ route('img', ['path' => 'assets/img/main_who_triangle.png', 'w' => 900, 'q' => 80, 'fm' => 'png', 'v' => 3]) }}" alt="About Ilsam">
+              <img loading="lazy" decoding="async" src="{{ route('img', ['path' => 'assets/img/main_who_triangle.png', 'w' => 900, 'q' => 80, 'fm' => 'png', 'v' => 3]) }}" alt="{{ __('website.home.about.image_alt') }}">
             </div>
           </div>
         </div>
@@ -208,7 +208,7 @@
                 <h2 class="experience__item-text-title color-white">
                   <span class="odometer" data-count="1999">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">Establishment in Indonesia</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">{{ __('website.home.experience.established') }}</h4>
               </div>
             </div>
 
@@ -220,7 +220,7 @@
                 <h2 class="experience__item-text-title color-white">
                   <span class="odometer" data-count="20">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">Clients</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">{{ __('website.home.experience.clients') }}</h4>
               </div>
             </div>
 
@@ -232,7 +232,7 @@
                 <h2 class="experience__item-text-title color-white">
                   <span class="odometer" data-count="27">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">Years Experience</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">{{ __('website.home.experience.years_experience') }}</h4>
               </div>
             </div>
           </div>
@@ -246,7 +246,7 @@
   <section class="what-we-do-2 section-space section-bg-2 overflow-hidden">
     <div class="container rr-shape-p-c_1">
       <div class="rr-upDown">
-        <div class="what-we-do-2__text rr-shape-p-s_1">Products</div>
+        <div class="what-we-do-2__text rr-shape-p-s_1">{{ __('website.home.products.label') }}</div>
       </div>
       <div class="what-we-do-2__shape-1 rr-shape-p-s_1 rr-upDown"><img
           loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-2.png') }}" alt="">
@@ -261,9 +261,9 @@
         <div class="col-12">
           <div class="section__title-wrapper text-center mb-60 mb-sm-40 mb-xs-35">
             <span class="section__subtitle justify-content-center mb-13 ml-0"><span data-width="40px"
-                class="left-separetor"></span>Products<span data-width="40px" class="right-separetor"></span></span>
+                class="left-separetor"></span>{{ __('website.home.products.label') }}<span data-width="40px" class="right-separetor"></span></span>
             <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">Powering
-              Industries with Quality Chemicals</h2>
+              {{ __('website.home.products.title') }}</h2>
           </div>
         </div>
       </div>
@@ -282,9 +282,9 @@
               <i class="bi bi-palette" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.colorants') }}">Colorants</a></h4>
-              <p class="mb-0 rr-p-16">There are many variations of passages <br>
-                of Lorem Ipsum available.</p>
+              <h4 class="title mb-15"><a href="{{ route('products.colorants') }}">{{ __('website.home.products.items.colorants') }}</a></h4>
+              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
+                {{ __('website.home.products.teaser_line2') }}</p>
             </div>
           </div>
         </div>
@@ -301,10 +301,10 @@
               <i class="bi bi-brush" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.surface-coating-agents') }}">Surface Coating Agents</a>
+              <h4 class="title mb-15"><a href="{{ route('products.surface-coating-agents') }}">{{ __('website.home.products.items.surface_coating_agents') }}</a>
               </h4>
-              <p class="mb-0 rr-p-16">There are many variations of passages <br>
-                of Lorem Ipsum available.</p>
+              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
+                {{ __('website.home.products.teaser_line2') }}</p>
             </div>
           </div>
         </div>
@@ -321,9 +321,9 @@
               <i class="bi bi-layers" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.additive-coating') }}">Additive Coating</a></h4>
-              <p class="mb-0 rr-p-16">There are many variations of passages <br>
-                of Lorem Ipsum available.</p>
+              <h4 class="title mb-15"><a href="{{ route('products.additive-coating') }}">{{ __('website.home.products.items.additive_coating') }}</a></h4>
+              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
+                {{ __('website.home.products.teaser_line2') }}</p>
             </div>
           </div>
         </div>
@@ -340,9 +340,9 @@
               <i class="bi bi-droplet" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.pu-resin') }}">PU RESIN </a></h4>
-              <p class="mb-0 rr-p-16">There are many variations of passages <br>
-                of Lorem Ipsum available.</p>
+              <h4 class="title mb-15"><a href="{{ route('products.pu-resin') }}">{{ __('website.home.products.items.pu_resin') }}</a></h4>
+              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
+                {{ __('website.home.products.teaser_line2') }}</p>
             </div>
           </div>
         </div>
@@ -458,7 +458,7 @@
                   <i class="bi bi-envelope" aria-hidden="true"></i>
                 </div>
                 <div class="contact-list__item-text">
-                  <h4 class="title">Email Address</h4>
+                  <h4 class="title">{{ __('website.home.contact.email_address') }}</h4>
                   <a href="mailto:market.ilsamindonesia@yahoo.com">market.ilsamindonesia@yahoo.com</a>
                 </div>
               </div>
@@ -470,7 +470,7 @@
                   <i class="bi bi-telephone" aria-hidden="true"></i>
                 </div>
                 <div class="contact-list__item-text">
-                  <h4 class="title">Phone Number</h4>
+                  <h4 class="title">{{ __('website.home.contact.phone_number') }}</h4>
                   <a href="tel:+622674868013">+62 (267) 4868013 / 313</a>
                 </div>
               </div>
@@ -482,7 +482,7 @@
                   <i class="bi bi-geo-alt" aria-hidden="true"></i>
                 </div>
                 <div class="contact-list__item-text">
-                  <h4 class="title">Our Location</h4>
+                  <h4 class="title">{{ __('website.home.contact.our_location') }}</h4>
                   <a href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6">Jl. Trans Heksa Artha Industrial Hill Area Block E
                     No.13.</a>
                 </div>
@@ -495,8 +495,8 @@
                   <i class="bi bi-clock" aria-hidden="true"></i>
                 </div>
                 <div class="contact-list__item-text">
-                  <h4 class="title">Opening Hour </h4>
-                  <span>Mon - Sat: 08am - 05pm</span>
+                  <h4 class="title">{{ __('website.home.contact.opening_hour') }}</h4>
+                  <span>{{ __('website.home.contact.opening_hours_value') }}</span>
                 </div>
               </div>
             </div>
@@ -505,11 +505,10 @@
         <div class="col-xl-6">
           <div class="section__title-wrapper text-center text-xl-start mb-40 mb-xs-35 rr-mt-60-lg">
             <span class="section__subtitle justify-content-start mb-13"><span data-width="40px"
-                class="left-separetor"></span>Lets Talk</span>
-            <h2 class="section__title title-animation text-capitalize mb-15 rr-br-hidden-md" data-cursor="-opaque">Need a
-              Trusted Chemical Partner? Get in Touch</h2>
-            <p class="des mb-0">We offer consistent, high-quality chemical solutions designed for efficiency, safety, and
-              long-term industrial performance.</p>
+                class="left-separetor"></span>{{ __('website.home.contact.subtitle') }}</span>
+            <h2 class="section__title title-animation text-capitalize mb-15 rr-br-hidden-md" data-cursor="-opaque">{{ __('website.home.contact.title_line1') }}
+              {{ __('website.home.contact.title_line2') }}</h2>
+            <p class="des mb-0">{{ __('website.home.contact.desc') }}</p>
           </div>
 
           <form id="contact-form" class="request-a-quote__form home-2" method="POST" action="{{ route('contact.send') }}">
@@ -518,35 +517,35 @@
               <div class="col-xl-6">
                 <div class="request-a-quote__form-input">
                   <div class="validation__wrapper-up position-relative">
-                    <input name="name" id="name" type="text" placeholder="Name">
+                    <input name="name" id="name" type="text" placeholder="{{ __('website.home.contact.form.name') }}">
                   </div>
                 </div>
               </div>
               <div class="col-xl-6">
                 <div class="request-a-quote__form-input">
                   <div class="validation__wrapper-up position-relative">
-                    <input name="tel" id="tel" type="tel" placeholder="Phone Number">
+                    <input name="tel" id="tel" type="tel" placeholder="{{ __('website.home.contact.form.tel') }}">
                   </div>
                 </div>
               </div>
               <div class="col-xl-6">
                 <div class="request-a-quote__form-input">
                   <div class="validation__wrapper-up position-relative">
-                    <input name="email" id="email" type="email" placeholder="Email Address">
+                    <input name="email" id="email" type="email" placeholder="{{ __('website.home.contact.form.email') }}">
                   </div>
                 </div>
               </div>
               <div class="col-xl-6">
                 <div class="request-a-quote__form-input">
                   <div class="validation__wrapper-up position-relative">
-                    <input name="inquiries" id="inquiries" type="text" placeholder="Work Inquiries">
+                    <input name="inquiries" id="inquiries" type="text" placeholder="{{ __('website.home.contact.form.inquiries') }}">
                   </div>
                 </div>
               </div>
               <div class="col-12">
                 <div class="request-a-quote__form-input textarea">
                   <div class="validation__wrapper-up position-relative">
-                    <textarea name="textarea" id="textarea" placeholder="Project Details"></textarea>
+                    <textarea name="textarea" id="textarea" placeholder="{{ __('website.home.contact.form.details') }}"></textarea>
                   </div>
                 </div>
               </div>
@@ -554,8 +553,8 @@
               <div class="col-12">
                 <button type="submit" class="rr-btn w-auto">
                   <span class="btn-wrap">
-                    <span class="text-one">Send Message</span>
-                    <span class="text-two">Send Message</span>
+                    <span class="text-one">{{ __('website.home.contact.form.send') }}</span>
+                    <span class="text-two">{{ __('website.home.contact.form.send') }}</span>
                   </span>
                 </button>
               </div>

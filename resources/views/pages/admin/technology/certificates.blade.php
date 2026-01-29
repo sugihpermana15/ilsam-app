@@ -6,6 +6,11 @@
 @section('pagetitle', 'Certificate Management')
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'certificate', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'certificate', 'update');
+    $canDelete = \App\Support\MenuAccess::can(auth()->user(), 'certificate', 'delete');
+  @endphp
   <div id="layout-wrapper">
     <div class="row">
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -34,7 +39,7 @@
               <h5 class="card-title mb-0">Certificate Management</h5>
               <div class="text-muted" style="font-size: 13px;">Upload proof as PDF.</div>
             </div>
-            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCertificateModal">Add
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCertificateModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Add
               Certificate</button>
           </div>
 
@@ -84,13 +89,13 @@
                             data-issued_date="{{ optional($c->issued_date)->format('Y-m-d') }}"
                             data-expiry_date="{{ optional($c->expiry_date)->format('Y-m-d') }}"
                             data-scope="{{ e($c->scope) }}" data-zdhc_link="{{ e($c->zdhc_link) }}"
-                            data-proof_url="{{ $proofUrl }}">Edit</button>
+                            data-proof_url="{{ $proofUrl }}" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}">Edit</button>
 
                           <form action="{{ route('admin.certificates.destroy', $c) }}" method="POST"
                             onsubmit="return confirm('Delete this certificate?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            <button type="submit" class="btn btn-danger btn-sm" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? '' : 'Tidak punya akses hapus' }}">Delete</button>
                           </form>
                         </div>
                       </td>
@@ -160,7 +165,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success">Save</button>
+                <button type="submit" class="btn btn-success" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Save</button>
               </div>
             </form>
           </div>
@@ -224,7 +229,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
+                <button type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}">Save changes</button>
               </div>
             </form>
           </div>

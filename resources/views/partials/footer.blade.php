@@ -9,14 +9,12 @@
               <div class="footer__logo mb-35 mb-xs-30">
                 <a href="{{ route('home') }}">
                   <img class="img-fluid" src="{{ asset('assets/img/logo_wh.svg') }}" width="200px" height="200px"
-                    alt="logo ilsam">
+                    alt="{{ __('website.footer.logo_alt') }}">
                 </a>
               </div>
 
               <div class="footer__content mb-30 mb-xs-35">
-                <p class="mb-0">Our company is an entity established in Indonesia on August 11, 1999. Headquartered in
-                  South Korea with branches spread across various countries, we have proven our continued success
-                  through hard work and commitment.</p>
+                <p class="mb-0">{{ __('website.footer.about') }}</p>
               </div>
             </div>
           </div>
@@ -24,15 +22,15 @@
           <div class="col-lg-3 col-6">
             <div class="footer__widget footer__widget-item-2">
               <div class="footer__widget-title">
-                <h4>Pages</h4>
+                <h4>{{ __('website.footer.sections.pages') }}</h4>
               </div>
               <div class="footer__link">
                 <ul>
-                  <li><a href="{{ route('aboutus') }}">About Us</a></li>
-                  <li><a href="{{ route('products') }}">Products</a></li>
-                  <li><a href="{{ route('technology') }}">Technology (R&D)</a></li>
-                  <li><a href="{{ route('career') }}">Careers</a></li>
-                  <li><a href="{{ route('contact') }}">Contact</a></li>
+                  <li><a href="{{ route('aboutus') }}">{{ __('website.nav.menu.about_us') }}</a></li>
+                  <li><a href="{{ route('products') }}">{{ __('website.nav.menu.products') }}</a></li>
+                  <li><a href="{{ route('technology') }}">{{ __('website.nav.menu.technology') }}</a></li>
+                  <li><a href="{{ route('career') }}">{{ __('website.nav.menu.careers') }}</a></li>
+                  <li><a href="{{ route('contact') }}">{{ __('website.nav.menu.contact') }}</a></li>
                 </ul>
               </div>
             </div>
@@ -41,15 +39,15 @@
           <div class="col-lg-3 col-6">
             <div class="footer__widget footer__widget-item-3">
               <div class="footer__widget-title">
-                <h4>Products</h4>
+                <h4>{{ __('website.footer.sections.products') }}</h4>
               </div>
 
               <div class="footer__link">
                 <ul>
-                  <li><a href="{{ route('products.colorants') }}">Colorants</a></li>
-                  <li><a href="{{ route('products.surface-coating-agents') }}">Surface Coating Agents</a></li>
-                  <li><a href="{{ route('products.additive-coating') }}">Additive Coating</a></li>
-                  <li><a href="{{ route('products.pu-resin') }}">PU Resin</a></li>
+                  <li><a href="{{ route('products.colorants') }}">{{ __('website.nav.menu.products_items.chemical_colorants') }}</a></li>
+                  <li><a href="{{ route('products.surface-coating-agents') }}">{{ __('website.nav.menu.products_items.surface_coating_agents') }}</a></li>
+                  <li><a href="{{ route('products.additive-coating') }}">{{ __('website.nav.menu.products_items.additive_coating') }}</a></li>
+                  <li><a href="{{ route('products.pu-resin') }}">{{ __('website.nav.menu.products_items.pu_resin') }}</a></li>
                 </ul>
               </div>
             </div>
@@ -58,7 +56,7 @@
           <div class="col-lg-2 col-6">
             <div class="footer__widget footer__widget-item-4">
               <div class="footer__widget-title">
-                <h4>Contact Us</h4>
+                <h4>{{ __('website.footer.sections.contact_us') }}</h4>
               </div>
 
               <div class="footer__link footer__link-contact">
@@ -68,7 +66,7 @@
                       <img src="{{ asset('assets/img/style2/icon/call.svg') }}" alt="">
                     </span>
                     <span class="text">
-                      <span>Call us for support</span>
+                      <span>{{ __('website.footer.contact.call_support') }}</span>
                       <a href="tel:02189830313">+62 (021) 89830313 / 0314</a>
                     </span>
                   </li>
@@ -77,7 +75,7 @@
                       <img src="{{ asset('assets/img/style2/icon/mail.svg') }}" alt="">
                     </span>
                     <span class="text">
-                      <span>Email us for query</span>
+                      <span>{{ __('website.footer.contact.email_query') }}</span>
                       <a href="mailto:market.ilsamindonesia@yahoo.com">market.ilsamindonesia@yahoo.com</a>
                     </span>
                   </li>
@@ -103,14 +101,14 @@
         <div class="row">
           <div class="col-lg-6">
             <div class="footer__copyright text-lg-start text-center">
-              <p class="mb-0">Copyright ©<span class="current-year">{{ now()->year }}</span> ILSAM INDONESIA.
-                All rights reserved.</p>
+              <p class="mb-0">{{ __('website.footer.copyright_prefix') }}<span class="current-year">{{ now()->year }}</span>
+                {{ __('website.footer.company_name') }}. {{ __('website.footer.rights_reserved') }}</p>
             </div>
           </div>
 
           <div class="col-lg-6">
             <div class="footer__copyright--who-create text-lg-end text-center">
-              <p><a href="{{ route('privacy-policy') }}">Privacy Policy</a></p>
+              <p><a href="{{ route('privacy-policy') }}">{{ __('website.footer.privacy_policy') }}</a></p>
             </div>
           </div>
         </div>

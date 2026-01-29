@@ -12,6 +12,9 @@
 @endsection
 
 @section('content')
+  @php
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'employees_deleted', 'update');
+  @endphp
   <div class="row">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -60,7 +63,7 @@
                       <form action="{{ route('admin.employees.restore', $employee->id) }}" method="POST"
                         class="js-restore-employee" style="display:inline-block">
                         @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-success">
+                        <button type="submit" class="btn btn-sm btn-outline-success" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses ubah' }}">
                           <i class="fas fa-rotate-left"></i> Restore
                         </button>
                       </form>

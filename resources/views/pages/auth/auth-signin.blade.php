@@ -1,6 +1,6 @@
 @extends('layouts.master_auth')
 
-@section('title', 'Ilsam - Sign In')
+@section('title', 'Ilsam - ' . __('auth.sign_in'))
 
 @section('content')
 
@@ -16,7 +16,7 @@
                         <div class="card-body py-12 px-8">
                             <img src="{{ asset('assets/img/logo.svg') }}" alt="Logo Dark" height="30"
                                 class="mb-4 mx-auto d-block">
-                            <h6 class="mb-3 mb-8 fw-medium text-center">Sign In to Your Account</h6>
+                            <h6 class="mb-3 mb-8 fw-medium text-center">{{ __('auth.sign_in_to_account') }}</h6>
                             <form method="POST" action="{{ route('login') }}">
                                 @csrf
 
@@ -29,34 +29,34 @@
                                 @endif
 
                                 @if($errors->any())
-                                    <div class="alert alert-danger">Please correct the errors below.</div>
+                                    <div class="alert alert-danger">{{ __('auth.errors_fix_below') }}</div>
                                 @endif
 
                                 <div class="row g-4">
                                     <div class="col-12">
-                                        <label for="username" class="form-label">Username <span
+                                        <label for="username" class="form-label">{{ __('auth.username') }} <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" name="username"
                                             class="form-control @error('username') is-invalid @enderror" id="username"
-                                            placeholder="Enter your username" required value="{{ old('username') }}">
+                                            placeholder="{{ __('auth.enter_username') }}" required value="{{ old('username') }}">
                                         @error('username')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label for="password" class="form-label">Password <span
+                                        <label for="password" class="form-label">{{ __('auth.password') }} <span
                                                 class="text-danger">*</span></label>
                                         <div class="position-relative">
                                             <input type="password" name="password"
                                                 class="form-control @error('password') is-invalid @enderror" id="password"
-                                                placeholder="Enter your password" required>
+                                                placeholder="{{ __('auth.enter_password') }}" required>
                                             <button type="button"
                                                 class="btn btn-link p-0 position-absolute top-50 end-0 translate-middle-y me-2 password-toggle"
                                                 data-target="#password" aria-label="Toggle password">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                         </div>
-                                        <div class="form-text text-muted">Minimum 8 characters.</div>
+                                        <div class="form-text text-muted">{{ __('auth.min_8_chars') }}</div>
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -66,7 +66,7 @@
                                             <div class="form-check">
                                                 <input type="checkbox" name="rememberMe" class="form-check-input"
                                                     id="rememberMe">
-                                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                                                <label class="form-check-label" for="rememberMe">{{ __('auth.remember_me') }}</label>
                                             </div>
                                             {{-- <div class="form-text">
                                                 <a href="{{ route('forgot-password') }}"
@@ -76,23 +76,22 @@
                                         </div>
                                     </div>
                                     <div class="col-12 mt-8">
-                                        <button type="submit" class="btn btn-primary w-full mb-4">Sign In<i
+                                        <button type="submit" class="btn btn-primary w-full mb-4">{{ __('auth.sign_in') }}<i
                                                 class="bi bi-box-arrow-in-right ms-1 fs-16"></i></button>
                                     </div>
                                 </div>
-                                <p class="mb-0 fw-semibold position-relative text-center fs-12">Don't have an account? <a
-                                        href="{{ route('register') }}" class="text-decoration-underline text-primary">Sign
-                                        up here</a>
+                                    <p class="mb-0 fw-semibold position-relative text-center fs-12">{{ __('auth.dont_have_account') }} <a
+                                        href="{{ route('register') }}" class="text-decoration-underline text-primary">{{ __('auth.sign_up_here') }}</a>
                                 </p>
                             </form>
                             <div class="text-center">
                             </div>
                         </div>
                     </div>
-                    <p class="position-relative text-center fs-12 mb-0">Copyright ©<span
-                            class="current-year">{{ now()->year }}</span> ILSAM
-                        INDONESIA by IT Team.
-                        All rights reserved.</p>
+                    <p class="position-relative text-center fs-12 mb-0">
+                        {{ __('common.footer.copyright', ['year' => now()->year]) }}
+                        {{ __('common.footer.by_it_team') }}
+                    </p>
                 </div>
             </div>
         </div>

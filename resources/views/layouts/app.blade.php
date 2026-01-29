@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <title>@yield('title')</title>
@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/carouselTicker.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/image-reveal-hover.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
 </head>
 
 <body>
@@ -114,6 +115,7 @@
     <script src="{{ asset('assets/js/vendor/ajax-form.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/TextPlugin.min.js') }}"></script>
     <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="{{ asset('assets/js/lang-switch.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/magiccursor.js') }}"></script>
     <script src="{{ asset('assets/js/image-reveal-hover.js') }}"></script>
 </body>

@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Distribusi Seragam | IGI')
-@section('title-sub', ' Dashboard Distribusi Seragam ')
-@section('pagetitle', 'Distribusi Seragam')
+@section('title', __('uniforms.distribution.page_title'))
+@section('title-sub', __('uniforms.distribution.title_sub'))
+@section('pagetitle', __('uniforms.distribution.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -32,15 +32,19 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_distribution', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_distribution', 'update');
+  @endphp
   <div class="row">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         @if(session('success'))
-          Swal.fire({ icon: 'success', title: 'Berhasil', text: @json(session('success')), timer: 2000, showConfirmButton: false });
+          Swal.fire({ icon: 'success', title: @json(__('common.success')), text: @json(session('success')), timer: 2000, showConfirmButton: false });
         @endif
         @if(session('error'))
-          Swal.fire({ icon: 'error', title: 'Gagal', text: @json(session('error')), timer: 2500, showConfirmButton: false });
+          Swal.fire({ icon: 'error', title: @json(__('common.error')), text: @json(session('error')), timer: 2500, showConfirmButton: false });
         @endif
                     });
     </script>
@@ -49,42 +53,42 @@
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Distribusi Seragam ke Karyawan </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.distribution.card_title') }}</h5>
           <div class="igi-actions">
             <a href="{{ route('admin.uniforms.master') }}" class="btn btn-secondary btn-sm"><i
                 class="fas fa-list"></i>
-              Master</a>
+              {{ __('uniforms.nav.master') }}</a>
             <a href="{{ route('admin.uniforms.stock') }}" class="btn btn-outline-secondary btn-sm"><i
-                class="fas fa-warehouse"></i> Stok Masuk</a>
+                class="fas fa-warehouse"></i> {{ __('uniforms.nav.stock') }}</a>
             <a href="{{ route('admin.uniforms.lots') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-layer-group"></i> Lot</a>
+              class="fas fa-layer-group"></i> {{ __('uniforms.nav.lots') }}</a>
             <a href="{{ route('admin.uniforms.reconcile') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-scale-balanced"></i> Rekonsiliasi</a>
+              class="fas fa-scale-balanced"></i> {{ __('uniforms.nav.reconcile') }}</a>
             <a href="{{ route('admin.uniforms.adjustments') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-sliders"></i> Penyesuaian</a>
+              class="fas fa-sliders"></i> {{ __('uniforms.nav.adjustments') }}</a>
             <a href="{{ route('admin.uniforms.writeoffs') }}" class="btn btn-outline-danger btn-sm"><i
-              class="fas fa-trash"></i> Penghapusan</a>
+              class="fas fa-trash"></i> {{ __('uniforms.nav.writeoffs') }}</a>
           </div>
         </div>
         <div class="card-body">
           <form method="POST" action="{{ route('admin.uniforms.distribution.issue') }}" class="row g-3">
             @csrf
             <div class="col-md-6">
-              <label class="form-label">Item</label>
+              <label class="form-label">{{ __('uniforms.distribution.form.item') }}</label>
               <select name="uniform_item_id" class="form-select js-item-select" required>
-                <option value="">-- pilih item --</option>
+                <option value="">{{ __('uniforms.distribution.form.select_item') }}</option>
                 @foreach($items as $item)
                   <option value="{{ $item->id }}">{{ $item->item_code }} - {{ $item->item_name }} - {{ $item->sizeMaster?->code ?? $item->size ?? '-' }} | Stock:
                     {{ $item->current_stock }} {{ $item->uom }}
                   </option>
                 @endforeach
               </select>
-              <small class="text-muted">Klik dropdown lalu ketik untuk mencari item.</small>
+              <small class="text-muted">{{ __('uniforms.distribution.form.search_item_hint') }}</small>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Karyawan</label>
+              <label class="form-label">{{ __('uniforms.distribution.form.employee') }}</label>
               <select name="issued_to_employee_id" class="form-select" required>
-                <option value="">-- pilih karyawan --</option>
+                <option value="">{{ __('uniforms.distribution.form.select_employee') }}</option>
                 @foreach($employees as $e)
                   <option value="{{ $e->id }}">
                     {{ $e->name }} ({{ $e->no_id }})
@@ -96,20 +100,20 @@
               </select>
             </div>
             <div class="col-md-2">
-              <label class="form-label">Qty</label>
+              <label class="form-label">{{ __('uniforms.distribution.form.qty') }}</label>
               <input type="number" name="qty" class="form-control" min="1" required>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Tanggal Distribusi (opsional)</label>
+              <label class="form-label">{{ __('uniforms.distribution.form.date_optional') }}</label>
               <input type="datetime-local" name="issued_at" class="form-control">
             </div>
             <div class="col-md-8">
-              <label class="form-label">Catatan</label>
+              <label class="form-label">{{ __('uniforms.distribution.form.notes') }}</label>
               <input type="text" name="notes" class="form-control"
-                placeholder="cth: Seragam baru untuk onboarding / penggantian">
+                placeholder="{{ __('uniforms.distribution.form.notes_placeholder') }}">
             </div>
             <div class="col-12">
-              <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Distribusikan ke Karyawan</button>
+              <button type="submit" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}"><i class="fas fa-paper-plane"></i> {{ __('uniforms.distribution.form.submit') }}</button>
             </div>
           </form>
         </div>
@@ -117,16 +121,16 @@
 
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0"> Distribusi Terakhir </h5>
-          <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm">Buka Riwayat</a>
+          <h5 class="card-title mb-0">{{ __('uniforms.distribution.recent_title') }}</h5>
+          <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm">{{ __('uniforms.nav.open_history') }}</a>
         </div>
         <div class="card-body">
             @php
               $uniformIssueStatusLabels = [
-                'ISSUED' => 'Didistribusikan',
-                'RETURNED' => 'Diretur',
-                'REPLACED' => 'Diganti',
-                'DAMAGED' => 'Rusak',
+                'ISSUED' => __('uniforms.distribution.issue_status.ISSUED'),
+                'RETURNED' => __('uniforms.distribution.issue_status.RETURNED'),
+                'REPLACED' => __('uniforms.distribution.issue_status.REPLACED'),
+                'DAMAGED' => __('uniforms.distribution.issue_status.DAMAGED'),
               ];
 
               $uniformIssueStatusBadge = function (?string $status): string {
@@ -145,17 +149,17 @@
             <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
               <thead>
                 <tr>
-                  <th>No</th>
-                  <th>Kode Issue</th>
-                  <th>Tanggal</th>
-                  <th>Item</th>
-                  <th>Ukuran</th>
-                  <th>Tujuan</th>
-                  <th>Qty</th>
-                  <th>Status</th>
-                  <th>Oleh</th>
-                  <th>Catatan</th>
-                  <th>Aksi</th>
+                  <th>{{ __('common.no') }}</th>
+                  <th>{{ __('uniforms.distribution.table.issue_code') }}</th>
+                  <th>{{ __('common.date') }}</th>
+                  <th>{{ __('common.item') }}</th>
+                  <th>{{ __('common.size') }}</th>
+                  <th>{{ __('uniforms.distribution.table.target') }}</th>
+                  <th>{{ __('common.qty') }}</th>
+                  <th>{{ __('common.status') }}</th>
+                  <th>{{ __('common.by') }}</th>
+                  <th>{{ __('common.notes') }}</th>
+                  <th>{{ __('common.action') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -179,7 +183,7 @@
                       @if($iss->status === 'ISSUED')
                         <form action="{{ route('admin.uniforms.issues.return', $iss->id) }}" method="POST" class="d-inline">
                           @csrf
-                          <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm('Proses retur untuk issue ini?')">Retur</button>
+                          <button type="submit" class="btn btn-sm btn-outline-success" onclick="return confirm(@json(__('uniforms.distribution.actions.confirm_return')))" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('uniforms.distribution.actions.return') }}</button>
                         </form>
 
                         <button
@@ -190,7 +194,8 @@
                           data-qty="{{ $iss->qty }}"
                           data-bs-toggle="modal"
                           data-bs-target="#replaceModal"
-                        >Penggantian</button>
+                          {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}"
+                        >{{ __('uniforms.distribution.actions.replacement') }}</button>
                       @else
                         <span class="text-muted">-</span>
                       @endif
@@ -208,52 +213,52 @@
             <form method="POST" id="replaceForm" action="#">
               @csrf
               <div class="modal-header">
-                <h5 class="modal-title" id="replaceModalLabel">Penggantian Seragam</h5>
+                <h5 class="modal-title" id="replaceModalLabel">{{ __('uniforms.distribution.actions.replacement_modal_title') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 <div class="alert alert-warning">
-                  <div class="fw-semibold">Catatan audit</div>
-                  <div>Penggantian akan membuat issue baru dan mengurangi stok berdasarkan FIFO per-lot. Jika <b>Tukar Barang (Retur Lama)</b> dicentang, stok dari issue lama akan diretur dulu, lalu dikeluarkan penggantinya.</div>
+                  <div class="fw-semibold">{{ __('uniforms.distribution.replacement_modal.audit_note_title') }}</div>
+                  <div>{{ __('uniforms.distribution.replacement_modal.audit_note_text') }}</div>
                 </div>
 
                 <div class="mb-2">
-                  <small class="text-muted">Kode Issue: <span class="fw-semibold" id="replaceIssueCode">-</span></small>
+                  <small class="text-muted">{{ __('uniforms.distribution.replacement_modal.issue_code_label') }} <span class="fw-semibold" id="replaceIssueCode">-</span></small>
                 </div>
 
                 <div class="row g-3">
                   <div class="col-md-4">
-                    <label class="form-label">Qty Penggantian</label>
+                    <label class="form-label">{{ __('uniforms.distribution.replacement_modal.qty_label') }}</label>
                     <input type="number" name="qty" id="replaceQty" class="form-control" min="1" required>
                   </div>
 
                   <div class="col-md-8">
-                    <label class="form-label">Tanggal Penggantian (opsional)</label>
+                    <label class="form-label">{{ __('uniforms.distribution.replacement_modal.date_optional') }}</label>
                     <input type="datetime-local" name="issued_at" class="form-control">
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Alasan (wajib)</label>
-                    <input type="text" name="reason" class="form-control" maxlength="255" required placeholder="cth: Rusak (sobek), hilang, ukuran tidak cocok">
+                    <label class="form-label">{{ __('uniforms.distribution.replacement_modal.reason_required') }}</label>
+                    <input type="text" name="reason" class="form-control" maxlength="255" required placeholder="{{ __('uniforms.distribution.replacement_modal.reason_placeholder') }}">
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Catatan (opsional)</label>
-                    <input type="text" name="notes" class="form-control" placeholder="cth: Penggantian seragam, dibuatkan berita acara">
+                    <label class="form-label">{{ __('uniforms.distribution.replacement_modal.notes_optional') }}</label>
+                    <input type="text" name="notes" class="form-control" placeholder="{{ __('uniforms.distribution.replacement_modal.notes_placeholder') }}">
                   </div>
 
                   <div class="col-12">
                     <div class="form-check">
                       <input class="form-check-input" type="checkbox" value="1" id="replaceReturnOld" name="return_old">
-                      <label class="form-check-label" for="replaceReturnOld">Tukar Barang (seragam lama diretur ke gudang)</label>
+                      <label class="form-check-label" for="replaceReturnOld">{{ __('uniforms.distribution.replacement_modal.exchange_label') }}</label>
                     </div>
-                    <small class="text-muted">Jika tidak dicentang, diasumsikan seragam lama rusak/hilang sehingga stok total berkurang.</small>
+                    <small class="text-muted">{{ __('uniforms.distribution.replacement_modal.exchange_hint') }}</small>
                   </div>
                 </div>
               </div>
               <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-warning" onclick="return confirm('Proses penggantian ini?')">Proses Penggantian</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{ __('common.cancel') }}</button>
+                <button type="submit" class="btn btn-warning" onclick="return confirm(@json(__('uniforms.distribution.actions.confirm_replacement')))" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('uniforms.distribution.actions.process_replacement') }}</button>
               </div>
             </form>
           </div>
@@ -279,7 +284,7 @@
         $select.select2({
           theme: 'bootstrap-5',
           width: '100%',
-          placeholder: '-- pilih item --',
+          placeholder: @json(__('uniforms.distribution.form.select_item')),
           allowClear: true,
         });
       }

@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Asset;
+use App\Models\ContractTerms;
+use App\Models\Document;
 use App\Models\Employee;
 use App\Models\UniformItem;
 use App\Models\UniformIssue;
 use App\Models\UniformMovement;
+use App\Support\MenuAccess;
 
 class AdminController extends Controller
 {
@@ -272,6 +275,46 @@ class AdminController extends Controller
         ];
     }
 
+    private function buildDocumentsDashboardData(bool $canSeeRestricted): array
+    {
+        $today = now()->toDateString();
+        $plus90 = now()->addDays(90)->toDateString();
+
+        $expiring = Document::query()
+            ->visibleTo(Auth::user(), $canSeeRestricted)
+            ->with(['vendor', 'contractTerms'])
+            ->whereHas('contractTerms', function ($q) use ($today, $plus90) {
+                $q->whereNotNull('end_date')
+                    ->whereBetween('end_date', [$today, $plus90]);
+            })
+            ->whereIn('status', ['Active', 'Draft'])
+            ->orderBy('status')
+            ->limit(20)
+            ->get();
+
+        $latest = Document::query()
+            ->visibleTo(Auth::user(), $canSeeRestricted)
+            ->with(['vendor'])
+            ->orderByDesc('updated_at')
+            ->limit(10)
+            ->get();
+
+        $activeByMonth = ContractTerms::query()
+            ->join('m_igi_documents as d', 'd.document_id', '=', 'm_igi_contract_terms.document_id')
+            ->whereNull('d.deleted_at')
+            ->when(!$canSeeRestricted, fn($q) => $q->where('d.confidentiality_level', '!=', 'Restricted'))
+            ->whereIn('d.document_type', ['Subscription', 'Contract'])
+            ->where('d.status', 'Active')
+            ->whereNotNull('m_igi_contract_terms.end_date')
+            ->selectRaw("DATE_FORMAT(m_igi_contract_terms.end_date, '%Y-%m') as ym, COUNT(*) as total")
+            ->groupBy('ym')
+            ->orderBy('ym')
+            ->limit(12)
+            ->get();
+
+        return compact('expiring', 'latest', 'activeByMonth');
+    }
+
     public function dashboard(Request $request)
     {
         $permissions = $this->resolveDashboardPermissions(Auth::user()?->dashboard_permissions);
@@ -283,7 +326,12 @@ class AdminController extends Controller
         // Employee summary is always available for admin dashboard view.
         $employee = $this->buildEmployeeDashboardData();
 
-        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'uniform', 'employee'));
+        $user = Auth::user();
+        $showDocuments = $user ? MenuAccess::can($user, 'documents_archive', 'read') : false;
+        $canSeeRestricted = $user && (($user->role?->role_name ?? null) === 'Super Admin' || MenuAccess::can($user, 'documents_restricted', 'read'));
+        $documents = $showDocuments ? $this->buildDocumentsDashboardData($canSeeRestricted) : null;
+
+        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'uniform', 'employee', 'showDocuments', 'documents'));
     }
 
     public function dashboardAssets()

@@ -1,6 +1,6 @@
 @extends('layouts.master_auth')
 
-@section('title', 'Ilsam - Sign Up')
+@section('title', 'Ilsam - ' . __('auth.sign_up'))
 
 @section('content')
 
@@ -17,7 +17,7 @@
                         <div class="card-body py-12 px-8">
                             <img src="{{ asset('assets/img/logo.svg') }}" alt="Logo Dark" height="30"
                                 class="mb-4 mx-auto d-block">
-                            <h6 class="mb-3 mb-8 fw-medium text-center">Create your account to login</h6>
+                            <h6 class="mb-3 mb-8 fw-medium text-center">{{ __('auth.create_account_to_login') }}</h6>
                             <form method="POST" action="{{ route('register.store') }}">
                                 @csrf
 
@@ -26,75 +26,75 @@
                                 @endif
 
                                 @if($errors->any())
-                                    <div class="alert alert-danger">Please correct the errors below.</div>
+                                    <div class="alert alert-danger">{{ __('auth.errors_fix_below') }}</div>
                                 @endif
 
                                 <div class="row g-4">
                                     <div class="col-6">
-                                        <label for="firstname" class="form-label">First Name <span
+                                        <label for="firstname" class="form-label">{{ __('auth.first_name') }} <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" name="firstname"
                                             class="form-control @error('firstname') is-invalid @enderror" id="firstname"
-                                            placeholder="Enter your First Name" required value="{{ old('firstname') }}">
+                                            placeholder="{{ __('auth.enter_first_name') }}" required value="{{ old('firstname') }}">
                                         @error('firstname')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-6">
-                                        <label for="lastname" class="form-label">Last Name <span
+                                        <label for="lastname" class="form-label">{{ __('auth.last_name') }} <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" name="lastname"
                                             class="form-control @error('lastname') is-invalid @enderror" id="lastname"
-                                            placeholder="Last Name" required value="{{ old('lastname') }}">
+                                            placeholder="{{ __('auth.enter_last_name') }}" required value="{{ old('lastname') }}">
                                         @error('lastname')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-6">
-                                        <label for="username" class="form-label">Username <span
+                                        <label for="username" class="form-label">{{ __('auth.username') }} <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" name="username"
                                             class="form-control @error('username') is-invalid @enderror" id="username"
-                                            placeholder="Username" value="{{ old('username') }}">
+                                            placeholder="{{ __('auth.username') }}" value="{{ old('username') }}">
                                         @error('username')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-6">
-                                        <label for="email" class="form-label">Email <span
+                                        <label for="email" class="form-label">{{ __('auth.email') }} <span
                                                 class="text-danger">*</span></label>
                                         <input type="email" name="email"
                                             class="form-control @error('email') is-invalid @enderror" id="email"
-                                            placeholder="Email" required value="{{ old('email') }}">
+                                            placeholder="{{ __('auth.email') }}" required value="{{ old('email') }}">
                                         @error('email')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label for="password" class="form-label">Password <span
+                                        <label for="password" class="form-label">{{ __('auth.password') }} <span
                                                 class="text-danger">*</span></label>
                                         <div class="position-relative">
                                             <input type="password" name="password"
                                                 class="form-control @error('password') is-invalid @enderror" id="password"
-                                                placeholder="Password" required>
+                                                placeholder="{{ __('auth.password') }}" required>
                                             <button type="button"
                                                 class="btn btn-link p-0 position-absolute top-50 end-0 translate-middle-y me-2 password-toggle"
                                                 data-target="#password" aria-label="Toggle password">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                         </div>
-                                        <div class="form-text text-muted">Minimum 8 characters.</div>
+                                        <div class="form-text text-muted">{{ __('auth.min_8_chars') }}</div>
                                         @error('password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-12">
-                                        <label for="password_confirmation" class="form-label">Confirm Password <span
+                                        <label for="password_confirmation" class="form-label">{{ __('auth.confirm_password') }} <span
                                                 class="text-danger">*</span></label>
                                         <div class="position-relative">
                                             <input type="password" name="password_confirmation"
                                                 class="form-control @error('password_confirmation') is-invalid @enderror"
-                                                id="password_confirmation" placeholder="Confirm Password" required>
+                                                id="password_confirmation" placeholder="{{ __('auth.confirm_password') }}" required>
                                             <button type="button"
                                                 class="btn btn-link p-0 position-absolute top-50 end-0 translate-middle-y me-2 password-toggle"
                                                 data-target="#password_confirmation"
@@ -102,7 +102,7 @@
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                         </div>
-                                        <div class="form-text text-muted">Must match the password above.</div>
+                                        <div class="form-text text-muted">{{ __('auth.must_match_password') }}</div>
                                         @error('password_confirmation')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -112,28 +112,27 @@
                                             <div class="form-check">
                                                 <input type="checkbox" name="rememberMe" class="form-check-input"
                                                     id="rememberMe">
-                                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                                                <label class="form-check-label" for="rememberMe">{{ __('auth.remember_me') }}</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-12 mt-8">
-                                        <button type="submit" class="btn btn-primary w-full mb-4">Sign Up<i
+                                        <button type="submit" class="btn btn-primary w-full mb-4">{{ __('auth.sign_up') }}<i
                                                 class="bi bi-box-arrow-in-right ms-1 fs-16"></i></button>
                                     </div>
                                 </div>
-                                <p class="mb-0 fw-semibold position-relative text-center fs-12">Already have an account? <a
-                                        href="{{ route('auth') }}" class="text-decoration-underline text-primary">Sign In
-                                        here</a>
+                                <p class="mb-0 fw-semibold position-relative text-center fs-12">{{ __('auth.already_have_account') }} <a
+                                        href="{{ route('auth') }}" class="text-decoration-underline text-primary">{{ __('auth.sign_in_here') }}</a>
                                 </p>
                             </form>
                             <div class="text-center">
                             </div>
                         </div>
                     </div>
-                    <p class="position-relative text-center fs-12 mb-0">Copyright ©<span
-                            class="current-year">{{ now()->year }}</span> ILSAM
-                        INDONESIA by IT Team.
-                        All rights reserved.</p>
+                    <p class="position-relative text-center fs-12 mb-0">
+                        {{ __('common.footer.copyright', ['year' => now()->year]) }}
+                        {{ __('common.footer.by_it_team') }}
+                    </p>
                 </div>
             </div>
         </div>

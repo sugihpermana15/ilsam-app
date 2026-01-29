@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Asset Management | IGI')
+@section('title', __('assets.management') . ' | IGI')
 
-@section('title-sub', ' Dashboard Asset Management ')
-@section('pagetitle', 'Asset Management')
+@section('title-sub', __('assets.management'))
+@section('pagetitle', __('assets.management'))
 @section('css')
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -39,6 +39,12 @@
 @endsection
 @section('content')
 
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'assets_data', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'assets_data', 'update');
+    $canDelete = \App\Support\MenuAccess::can(auth()->user(), 'assets_data', 'delete');
+  @endphp
+
   <!--begin::App-->
   <div id="layout-wrapper">
     <div class="row">
@@ -49,7 +55,7 @@
           @if(session('success'))
             Swal.fire({
               icon: 'success',
-              title: 'Success',
+              title: @json(__('common.success')),
               text: @json(session('success')),
               timer: 2000,
               showConfirmButton: false
@@ -58,7 +64,7 @@
           @if(session('error'))
             Swal.fire({
               icon: 'error',
-              title: 'Error',
+              title: @json(__('common.error')),
               text: @json(session('error')),
               timer: 2500,
               showConfirmButton: false
@@ -70,16 +76,16 @@
         <div class="card">
           <!--start::card-->
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0"> Asset Management </h5>
+            <h5 class="card-title mb-0">{{ __('assets.management') }}</h5>
             <div class="d-flex gap-2">
-              <button type="button" class="btn btn-success" id="btn-open-create-asset" data-bs-toggle="modal" data-bs-target="#assetCreateModal">
-                <i class="fas fa-plus"></i> Add Asset
+              <button type="button" class="btn btn-success" id="btn-open-create-asset" data-bs-toggle="modal" data-bs-target="#assetCreateModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('assets.actions.no_access_create') }}">
+                <i class="fas fa-plus"></i> {{ __('assets.pt.add_asset') }}
               </button>
               <form id="form-print-selected-barcode" method="POST" action="{{ route('admin.assets.printSelectedBarcode') }}" target="_blank" style="display:inline-block;">
                 @csrf
                 <input type="hidden" name="selected_ids" id="selected-ids" value="">
                 <button type="submit" id="print-selected-barcode" class="btn btn-secondary">
-                  <i class="fas fa-barcode"></i> Print Barcode
+                  <i class="fas fa-barcode"></i> {{ __('assets.actions.print_barcode') }}
                 </button>
               </form>
             </div>
@@ -91,23 +97,23 @@
               <thead>
                 <tr>
                   <th><input type="checkbox" id="select-all"></th>
-                  <th>No</th>
-                  <th>Asset Code</th>
-                  <th>Asset Name</th>
-                  <th>Serial Number</th>
-                  <th>Category</th>
-                  <th>Location</th>
-                  <th>Person In Charge</th>
-                  <th>Purchase Date</th>
-                  <th>Price</th>
-                  <th>Qty</th>
-                  <th>Satuan</th>
-                  <th>Condition</th>
-                  <th>Ownership Status</th>
-                  <th>Status</th>
-                  <th>Description</th>
-                  <th>Last Updated</th>
-                  <th>Action</th>
+                  <th>{{ __('assets.pt.table.no') }}</th>
+                  <th>{{ __('assets.fields.asset_code') }}</th>
+                  <th>{{ __('assets.fields.asset_name') }}</th>
+                  <th>{{ __('assets.fields.serial_number') }}</th>
+                  <th>{{ __('assets.fields.category') }}</th>
+                  <th>{{ __('assets.fields.location') }}</th>
+                  <th>{{ __('assets.fields.pic') }}</th>
+                  <th>{{ __('assets.fields.purchase_date') }}</th>
+                  <th>{{ __('assets.fields.price') }}</th>
+                  <th>{{ __('assets.fields.qty') }}</th>
+                  <th>{{ __('assets.fields.uom') }}</th>
+                  <th>{{ __('assets.fields.condition') }}</th>
+                  <th>{{ __('assets.fields.ownership_status') }}</th>
+                  <th>{{ __('assets.fields.status') }}</th>
+                  <th>{{ __('assets.fields.description') }}</th>
+                  <th>{{ __('assets.fields.last_updated') }}</th>
+                  <th>{{ __('assets.pt.table.action') }}</th>
                 </tr>
               </thead>
                 <tbody>
@@ -135,30 +141,37 @@
                       <td>{{ $asset->ownership_status }}</td>
                       <td>
                         @php
-                          $status = $asset->asset_status;
-                          $badgeClass = match($status) {
+                          $statusRaw = (string) ($asset->asset_status ?? '');
+                          $badgeClass = match($statusRaw) {
                             'Active' => 'bg-success-subtle text-success',
                             'Inactive' => 'bg-secondary-subtle text-secondary',
                             'Sold' => 'bg-warning-subtle text-warning',
                             'Disposed' => 'bg-danger-subtle text-danger',
                             default => 'bg-light-subtle text-body',
                           };
+
+                          $statusKey = strtolower($statusRaw);
+                          $statusLabel = $statusRaw === ''
+                            ? '-'
+                            : (\Illuminate\Support\Facades\Lang::has("assets.options.asset_status.$statusKey")
+                              ? __("assets.options.asset_status.$statusKey")
+                              : $statusRaw);
                         @endphp
-                        <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                       </td>
                       <td>{{ $asset->description }}</td>
                       <td>{{ $asset->last_updated ? \Carbon\Carbon::parse($asset->last_updated)->format('d-m-Y H:i') : '-' }}</td>
                       <td>
-                        <a href="{{ route('admin.assets.show', $asset->id) }}" class="btn btn-sm btn-info" title="Detail">
+                        <a href="{{ route('admin.assets.show', $asset->id) }}" class="btn btn-sm btn-info" title="{{ __('assets.actions.detail') }}">
                           <i class="fas fa-eye"></i>
                         </a>
-                        <button type="button" class="btn btn-sm btn-warning btn-edit-asset" data-id="{{ $asset->id }}" title="Edit">
+                        <button type="button" class="btn btn-sm btn-warning btn-edit-asset" data-id="{{ $asset->id }}" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? __('assets.actions.edit') : __('assets.actions.no_access_update') }}">
                           <i class="fas fa-edit"></i>
                         </button>
-                        <form action="{{ route('admin.assets.destroy', $asset->id) }}" method="POST" style="display:inline-block" class="form-delete-asset" title="Delete">
+                        <form action="{{ route('admin.assets.destroy', $asset->id) }}" method="POST" style="display:inline-block" class="form-delete-asset" title="{{ __('assets.actions.delete') }}">
                           @csrf
                           @method('DELETE')
-                          <button type="button" class="btn btn-sm btn-danger btn-delete-asset">
+                          <button type="button" class="btn btn-sm btn-danger btn-delete-asset" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? __('assets.actions.delete') : __('assets.actions.no_access_delete') }}">
                             <i class="fas fa-trash-alt"></i>
                           </button>
                         </form>
@@ -179,13 +192,13 @@
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Input Lengkap Asset</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h5 class="modal-title">{{ __('assets.pt.create_modal_title') }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('common.close') }}"></button>
             </div>
             <div class="modal-body">
               @if ($errors->any() && old('_create_modal'))
                 <div class="alert alert-danger" role="alert">
-                  <div class="fw-semibold mb-1">Mohon lengkapi data yang wajib diisi.</div>
+                  <div class="fw-semibold mb-1">{{ __('assets.pt.validation_required') }}</div>
                   <ul class="mb-0">
                     @foreach ($errors->all() as $error)
                       <li>{{ $error }}</li>
@@ -200,7 +213,7 @@
 
                 <div class="row g-3">
                   <div class="col-md-12">
-                    <label class="form-label">Asset Name</label>
+                    <label class="form-label">{{ __('assets.fields.asset_name') }}</label>
                     <input type="text" class="form-control @error('asset_name') is-invalid @enderror" name="asset_name" value="{{ old('asset_name') }}" required>
                     @error('asset_name')
                       <div class="invalid-feedback">{{ $message }}</div>
@@ -208,9 +221,9 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Category</label>
+                    <label class="form-label">{{ __('assets.fields.category') }}</label>
                     <select class="form-select js-select2-modal @error('asset_category') is-invalid @enderror" name="asset_category" required>
-                      <option value="">Select Category</option>
+                      <option value="">{{ __('assets.pt.select_category') }}</option>
                       @foreach(($assetCategories ?? collect()) as $c)
                         <option value="{{ $c->code }}" {{ old('asset_category') == $c->code ? 'selected' : '' }}>
                           {{ $c->code }} - {{ $c->name }}
@@ -220,13 +233,13 @@
                     @error('asset_category')
                       <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Kelola kategori di <a href="{{ route('admin.asset_categories.index') }}">Master Data</a>.</small>
+                    <small class="text-muted">{{ __('assets.pt.manage_category_prefix') }} <a href="{{ route('admin.asset_categories.index') }}">{{ __('menu.master_data') }}</a>.</small>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Location</label>
+                    <label class="form-label">{{ __('assets.fields.location') }}</label>
                     <select class="form-select js-select2-modal @error('asset_location') is-invalid @enderror" name="asset_location" required>
-                      <option value="">Select Location</option>
+                      <option value="">{{ __('assets.pt.select_location') }}</option>
                       @foreach(($assetLocations ?? collect()) as $l)
                         <option value="{{ $l->name }}" {{ old('asset_location') == $l->name ? 'selected' : '' }}>{{ $l->name }}</option>
                       @endforeach
@@ -234,21 +247,21 @@
                     @error('asset_location')
                       <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Kelola lokasi di <a href="{{ route('admin.asset_locations.index') }}">Master Data</a>.</small>
+                    <small class="text-muted">{{ __('assets.pt.manage_location_prefix') }} <a href="{{ route('admin.asset_locations.index') }}">{{ __('menu.master_data') }}</a>.</small>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Brand / Type / Model</label>
+                    <label class="form-label">{{ __('assets.fields.brand_type_model') }}</label>
                     <input type="text" class="form-control" name="brand_type_model" value="{{ old('brand_type_model') }}">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Serial Number</label>
+                    <label class="form-label">{{ __('assets.fields.serial_number') }}</label>
                     <input type="text" class="form-control" name="serial_number" value="{{ old('serial_number') }}">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Purchase Date</label>
+                    <label class="form-label">{{ __('assets.fields.purchase_date') }}</label>
                     <input type="date" class="form-control @error('purchase_date') is-invalid @enderror" name="purchase_date" value="{{ old('purchase_date') }}">
                     @error('purchase_date')
                       <div class="invalid-feedback">{{ $message }}</div>
@@ -256,7 +269,7 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Price</label>
+                    <label class="form-label">{{ __('assets.fields.price') }}</label>
                     <div class="input-group">
                       <span class="input-group-text">Rp.</span>
                       <input type="number" step="0.01" class="form-control @error('price') is-invalid @enderror" name="price" min="0" value="{{ old('price') }}">
@@ -267,7 +280,7 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Qty</label>
+                    <label class="form-label">{{ __('assets.fields.qty') }}</label>
                     <input type="number" class="form-control @error('qty') is-invalid @enderror" name="qty" min="0" placeholder="0" value="{{ old('qty') }}">
                     @error('qty')
                       <div class="invalid-feedback">{{ $message }}</div>
@@ -275,9 +288,9 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Satuan</label>
+                    <label class="form-label">{{ __('assets.fields.uom') }}</label>
                     <select class="form-select js-select2-modal @error('satuan') is-invalid @enderror" name="satuan">
-                      <option value="">- Pilih Satuan -</option>
+                      <option value="">{{ __('assets.pt.select_uom') }}</option>
                       @foreach(($assetUoms ?? collect()) as $u)
                         <option value="{{ $u->name }}" {{ old('satuan') == $u->name ? 'selected' : '' }}>{{ $u->name }}</option>
                       @endforeach
@@ -285,13 +298,13 @@
                     @error('satuan')
                       <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Kelola satuan di <a href="{{ route('admin.asset_uoms.index') }}">Master Data</a>.</small>
+                    <small class="text-muted">{{ __('assets.pt.manage_uom_prefix') }} <a href="{{ route('admin.asset_uoms.index') }}">{{ __('menu.master_data') }}</a>.</small>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Vendor / Supplier</label>
+                    <label class="form-label">{{ __('assets.fields.vendor_supplier') }}</label>
                     <select class="form-select js-select2-modal @error('vendor_supplier') is-invalid @enderror" name="vendor_supplier">
-                      <option value="">- Pilih Vendor -</option>
+                      <option value="">{{ __('assets.pt.select_vendor') }}</option>
                       @foreach(($assetVendors ?? collect()) as $v)
                         <option value="{{ $v->name }}" {{ old('vendor_supplier') == $v->name ? 'selected' : '' }}>{{ $v->name }}</option>
                       @endforeach
@@ -299,18 +312,18 @@
                     @error('vendor_supplier')
                       <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                    <small class="text-muted">Kelola vendor di <a href="{{ route('admin.asset_vendors.index') }}">Master Data</a>.</small>
+                    <small class="text-muted">{{ __('assets.pt.manage_vendor_prefix') }} <a href="{{ route('admin.asset_vendors.index') }}">{{ __('menu.master_data') }}</a>.</small>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Invoice Number</label>
+                    <label class="form-label">{{ __('assets.fields.invoice_number') }}</label>
                     <input type="text" class="form-control" name="invoice_number" value="{{ old('invoice_number') }}">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Department</label>
+                    <label class="form-label">{{ __('assets.fields.department') }}</label>
                     <select class="form-select js-select2-modal @error('department_id') is-invalid @enderror" name="department_id">
-                      <option value="">- Pilih Department -</option>
+                      <option value="">{{ __('assets.pt.select_department') }}</option>
                       @foreach(($departments ?? collect()) as $d)
                         <option value="{{ $d->id }}" {{ (string) old('department_id') === (string) $d->id ? 'selected' : '' }}>{{ $d->name }}</option>
                       @endforeach
@@ -321,9 +334,9 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Person In Charge</label>
+                    <label class="form-label">{{ __('assets.fields.pic') }}</label>
                     <select class="form-select js-select2-modal @error('person_in_charge_employee_id') is-invalid @enderror" name="person_in_charge_employee_id">
-                      <option value="">- Pilih Karyawan -</option>
+                      <option value="">{{ __('assets.pt.select_employee') }}</option>
                       @foreach(($employees ?? collect()) as $e)
                         <option value="{{ $e->id }}" {{ (string) old('person_in_charge_employee_id') === (string) $e->id ? 'selected' : '' }}>
                           {{ $e->no_id }} - {{ $e->name }}
@@ -336,38 +349,38 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Ownership Status</label>
+                    <label class="form-label">{{ __('assets.fields.ownership_status') }}</label>
                     <select class="form-select" name="ownership_status">
-                      <option value="">Select Status</option>
-                      <option value="Owned" {{ old('ownership_status') == 'Owned' ? 'selected' : '' }}>Owned</option>
-                      <option value="Rented" {{ old('ownership_status') == 'Rented' ? 'selected' : '' }}>Rented</option>
-                      <option value="Leased" {{ old('ownership_status') == 'Leased' ? 'selected' : '' }}>Leased</option>
+                      <option value="">{{ __('assets.pt.select_status') }}</option>
+                      <option value="Owned" {{ old('ownership_status') == 'Owned' ? 'selected' : '' }}>{{ __('assets.options.ownership.owned') }}</option>
+                      <option value="Rented" {{ old('ownership_status') == 'Rented' ? 'selected' : '' }}>{{ __('assets.options.ownership.rented') }}</option>
+                      <option value="Leased" {{ old('ownership_status') == 'Leased' ? 'selected' : '' }}>{{ __('assets.options.ownership.leased') }}</option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Condition</label>
+                    <label class="form-label">{{ __('assets.fields.condition') }}</label>
                     <select class="form-select" name="asset_condition">
-                      <option value="">Select Condition</option>
-                      <option value="Good" {{ old('asset_condition') == 'Good' ? 'selected' : '' }}>Good</option>
-                      <option value="Minor Damage" {{ old('asset_condition') == 'Minor Damage' ? 'selected' : '' }}>Minor Damage</option>
-                      <option value="Major Damage" {{ old('asset_condition') == 'Major Damage' ? 'selected' : '' }}>Major Damage</option>
+                      <option value="">{{ __('assets.pt.select_condition') }}</option>
+                      <option value="Good" {{ old('asset_condition') == 'Good' ? 'selected' : '' }}>{{ __('assets.options.condition.good') }}</option>
+                      <option value="Minor Damage" {{ old('asset_condition') == 'Minor Damage' ? 'selected' : '' }}>{{ __('assets.options.condition.minor_damage') }}</option>
+                      <option value="Major Damage" {{ old('asset_condition') == 'Major Damage' ? 'selected' : '' }}>{{ __('assets.options.condition.major_damage') }}</option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">{{ __('assets.fields.status') }}</label>
                     <select class="form-select" name="asset_status">
-                      <option value="">Select Status</option>
-                      <option value="Active" {{ old('asset_status') == 'Active' ? 'selected' : '' }}>Active</option>
-                      <option value="Inactive" {{ old('asset_status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
-                      <option value="Sold" {{ old('asset_status') == 'Sold' ? 'selected' : '' }}>Sold</option>
-                      <option value="Disposed" {{ old('asset_status') == 'Disposed' ? 'selected' : '' }}>Disposed</option>
+                      <option value="">{{ __('assets.pt.select_status') }}</option>
+                      <option value="Active" {{ old('asset_status') == 'Active' ? 'selected' : '' }}>{{ __('assets.options.asset_status.active') }}</option>
+                      <option value="Inactive" {{ old('asset_status') == 'Inactive' ? 'selected' : '' }}>{{ __('assets.options.asset_status.inactive') }}</option>
+                      <option value="Sold" {{ old('asset_status') == 'Sold' ? 'selected' : '' }}>{{ __('assets.options.asset_status.sold') }}</option>
+                      <option value="Disposed" {{ old('asset_status') == 'Disposed' ? 'selected' : '' }}>{{ __('assets.options.asset_status.disposed') }}</option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Start Use Date</label>
+                    <label class="form-label">{{ __('assets.fields.start_use_date') }}</label>
                     <input type="date" class="form-control @error('start_use_date') is-invalid @enderror" name="start_use_date" value="{{ old('start_use_date') }}">
                     @error('start_use_date')
                       <div class="invalid-feedback">{{ $message }}</div>
@@ -375,52 +388,52 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Warranty Status</label>
+                    <label class="form-label">{{ __('assets.fields.warranty_status') }}</label>
                     <select class="form-select" name="warranty_status">
-                      <option value="">Select</option>
-                      <option value="Yes" {{ old('warranty_status') == 'Yes' ? 'selected' : '' }}>Yes</option>
-                      <option value="No" {{ old('warranty_status') == 'No' ? 'selected' : '' }}>No</option>
+                      <option value="">{{ __('assets.pt.select') }}</option>
+                      <option value="Yes" {{ old('warranty_status') == 'Yes' ? 'selected' : '' }}>{{ __('assets.options.warranty.yes') }}</option>
+                      <option value="No" {{ old('warranty_status') == 'No' ? 'selected' : '' }}>{{ __('assets.options.warranty.no') }}</option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Warranty End Date</label>
+                    <label class="form-label">{{ __('assets.fields.warranty_end_date') }}</label>
                     <input type="date" class="form-control" name="warranty_end_date" value="{{ old('warranty_end_date') }}">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Input By</label>
+                    <label class="form-label">{{ __('assets.fields.input_by') }}</label>
                     <input type="text" class="form-control" name="input_by" value="{{ Auth::user()->name }}" readonly>
                   </div>
 
                   <div class="col-md-12">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">{{ __('assets.fields.description') }}</label>
                     <textarea class="form-control" name="description" rows="2">{{ old('description') }}</textarea>
                   </div>
 
                   <div class="col-md-12">
-                    <label class="form-label">Notes</label>
+                    <label class="form-label">{{ __('assets.fields.notes') }}</label>
                     <textarea class="form-control" name="notes" rows="2">{{ old('notes') }}</textarea>
                   </div>
 
                   <div class="col-md-4">
-                    <label class="form-label">Image 1</label>
+                    <label class="form-label">{{ __('assets.fields.image_1') }}</label>
                     <input type="file" class="form-control" name="image_1" accept="image/*">
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Image 2</label>
+                    <label class="form-label">{{ __('assets.fields.image_2') }}</label>
                     <input type="file" class="form-control" name="image_2" accept="image/*">
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Image 3</label>
+                    <label class="form-label">{{ __('assets.fields.image_3') }}</label>
                     <input type="file" class="form-control" name="image_3" accept="image/*">
                   </div>
                 </div>
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-              <button type="submit" form="asset-create-form" class="btn btn-primary">Simpan Asset</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.close') }}</button>
+              <button type="submit" form="asset-create-form" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('assets.actions.no_access_create') }}">{{ __('assets.pt.save_asset') }}</button>
             </div>
           </div>
         </div>
@@ -431,13 +444,13 @@
         <div class="modal-dialog modal-lg modal-dialog-scrollable">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">Edit Asset</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              <h5 class="modal-title">{{ __('assets.pt.edit_modal_title') }}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('common.close') }}"></button>
             </div>
             <div class="modal-body">
               @if ($errors->any() && old('_edit_id'))
                 <div class="alert alert-danger" role="alert">
-                  <div class="fw-semibold mb-1">Mohon lengkapi data yang wajib diisi.</div>
+                  <div class="fw-semibold mb-1">{{ __('assets.pt.validation_required') }}</div>
                   <ul class="mb-0">
                     @foreach ($errors->all() as $error)
                       <li>{{ $error }}</li>
@@ -453,27 +466,27 @@
 
                 <div class="row g-3">
                   <div class="col-md-6">
-                    <label class="form-label">Asset Code</label>
+                    <label class="form-label">{{ __('assets.fields.asset_code') }}</label>
                     <input type="text" class="form-control" id="edit-asset-code" readonly>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Asset Name</label>
+                    <label class="form-label">{{ __('assets.fields.asset_name') }}</label>
                     <input type="text" class="form-control" name="asset_name" id="edit-asset-name" required>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Category</label>
+                    <label class="form-label">{{ __('assets.fields.category') }}</label>
                     <select class="form-select js-select2-modal" name="asset_category" id="edit-asset-category" required>
-                      <option value="">Select Category</option>
+                      <option value="">{{ __('assets.pt.select_category') }}</option>
                       @foreach(($assetCategories ?? collect()) as $c)
                         <option value="{{ $c->code }}">{{ $c->code }} - {{ $c->name }}</option>
                       @endforeach
                     </select>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Location</label>
+                    <label class="form-label">{{ __('assets.fields.location') }}</label>
                     <select class="form-select js-select2-modal" name="asset_location" id="edit-asset-location" required>
-                      <option value="">Select Location</option>
+                      <option value="">{{ __('assets.pt.select_location') }}</option>
                       @foreach(($assetLocations ?? collect()) as $l)
                         <option value="{{ $l->name }}">{{ $l->name }}</option>
                       @endforeach
@@ -481,22 +494,22 @@
                   </div>
 
                   <div class="col-md-4">
-                    <label class="form-label">Qty</label>
+                    <label class="form-label">{{ __('assets.fields.qty') }}</label>
                     <input type="number" class="form-control" name="qty" id="edit-qty" min="0">
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Satuan</label>
+                    <label class="form-label">{{ __('assets.fields.uom') }}</label>
                     <select class="form-select js-select2-modal" name="satuan" id="edit-satuan">
-                      <option value="">- Pilih Satuan -</option>
+                      <option value="">{{ __('assets.pt.select_uom') }}</option>
                       @foreach(($assetUoms ?? collect()) as $u)
                         <option value="{{ $u->name }}">{{ $u->name }}</option>
                       @endforeach
                     </select>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Vendor</label>
+                    <label class="form-label">{{ __('assets.fields.vendor') }}</label>
                     <select class="form-select js-select2-modal" name="vendor_supplier" id="edit-vendor">
-                      <option value="">- Pilih Vendor -</option>
+                      <option value="">{{ __('assets.pt.select_vendor') }}</option>
                       @foreach(($assetVendors ?? collect()) as $v)
                         <option value="{{ $v->name }}">{{ $v->name }}</option>
                       @endforeach
@@ -504,18 +517,18 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Department</label>
+                    <label class="form-label">{{ __('assets.fields.department') }}</label>
                     <select class="form-select js-select2-modal" name="department_id" id="edit-department-id">
-                      <option value="">- Pilih Department -</option>
+                      <option value="">{{ __('assets.pt.select_department') }}</option>
                       @foreach(($departments ?? collect()) as $d)
                         <option value="{{ $d->id }}">{{ $d->name }}</option>
                       @endforeach
                     </select>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Person In Charge</label>
+                    <label class="form-label">{{ __('assets.fields.pic') }}</label>
                     <select class="form-select js-select2-modal" name="person_in_charge_employee_id" id="edit-pic-id">
-                      <option value="">- Pilih Karyawan -</option>
+                      <option value="">{{ __('assets.pt.select_employee') }}</option>
                       @foreach(($employees ?? collect()) as $e)
                         <option value="{{ $e->id }}">{{ $e->no_id }} - {{ $e->name }}</option>
                       @endforeach
@@ -523,11 +536,11 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Purchase Date</label>
+                    <label class="form-label">{{ __('assets.fields.purchase_date') }}</label>
                     <input type="date" class="form-control" name="purchase_date" id="edit-purchase-date">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Price</label>
+                    <label class="form-label">{{ __('assets.fields.price') }}</label>
                     <div class="input-group">
                       <span class="input-group-text">Rp.</span>
                       <input type="number" step="0.01" class="form-control" name="price" id="edit-price" min="0">
@@ -535,96 +548,96 @@
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Brand / Type / Model</label>
+                    <label class="form-label">{{ __('assets.fields.brand_type_model') }}</label>
                     <input type="text" class="form-control" name="brand_type_model" id="edit-brand">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Serial Number</label>
+                    <label class="form-label">{{ __('assets.fields.serial_number') }}</label>
                     <input type="text" class="form-control" name="serial_number" id="edit-serial">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Invoice Number</label>
+                    <label class="form-label">{{ __('assets.fields.invoice_number') }}</label>
                     <input type="text" class="form-control" name="invoice_number" id="edit-invoice">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Start Use Date</label>
+                    <label class="form-label">{{ __('assets.fields.start_use_date') }}</label>
                     <input type="date" class="form-control" name="start_use_date" id="edit-start-use-date">
                   </div>
 
                   <div class="col-md-4">
-                    <label class="form-label">Ownership Status</label>
+                    <label class="form-label">{{ __('assets.fields.ownership_status') }}</label>
                     <select class="form-select" name="ownership_status" id="edit-ownership">
-                      <option value="">Select Status</option>
-                      <option value="Owned">Owned</option>
-                      <option value="Rented">Rented</option>
-                      <option value="Leased">Leased</option>
+                      <option value="">{{ __('assets.pt.select_status') }}</option>
+                      <option value="Owned">{{ __('assets.options.ownership.owned') }}</option>
+                      <option value="Rented">{{ __('assets.options.ownership.rented') }}</option>
+                      <option value="Leased">{{ __('assets.options.ownership.leased') }}</option>
                     </select>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Condition</label>
+                    <label class="form-label">{{ __('assets.fields.condition') }}</label>
                     <select class="form-select" name="asset_condition" id="edit-condition">
-                      <option value="">Select Condition</option>
-                      <option value="Good">Good</option>
-                      <option value="Minor Damage">Minor Damage</option>
-                      <option value="Major Damage">Major Damage</option>
+                      <option value="">{{ __('assets.pt.select_condition') }}</option>
+                      <option value="Good">{{ __('assets.options.condition.good') }}</option>
+                      <option value="Minor Damage">{{ __('assets.options.condition.minor_damage') }}</option>
+                      <option value="Major Damage">{{ __('assets.options.condition.major_damage') }}</option>
                     </select>
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">{{ __('assets.fields.status') }}</label>
                     <select class="form-select" name="asset_status" id="edit-status">
-                      <option value="">Select Status</option>
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      <option value="Sold">Sold</option>
-                      <option value="Disposed">Disposed</option>
+                      <option value="">{{ __('assets.pt.select_status') }}</option>
+                      <option value="Active">{{ __('assets.options.asset_status.active') }}</option>
+                      <option value="Inactive">{{ __('assets.options.asset_status.inactive') }}</option>
+                      <option value="Sold">{{ __('assets.options.asset_status.sold') }}</option>
+                      <option value="Disposed">{{ __('assets.options.asset_status.disposed') }}</option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Warranty Status</label>
+                    <label class="form-label">{{ __('assets.fields.warranty_status') }}</label>
                     <select class="form-select" name="warranty_status" id="edit-warranty-status">
-                      <option value="">Select</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
+                      <option value="">{{ __('assets.pt.select') }}</option>
+                      <option value="Yes">{{ __('assets.options.warranty.yes') }}</option>
+                      <option value="No">{{ __('assets.options.warranty.no') }}</option>
                     </select>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Warranty End Date</label>
+                    <label class="form-label">{{ __('assets.fields.warranty_end_date') }}</label>
                     <input type="date" class="form-control" name="warranty_end_date" id="edit-warranty-end-date">
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Description</label>
+                    <label class="form-label">{{ __('assets.fields.description') }}</label>
                     <textarea class="form-control" name="description" id="edit-description" rows="2"></textarea>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Notes</label>
+                    <label class="form-label">{{ __('assets.fields.notes') }}</label>
                     <textarea class="form-control" name="notes" id="edit-notes" rows="2"></textarea>
                   </div>
 
                   <div class="col-md-4">
-                    <label class="form-label">Image 1 (opsional)</label>
+                    <label class="form-label">{{ __('assets.fields.image_1_optional') }}</label>
                     <input type="file" class="form-control" name="image_1" accept="image/*">
-                    <img id="edit-image-1" class="mt-2 d-none" style="max-width: 150px; max-height: 150px;" alt="Image 1">
+                    <img id="edit-image-1" class="mt-2 d-none" style="max-width: 150px; max-height: 150px;" alt="{{ __('assets.fields.image_1') }}">
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Image 2 (opsional)</label>
+                    <label class="form-label">{{ __('assets.fields.image_2_optional') }}</label>
                     <input type="file" class="form-control" name="image_2" accept="image/*">
-                    <img id="edit-image-2" class="mt-2 d-none" style="max-width: 150px; max-height: 150px;" alt="Image 2">
+                    <img id="edit-image-2" class="mt-2 d-none" style="max-width: 150px; max-height: 150px;" alt="{{ __('assets.fields.image_2') }}">
                   </div>
                   <div class="col-md-4">
-                    <label class="form-label">Image 3 (opsional)</label>
+                    <label class="form-label">{{ __('assets.fields.image_3_optional') }}</label>
                     <input type="file" class="form-control" name="image_3" accept="image/*">
-                    <img id="edit-image-3" class="mt-2 d-none" style="max-width: 150px; max-height: 150px;" alt="Image 3">
+                    <img id="edit-image-3" class="mt-2 d-none" style="max-width: 150px; max-height: 150px;" alt="{{ __('assets.fields.image_3') }}">
                   </div>
                 </div>
               </form>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-              <button type="submit" form="asset-edit-form" class="btn btn-primary">Update</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ __('common.close') }}</button>
+              <button type="submit" form="asset-edit-form" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('assets.actions.no_access_update') }}">{{ __('assets.pt.update') }}</button>
             </div>
           </div>
         </div>
@@ -681,6 +694,7 @@
       const $editModal = $('#assetEditModal');
       const ensureEditModalSelect2 = () => initSelect2InModal($editModal);
       const ensureCreateModalSelect2 = () => initSelect2InModal($createModal);
+      const notRegisteredPrefix = @json(__('common.not_registered_prefix'));
 
       const setSelectValueWithFallback = (selector, value, fallbackLabel) => {
         const $sel = $(selector);
@@ -693,7 +707,7 @@
 
         const has = $sel.find('option').filter(function() { return String($(this).attr('value')) === val; }).length > 0;
         if (!has) {
-          const label = fallbackLabel ? `(belum terdaftar) ${fallbackLabel}` : `(belum terdaftar) ${val}`;
+          const label = fallbackLabel ? `${notRegisteredPrefix} ${fallbackLabel}` : `${notRegisteredPrefix} ${val}`;
           $sel.append(new Option(label, val, true, true));
         }
         $sel.val(val).trigger('change');
@@ -709,7 +723,7 @@
           const url = `{{ url('/admin/assets') }}/${id}/json`;
           const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
           if (!res.ok) {
-            throw new Error('Gagal mengambil data asset.');
+            throw new Error(@json(__('assets.pt.alerts.fetch_failed')));
           }
           const data = await res.json();
 
@@ -764,7 +778,7 @@
             $editModal.modal('show');
           }
         } catch (e) {
-          $err.removeClass('d-none').text(e.message || 'Terjadi kesalahan.');
+          $err.removeClass('d-none').text(e.message || @json(__('assets.pt.alerts.generic_error')));
         }
       };
 
@@ -821,7 +835,7 @@
         var selected = $('.select-asset:checked').map(function() { return this.value; }).get();
         if (selected.length === 0) {
           e.preventDefault();
-          Swal.fire({ icon: 'warning', title: 'No asset selected', text: 'Please select at least one asset to print barcode.' });
+          Swal.fire({ icon: 'warning', title: @json(__('assets.pt.alerts.no_asset_selected_title')), text: @json(__('assets.pt.alerts.no_asset_selected_text')) });
           return false;
         }
         $('#selected-ids').val(selected.join(','));
@@ -835,14 +849,14 @@
       e.preventDefault();
       var form = $(this).closest('form');
       Swal.fire({
-        title: 'Are you sure?',
-        text: "This action cannot be undone!",
+        title: @json(__('assets.pt.alerts.delete_confirm_title')),
+        text: @json(__('assets.pt.alerts.delete_confirm_text')),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: @json(__('common.ok')),
+        cancelButtonText: @json(__('common.cancel'))
       }).then((result) => {
         if (result.isConfirmed) {
           form.submit();

@@ -2,11 +2,11 @@
   // Set page size for print (60x40mm = 6x4 cm)
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
   <meta charset="UTF-8">
-  <title>Print Barcode - Ilsam</title>
+  <title>{{ __('assets.barcode_print.title') }} - Ilsam</title>
   <!-- App favicon -->
   <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
   <style>
@@ -137,33 +137,33 @@
     @foreach($assets as $asset)
       <div class="label-container">
         <div class="logo-section">
-          <img src="{{ asset('assets/img/logo-min.svg') }}" alt="Logo" />
+          <img src="{{ asset('assets/img/logo-min.svg') }}" alt="{{ __('common.logo') }}" />
           <span>PT ILSAM GLOBAL INDONESIA</span>
         </div>
         <div class="barcode-section">
-          <img class="barcode-img" src="{{ route('admin.assets.barcode', $asset->asset_code) }}?v={{ uniqid() }}" alt="Barcode">
+          <img class="barcode-img" src="{{ route('admin.assets.barcode', $asset->asset_code) }}?v={{ uniqid() }}" alt="{{ __('common.barcode') }}">
           <div style="border-top:1px solid #000; margin:5px 0 0 0;"></div>
           <div class="asset-code">{{ $asset->asset_code }}</div>
         </div>
         <div class="property">
-          ASSET OF<br>PT ILSAM GLOBAL INDONESIA
+          {{ __('assets.barcode_print.property_of') }}<br>PT ILSAM GLOBAL INDONESIA
         </div>
         <div class="footer-section">
           <div class="footer-row">
             <div class="footer-col">
-              <span class="footer-label">Lokasi :</span> {{ $asset->asset_location }}
+              <span class="footer-label">{{ __('assets.barcode_print.labels.location') }} :</span> {{ $asset->asset_location }}
             </div>
             <div class="footer-col" style="text-align: right;">
-              <span class="footer-label">Tgl Pembelian :</span>
+              <span class="footer-label">{{ __('assets.barcode_print.labels.purchase_date') }} :</span>
               {{ $asset->purchase_date ? \Carbon\Carbon::parse($asset->purchase_date)->format('d-m-Y') : '-' }}
             </div>
           </div>
           <div class="footer-row">
             <div class="footer-col">
-              <span class="footer-label">Serial Number :</span> {{ $asset->serial_number ?? '-' }}
+              <span class="footer-label">{{ __('assets.barcode_print.labels.serial_number') }} :</span> {{ $asset->serial_number ?? '-' }}
             </div>
             <div class="footer-col" style="text-align: right;">
-              <span class="footer-label">Kategori :</span> {{ $asset->asset_category }}
+              <span class="footer-label">{{ __('assets.barcode_print.labels.category') }} :</span> {{ $asset->asset_category }}
             </div>
           </div>
         </div>
@@ -173,39 +173,39 @@
   @elseif(isset($asset))
     <div class="label-container">
       <div class="logo-section">
-        <img src="{{ asset('assets/img/logo-min.svg') }}" alt="Logo" />
+        <img src="{{ asset('assets/img/logo-min.svg') }}" alt="{{ __('common.logo') }}" />
         PT ILSAM GLOBAL INDONESIA
       </div>
       <div class="barcode-section">
-        <img class="barcode-img" src="{{ route('admin.assets.barcode', $asset->asset_code) }}?v={{ uniqid() }}" alt="Barcode">
+        <img class="barcode-img" src="{{ route('admin.assets.barcode', $asset->asset_code) }}?v={{ uniqid() }}" alt="{{ __('common.barcode') }}">
         <div style="border-top:1px solid #000; margin:5px 0 0 0;"></div>
         <div class="asset-code">{{ $asset->asset_code }}</div>
       </div>
       <div class="property">
-        PROPERTY OF<br>PT ILSAM GLOBAL INDONESIA
+        {{ __('assets.barcode_print.property_of') }}<br>PT ILSAM GLOBAL INDONESIA
       </div>
       <div class="footer-section">
         <div class="footer-row">
           <div class="footer-col">
-            <span class="footer-label">Lokasi :</span> {{ $asset->asset_location }}
+            <span class="footer-label">{{ __('assets.barcode_print.labels.location') }} :</span> {{ $asset->asset_location }}
           </div>
           <div class="footer-col" style="text-align: right;">
-            <span class="footer-label">Tgl Pembelian :</span>
+            <span class="footer-label">{{ __('assets.barcode_print.labels.purchase_date') }} :</span>
             {{ $asset->purchase_date ? \Carbon\Carbon::parse($asset->purchase_date)->format('d-m-Y') : '-' }}
           </div>
         </div>
         <div class="footer-row">
           <div class="footer-col">
-            <span class="footer-label">Serial Number :</span> {{ $asset->serial_number ?? '-' }}
+            <span class="footer-label">{{ __('assets.barcode_print.labels.serial_number') }} :</span> {{ $asset->serial_number ?? '-' }}
           </div>
           <div class="footer-col" style="text-align: right;">
-            <span class="footer-label">Kategori :</span> {{ $asset->asset_category }}
+            <span class="footer-label">{{ __('assets.barcode_print.labels.category') }} :</span> {{ $asset->asset_category }}
           </div>
         </div>
       </div>
     </div>
   @else
-    <div style="color:red;">Asset data not found.</div>
+    <div style="color:red;">{{ __('assets.barcode_print.not_found') }}</div>
   @endif
 
   <script>

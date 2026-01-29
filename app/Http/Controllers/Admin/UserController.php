@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\DeletedUser;
 use App\Models\Role;
+use App\Support\MenuAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -52,85 +53,76 @@ class UserController extends Controller
 
     $roleId = (int) $request->input('role_id', 0);
 
-    $permissions = [
-      // User area
-      'user_dashboard' => $request->boolean('menu_user_dashboard'),
+    $permFor = function (string $key) use ($request): array {
+      $read = $request->boolean('menu_' . $key);
+      $create = $request->boolean('menu_' . $key . '_create');
+      $update = $request->boolean('menu_' . $key . '_update');
+      $delete = $request->boolean('menu_' . $key . '_delete');
 
-      // Admin area
-      'admin_dashboard' => $request->boolean('menu_admin_dashboard'),
-      // Groups
-      'assets' => $request->boolean('menu_assets'),
-      'uniforms' => $request->boolean('menu_uniforms'),
+      // Actions imply read.
+      if ($create || $update || $delete) {
+        $read = true;
+      }
 
-      // Assets submenus
-      'assets_data' => $request->boolean('menu_assets_data'),
-      'assets_jababeka' => $request->boolean('menu_assets_jababeka'),
-      'assets_karawang' => $request->boolean('menu_assets_karawang'),
-      'assets_in' => $request->boolean('menu_assets_in'),
-      'assets_transfer' => $request->boolean('menu_assets_transfer'),
-
-      // Uniforms submenus
-      'uniforms_master' => $request->boolean('menu_uniforms_master'),
-      'uniforms_stock' => $request->boolean('menu_uniforms_stock'),
-      'uniforms_distribution' => $request->boolean('menu_uniforms_distribution'),
-      'uniforms_history' => $request->boolean('menu_uniforms_history'),
-
-      'employees' => $request->boolean('menu_employees'),
-      'master_data' => $request->boolean('menu_master_data'),
-      'settings' => $request->boolean('menu_settings'),
-    ];
-
-    $defaults = match ($roleId) {
-      3 => [
-        'user_dashboard' => true,
-        'admin_dashboard' => false,
-        // Groups
-        'assets' => false,
-        'uniforms' => false,
-
-        // Assets submenus
-        'assets_data' => false,
-        'assets_jababeka' => false,
-        'assets_karawang' => false,
-        'assets_in' => false,
-        'assets_transfer' => false,
-
-        // Uniforms submenus
-        'uniforms_master' => false,
-        'uniforms_stock' => false,
-        'uniforms_distribution' => false,
-        'uniforms_history' => false,
-
-        'employees' => false,
-        'master_data' => false,
-        'settings' => false,
-      ],
-      default => [
-        'user_dashboard' => true,
-        'admin_dashboard' => true,
-        // Groups
-        'assets' => true,
-        'uniforms' => true,
-
-        // Assets submenus
-        'assets_data' => true,
-        'assets_jababeka' => true,
-        'assets_karawang' => true,
-        'assets_in' => true,
-        'assets_transfer' => true,
-
-        // Uniforms submenus
-        'uniforms_master' => true,
-        'uniforms_stock' => true,
-        'uniforms_distribution' => true,
-        'uniforms_history' => true,
-
-        'employees' => true,
-        'master_data' => true,
-        'settings' => true,
-      ],
+      return [
+        'read' => $read,
+        'create' => $create,
+        'update' => $update,
+        'delete' => $delete,
+      ];
     };
 
+    $permissions = [
+      // User area
+      'user_dashboard' => $permFor('user_dashboard'),
+
+      // Admin area
+      'admin_dashboard' => $permFor('admin_dashboard'),
+      // Groups
+      'assets' => $permFor('assets'),
+      'uniforms' => $permFor('uniforms'),
+
+      // Assets submenus
+      'assets_data' => $permFor('assets_data'),
+      'accounts_data' => $permFor('accounts_data'),
+      'accounts_secrets' => $permFor('accounts_secrets'),
+      'assets_jababeka' => $permFor('assets_jababeka'),
+      'assets_karawang' => $permFor('assets_karawang'),
+      'assets_in' => $permFor('assets_in'),
+      'assets_transfer' => $permFor('assets_transfer'),
+
+      // Uniforms submenus
+      'uniforms_master' => $permFor('uniforms_master'),
+      'uniforms_stock' => $permFor('uniforms_stock'),
+      'uniforms_distribution' => $permFor('uniforms_distribution'),
+      'uniforms_history' => $permFor('uniforms_history'),
+
+      'employees' => $permFor('employees'),
+      'employees_index' => $permFor('employees_index'),
+      'employees_deleted' => $permFor('employees_deleted'),
+      'employees_audit' => $permFor('employees_audit'),
+      'master_data' => $permFor('master_data'),
+      'departments' => $permFor('departments'),
+      'positions' => $permFor('positions'),
+      'asset_categories' => $permFor('asset_categories'),
+      'account_types' => $permFor('account_types'),
+      'asset_locations' => $permFor('asset_locations'),
+      'asset_uoms' => $permFor('asset_uoms'),
+      'asset_vendors' => $permFor('asset_vendors'),
+      'uniform_sizes' => $permFor('uniform_sizes'),
+      'uniform_item_names' => $permFor('uniform_item_names'),
+      'uniform_categories' => $permFor('uniform_categories'),
+      'uniform_colors' => $permFor('uniform_colors'),
+      'uniform_uoms' => $permFor('uniform_uoms'),
+      'career' => $permFor('career'),
+      'certificate' => $permFor('certificate'),
+      'settings' => $permFor('settings'),
+      'settings_users' => $permFor('settings_users'),
+      'settings_history_user' => $permFor('settings_history_user'),
+      'settings_history_asset' => $permFor('settings_history_asset'),
+    ];
+
+    $defaults = MenuAccess::defaultsForRole(null, $roleId);
     return $permissions == $defaults ? null : $permissions;
   }
 

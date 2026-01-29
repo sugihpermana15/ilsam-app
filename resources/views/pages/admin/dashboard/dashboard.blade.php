@@ -177,11 +177,15 @@
         !empty($permissions['uniform']['recent'])
       );
 
+      $showDocuments = !empty($showDocuments);
+
       $tabs = [];
       if ($showAsset)
         $tabs[] = 'asset';
       if ($showUniform)
         $tabs[] = 'uniform';
+      if ($showDocuments)
+        $tabs[] = 'documents';
       if ($showEmployee)
         $tabs[] = 'employee';
 
@@ -237,6 +241,14 @@
                       <button class="nav-link {{ $activeTab === 'employee' ? 'active' : '' }}" data-bs-toggle="tab"
                         data-bs-target="#tab-employee" type="button" role="tab">
                         <i class="fas fa-users me-1"></i> Karyawan
+                      </button>
+                    </li>
+                  @endif
+                  @if($showDocuments)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'documents' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-documents" type="button" role="tab">
+                        <i class="fas fa-folder-open me-1"></i> Archived Berkas
                       </button>
                     </li>
                   @endif
@@ -549,6 +561,130 @@
                         </div>
                       </div>
                     @endif
+                  </div>
+                @endif
+
+                @if($showDocuments)
+                  @php
+                    $docExpiring = $documents['expiring'] ?? collect();
+                    $docLatest = $documents['latest'] ?? collect();
+                    $docActiveByMonth = $documents['activeByMonth'] ?? collect();
+                    $canCreateDoc = \App\Support\MenuAccess::can(auth()->user(), 'documents_archive', 'create');
+                  @endphp
+
+                  <div class="tab-pane fade {{ $activeTab === 'documents' ? 'show active' : '' }}" id="tab-documents"
+                    role="tabpanel">
+                    <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
+                      <div class="text-muted small">Ringkasan kontrak/lampiran dari Archived Berkas.</div>
+                      <div class="d-flex gap-2">
+                        <a href="{{ route('admin.documents.index') }}" class="btn btn-outline-secondary btn-sm">Open List</a>
+                        @if($canCreateDoc)
+                          <a href="{{ route('admin.documents.create') }}" class="btn btn-primary btn-sm">Upload Dokumen</a>
+                        @endif
+                      </div>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-12 col-xl-6">
+                        <div class="card">
+                          <div class="card-header d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0">Kontrak/Langganan Akan Habis (≤ 90 hari)</h6>
+                            <a href="{{ route('admin.documents.index', ['status' => 'Active']) }}" class="btn btn-sm btn-outline-primary">Lihat</a>
+                          </div>
+                          <div class="card-body">
+                            @if($docExpiring->isEmpty())
+                              <div class="text-muted">Tidak ada yang akan habis dalam 90 hari.</div>
+                            @else
+                              <div class="table-responsive">
+                                <table class="table table-sm table-striped align-middle mb-0">
+                                  <thead>
+                                    <tr>
+                                      <th>Judul</th>
+                                      <th>Vendor</th>
+                                      <th>End Date</th>
+                                      <th>Status</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    @foreach($docExpiring as $d)
+                                      <tr>
+                                        <td>
+                                          <a href="{{ route('admin.documents.show', $d->document_id) }}">{{ $d->document_title }}</a>
+                                          <div class="text-muted small">{{ $d->document_type }} • {{ $d->document_number }}</div>
+                                        </td>
+                                        <td>{{ $d->vendor?->name }}</td>
+                                        <td>{{ optional($d->contractTerms?->end_date)->format('Y-m-d') }}</td>
+                                        <td>
+                                          <span class="badge bg-{{ $d->status === 'Active' ? 'success' : ($d->status === 'Draft' ? 'secondary' : 'warning') }}">{{ $d->status }}</span>
+                                        </td>
+                                      </tr>
+                                    @endforeach
+                                  </tbody>
+                                </table>
+                              </div>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-xl-6">
+                        <div class="card">
+                          <div class="card-header d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0">Dokumen Terbaru</h6>
+                            <a href="{{ route('admin.documents.index') }}" class="btn btn-sm btn-outline-primary">List</a>
+                          </div>
+                          <div class="card-body">
+                            @if($docLatest->isEmpty())
+                              <div class="text-muted">Belum ada dokumen.</div>
+                            @else
+                              <ul class="list-group list-group-flush">
+                                @foreach($docLatest as $d)
+                                  <li class="list-group-item d-flex align-items-center justify-content-between">
+                                    <div>
+                                      <a href="{{ route('admin.documents.show', $d->document_id) }}">{{ $d->document_title }}</a>
+                                      <div class="text-muted small">{{ $d->vendor?->name }} • {{ $d->document_type }} • {{ $d->document_number }}</div>
+                                    </div>
+                                    <div class="text-muted small">{{ $d->updated_at?->format('Y-m-d H:i') }}</div>
+                                  </li>
+                                @endforeach
+                              </ul>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <div class="card">
+                          <div class="card-header">
+                            <h6 class="mb-0">Langganan Aktif per Bulan (berdasarkan End Date)</h6>
+                          </div>
+                          <div class="card-body">
+                            @if($docActiveByMonth->isEmpty())
+                              <div class="text-muted">Belum ada data.</div>
+                            @else
+                              <div class="table-responsive">
+                                <table class="table table-sm table-striped mb-0">
+                                  <thead>
+                                    <tr>
+                                      <th>Bulan</th>
+                                      <th class="text-end">Total</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    @foreach($docActiveByMonth as $row)
+                                      <tr>
+                                        <td>{{ $row->ym }}</td>
+                                        <td class="text-end">{{ $row->total }}</td>
+                                      </tr>
+                                    @endforeach
+                                  </tbody>
+                                </table>
+                              </div>
+                            @endif
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 @endif
 

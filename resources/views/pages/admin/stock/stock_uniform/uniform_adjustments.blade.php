@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Penyesuaian Stok Seragam | IGI')
-@section('title-sub', ' Dashboard Penyesuaian Stok Seragam ')
-@section('pagetitle', 'Penyesuaian Stok Seragam')
+@section('title', __('uniforms.adjustments.page_title'))
+@section('title-sub', __('uniforms.adjustments.title_sub'))
+@section('pagetitle', __('uniforms.adjustments.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -11,13 +11,17 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'update');
+  @endphp
   <div class="row">
     <div class="col-12">
       @php
         $uniformApprovalStatusLabels = [
-          'PENDING' => 'Menunggu',
-          'APPROVED' => 'Disetujui',
-          'REJECTED' => 'Ditolak',
+          'PENDING' => __('uniforms.approval_status.PENDING'),
+          'APPROVED' => __('uniforms.approval_status.APPROVED'),
+          'REJECTED' => __('uniforms.approval_status.REJECTED'),
         ];
 
         $uniformApprovalStatusBadge = function (?string $status): string {
@@ -35,12 +39,12 @@
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Permintaan Penyesuaian Stok </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.adjustments.card_title') }}</h5>
           <div class="d-flex gap-2 flex-wrap">
             <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm"><i
-                class="fas fa-clock"></i> Riwayat</a>
+                class="fas fa-clock"></i> {{ __('uniforms.nav.history') }}</a>
             <a href="{{ route('admin.uniforms.writeoffs') }}" class="btn btn-outline-danger btn-sm"><i
-                class="fas fa-trash"></i> Penghapusan</a>
+                class="fas fa-trash"></i> {{ __('uniforms.nav.writeoffs') }}</a>
           </div>
         </div>
         <div class="card-body">
@@ -54,39 +58,39 @@
           <form method="POST" action="{{ route('admin.uniforms.adjustments.store') }}" class="row g-3">
             @csrf
             <div class="col-md-5">
-              <label class="form-label">Item</label>
+              <label class="form-label">{{ __('uniforms.adjustments.form.item') }}</label>
               <select name="uniform_item_id" class="form-select" required>
-                <option value="">-- pilih item --</option>
+                <option value="">{{ __('uniforms.adjustments.form.select_item') }}</option>
                 @foreach($items as $item)
                   <option value="{{ $item->id }}">{{ $item->item_code }} - {{ $item->item_name }} - {{ $item->sizeMaster?->code ?? $item->size ?? '-' }}
                     - {{ $item->location }}</option>
                 @endforeach
               </select>
-              <small class="text-muted">Penyesuaian Masuk akan membuat lot ADJ otomatis.</small>
+              <small class="text-muted">{{ __('uniforms.adjustments.form.hint_in_lot') }}</small>
             </div>
             <div class="col-md-3">
-              <label class="form-label">Perubahan Qty</label>
-              <input type="number" name="qty_change" class="form-control" required placeholder="ex: -2 atau 5">
-              <small class="text-muted">Gunakan minus (-) untuk pengurangan.</small>
+              <label class="form-label">{{ __('uniforms.adjustments.form.qty_change') }}</label>
+              <input type="number" name="qty_change" class="form-control" required placeholder="{{ __('uniforms.adjustments.form.qty_placeholder') }}">
+              <small class="text-muted">{{ __('uniforms.adjustments.form.hint_minus') }}</small>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Lot (opsional)</label>
+              <label class="form-label">{{ __('uniforms.adjustments.form.lot_optional') }}</label>
               <select name="lot_id" class="form-select">
-                <option value="">FIFO (otomatis) / kosong untuk penyesuaian masuk</option>
+                <option value="">{{ __('uniforms.adjustments.form.lot_fifo_hint') }}</option>
                 @foreach($lots as $lot)
                   <option value="{{ $lot->id }}">{{ $lot->item?->item_code }} | {{ $lot->lot_number }} | Rem:
                     {{ $lot->remaining_qty }}</option>
                 @endforeach
               </select>
-              <small class="text-muted">Untuk Penyesuaian Keluar bisa pilih lot spesifik atau FIFO.</small>
+              <small class="text-muted">{{ __('uniforms.adjustments.form.hint_out_fifo') }}</small>
             </div>
             <div class="col-12">
-              <label class="form-label">Alasan</label>
+              <label class="form-label">{{ __('uniforms.adjustments.form.reason') }}</label>
               <textarea name="reason" class="form-control" rows="2" required
-                placeholder="Alasan adjustment (audit)"></textarea>
+                placeholder="{{ __('uniforms.adjustments.form.reason_placeholder') }}"></textarea>
             </div>
             <div class="col-12">
-              <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Ajukan Permintaan</button>
+              <button type="submit" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}"><i class="fas fa-paper-plane"></i> {{ __('uniforms.adjustments.form.submit') }}</button>
             </div>
           </form>
         </div>
@@ -94,21 +98,21 @@
 
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0"> Permintaan Menunggu Persetujuan </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.adjustments.pending_title') }}</h5>
         </div>
         <div class="card-body">
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Diajukan Pada</th>
-                <th>Item</th>
-                <th>Ukuran</th>
-                <th>Lot</th>
-                <th>Qty</th>
-                <th>Alasan</th>
-                <th>Diajukan Oleh</th>
-                <th>Aksi</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('uniforms.adjustments.table.requested_at') }}</th>
+                <th>{{ __('common.item') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('common.lot') }}</th>
+                <th>{{ __('common.qty') }}</th>
+                <th>{{ __('common.reason') }}</th>
+                <th>{{ __('uniforms.adjustments.table.requested_by') }}</th>
+                <th>{{ __('common.action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -126,14 +130,14 @@
                     <form method="POST" action="{{ route('admin.uniforms.adjustments.approve', $r->id) }}" class="d-inline">
                       @csrf
                       <button type="submit" class="btn btn-sm btn-success"
-                        onclick="return confirm('Setujui permintaan ini?')">Setujui</button>
+                        onclick="return confirm(@json(__('uniforms.adjustments.confirm_approve')))" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('uniforms.adjustments.approve') }}</button>
                     </form>
 
                     <form method="POST" action="{{ route('admin.uniforms.adjustments.reject', $r->id) }}" class="d-inline">
                       @csrf
-                      <input type="hidden" name="rejection_reason" value="Ditolak oleh admin">
+                      <input type="hidden" name="rejection_reason" value="{{ __('common.rejected_by_admin') }}">
                       <button type="submit" class="btn btn-sm btn-outline-danger"
-                        onclick="return confirm('Tolak permintaan ini?')">Tolak</button>
+                        onclick="return confirm(@json(__('uniforms.adjustments.confirm_reject')))" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('uniforms.adjustments.reject') }}</button>
                     </form>
                   </td>
                 </tr>
@@ -145,22 +149,22 @@
 
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0"> Riwayat Disetujui / Ditolak </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.adjustments.recent_title') }}</h5>
         </div>
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-nowrap table-striped table-bordered w-100">
               <thead>
                 <tr>
-                  <th>No</th>
-                  <th>Status</th>
-                  <th>Item</th>
-                  <th>Ukuran</th>
-                  <th>Lot</th>
-                  <th>Qty</th>
-                  <th>Diajukan Pada</th>
-                  <th>Diproses Pada</th>
-                  <th>Diproses Oleh</th>
+                  <th>{{ __('common.no') }}</th>
+                  <th>{{ __('common.status') }}</th>
+                  <th>{{ __('common.item') }}</th>
+                  <th>{{ __('common.size') }}</th>
+                  <th>{{ __('common.lot') }}</th>
+                  <th>{{ __('common.qty') }}</th>
+                  <th>{{ __('uniforms.adjustments.table.requested_at') }}</th>
+                  <th>{{ __('uniforms.adjustments.table.processed_at') }}</th>
+                  <th>{{ __('uniforms.adjustments.table.processed_by') }}</th>
                 </tr>
               </thead>
               <tbody>

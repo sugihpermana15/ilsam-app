@@ -17,6 +17,10 @@
 
 @section('content')
   @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'career', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'career', 'update');
+    $canDelete = \App\Support\MenuAccess::can(auth()->user(), 'career', 'delete');
+
     $careers = collect($careers ?? []);
     $departmentOptions = collect($departmentOptions ?? $careers->pluck('department'))->filter()->unique()->sort()->values()->all();
     $locationOptions = collect($locationOptions ?? $careers->pluck('location'))->filter()->unique()->sort()->values()->all();
@@ -50,7 +54,7 @@
             <a href="{{ url('/career') }}" target="_blank" class="btn btn-outline-secondary btn-sm">
               <i class="bi bi-box-arrow-up-right"></i> Preview Career Page
             </a>
-            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addCareerModal">
+            <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addCareerModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">
               <i class="bi bi-plus-lg"></i> Add Job Opening
             </button>
           </div>
@@ -84,7 +88,7 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h6 class="mb-0">Job Openings</h6>
-          <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addCareerModal">
+          <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addCareerModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">
             <i class="bi bi-plus-lg"></i> Add Opening
           </button>
         </div>
@@ -135,6 +139,7 @@
                       <div class="d-flex gap-2">
                         <button type="button" class="btn btn-sm btn-outline-primary js-edit-career" data-bs-toggle="modal"
                           data-bs-target="#editCareerModal"
+                          {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}"
                           data-update-url="{{ $career->update_url ?? url('/admin/careers/' . ($career->id ?? '')) }}"
                           data-title="{{ $career->title ?? $career['title'] ?? '' }}"
                           data-department="{{ $career->department ?? $career['department'] ?? '' }}"
@@ -155,7 +160,7 @@
                           method="POST">
                           @csrf
                           @method('DELETE')
-                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                          <button type="submit" class="btn btn-sm btn-outline-danger" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? '' : 'Tidak punya akses hapus' }}">
                             <i class="bi bi-trash"></i>
                           </button>
                         </form>
@@ -262,14 +267,14 @@
             </div>
 
             <div class="d-grid gap-2 d-md-none mt-3">
-              <button type="submit" class="btn btn-primary">Save Opening</button>
+              <button type="submit" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Save Opening</button>
               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" form="career-create-form" class="btn btn-primary">Save Opening</button>
+          <button type="submit" form="career-create-form" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Save Opening</button>
         </div>
       </div>
     </div>
@@ -367,14 +372,14 @@
             </div>
 
             <div class="d-grid gap-2 d-md-none mt-3">
-              <button type="submit" class="btn btn-primary">Update Opening</button>
+              <button type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}">Update Opening</button>
               <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" form="career-edit-form" class="btn btn-primary">Update Opening</button>
+          <button type="submit" form="career-edit-form" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}">Update Opening</button>
         </div>
       </div>
     </div>

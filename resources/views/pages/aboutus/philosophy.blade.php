@@ -1,6 +1,6 @@
 @extends('about')
-@section('title', 'Ilsam - Business Philosophy')
-@section('breadcrumb_title', 'Business Philosophy')
+@section('title', __('website.titles.business_philosophy'))
+@section('breadcrumb_title', __('website.about.business_philosophy.title'))
 @section('aboutus')
 
     <!-- Working Process area start -->
@@ -9,7 +9,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section__title-wrapper text-center mb-60 mb-sm-40 mb-xs-35">
-                        <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">Company Motto</h2>
+                        <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">{{ __('website.about.business_philosophy.motto_title') }}</h2>
                     </div>
                 </div>
             </div>
@@ -26,10 +26,9 @@
                                 <i class="bi bi-activity"></i>
                             </div>
                         </div>
-                        <h4 class="title mb-10">GOOD HEALTH</h4>
+                        <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.good_health.title') }}</h4>
                         <p class="des mb-0">
-                            Workers obtain the highest degree of health (physical, spiritual, and social) by preventing and treating
-                            diseases or health problems caused by work and the environment.
+                            {{ __('website.about.business_philosophy.motto.good_health.desc') }}
                         </p>
                     </div>
                 </div>
@@ -41,10 +40,9 @@
                                 <i class="bi bi-hand-thumbs-up-fill"></i>
                             </div>
                         </div>
-                        <h4 class="title mb-10">LOYALTY</h4>
+                        <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.loyalty.title') }}</h4>
                         <p class="des mb-0">
-                            High responsibility of employees towards their company as a form of appreciation given by the company to
-                            its employees.
+                            {{ __('website.about.business_philosophy.motto.loyalty.desc') }}
                         </p>
                     </div>
                 </div>
@@ -56,8 +54,8 @@
                                 <i class="bi bi-bank2"></i>
                             </div>
                         </div>
-                        <h4 class="title mb-10">JUSTICE</h4>
-                        <p class="des mb-0">Employee perceptions about fairness at work.</p>
+                        <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.justice.title') }}</h4>
+                        <p class="des mb-0">{{ __('website.about.business_philosophy.motto.justice.desc') }}</p>
                     </div>
                 </div>
 
@@ -68,10 +66,9 @@
                                 <i class="bi bi-shield-lock-fill"></i>
                             </div>
                         </div>
-                        <h4 class="title mb-10">MORALITY</h4>
+                        <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.morality.title') }}</h4>
                         <p class="des mb-0">
-                            The attitude of individuals in a group towards their work environment, and working together voluntarily
-                            to mobilize their abilities to achieve organizational goals.
+                            {{ __('website.about.business_philosophy.motto.morality.desc') }}
                         </p>
                     </div>
                 </div>
@@ -84,11 +81,11 @@
     class="about-hero about-hero--bleed wow fadeInUp"
     data-wow-delay=".1s"
     style="--about-hero-bg: url('{{ asset('assets/img/aboutus/img12.jpg') }}');"
-    aria-label="Business Philosophy">
+        aria-label="{{ __('website.about.business_philosophy.aria') }}">
     <div class="about-hero__inner">
-      <h2 class="about-hero__title">Business Philosophy</h2>
+            <h2 class="about-hero__title">{{ __('website.about.business_philosophy.title') }}</h2>
       <p class="about-hero__lead mb-0">
-        <span class="about-hero__quote">Good to the divine eye, perfectly meeting customer's needs, helpful for a happy family life</span>.
+                <span class="about-hero__quote">{{ __('website.about.business_philosophy.quote') }}</span>.
       </p>
     </div>
     </section>
@@ -99,7 +96,7 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="section__title-wrapper text-center mb-60 mb-sm-40 mb-xs-35">
-                            <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">Company Slogans</h2>
+                            <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">{{ __('website.about.business_philosophy.slogans_title') }}</h2>
                         </div>
                     </div>
                 </div>
@@ -107,10 +104,10 @@
                 <div class="row justify-content-center">
                     <div class="col-12 col-lg-8">
                         <ul class="company-slogan__list company-slogan__list--center mb-0 wow fadeInUp" data-wow-delay=".15s">
-                            <li class="company-slogan__item">Say “I know” when sure, “I don't know” when unsure.</li>
-                            <li class="company-slogan__item">Always think and innovate with a smile.</li>
-                            <li class="company-slogan__item">We act after looking closely, listening carefully and understanding clearly.</li>
-                            <li class="company-slogan__item">Be good, smile and enjoy life.</li>
+                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.1') }}</li>
+                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.2') }}</li>
+                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.3') }}</li>
+                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.4') }}</li>
                         </ul>
                     </div>
                 </div>

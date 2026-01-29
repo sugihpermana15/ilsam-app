@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Penghapusan Stok Seragam | IGI')
-@section('title-sub', ' Dashboard Penghapusan Stok Seragam ')
-@section('pagetitle', 'Penghapusan Stok Seragam')
+@section('title', __('uniforms.writeoffs.page_title'))
+@section('title-sub', __('uniforms.writeoffs.title_sub'))
+@section('pagetitle', __('uniforms.writeoffs.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -11,13 +11,17 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'update');
+  @endphp
   <div class="row">
     <div class="col-12">
       @php
         $uniformApprovalStatusLabels = [
-          'PENDING' => 'Menunggu',
-          'APPROVED' => 'Disetujui',
-          'REJECTED' => 'Ditolak',
+          'PENDING' => __('uniforms.approval_status.PENDING'),
+          'APPROVED' => __('uniforms.approval_status.APPROVED'),
+          'REJECTED' => __('uniforms.approval_status.REJECTED'),
         ];
 
         $uniformApprovalStatusBadge = function (?string $status): string {
@@ -35,12 +39,12 @@
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Permintaan Penghapusan Stok </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.writeoffs.card_title') }}</h5>
           <div class="d-flex gap-2 flex-wrap">
             <a href="{{ route('admin.uniforms.adjustments') }}" class="btn btn-outline-primary btn-sm"><i
-                class="fas fa-sliders"></i> Penyesuaian</a>
+                class="fas fa-sliders"></i> {{ __('uniforms.nav.adjustments') }}</a>
             <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm"><i
-                class="fas fa-clock"></i> Riwayat</a>
+                class="fas fa-clock"></i> {{ __('uniforms.nav.history') }}</a>
           </div>
         </div>
         <div class="card-body">
@@ -54,27 +58,27 @@
           <form method="POST" action="{{ route('admin.uniforms.writeoffs.store') }}" class="row g-3">
             @csrf
             <div class="col-md-8">
-              <label class="form-label">Lot</label>
+              <label class="form-label">{{ __('uniforms.writeoffs.form.lot') }}</label>
               <select name="lot_id" class="form-select" required>
-                <option value="">-- pilih lot --</option>
+                <option value="">{{ __('uniforms.writeoffs.form.select_lot') }}</option>
                 @foreach($lots as $lot)
                   <option value="{{ $lot->id }}">{{ $lot->item?->item_code }} - {{ $lot->item?->item_name }} - {{ $lot->item?->sizeMaster?->code ?? $lot->item?->size ?? '-' }} |
                     {{ $lot->lot_number }} | Rem: {{ $lot->remaining_qty }}</option>
                 @endforeach
               </select>
-              <small class="text-muted">Penghapusan wajib pilih lot spesifik.</small>
+              <small class="text-muted">{{ __('uniforms.writeoffs.form.hint_specific_lot') }}</small>
             </div>
             <div class="col-md-4">
-              <label class="form-label">Qty</label>
+              <label class="form-label">{{ __('uniforms.writeoffs.form.qty') }}</label>
               <input type="number" name="qty" class="form-control" min="1" required>
             </div>
             <div class="col-12">
-              <label class="form-label">Alasan</label>
+              <label class="form-label">{{ __('uniforms.writeoffs.form.reason') }}</label>
               <textarea name="reason" class="form-control" rows="2" required
-                placeholder="Alasan penghapusan (rusak/kedaluwarsa/hilang)"></textarea>
+                placeholder="{{ __('uniforms.writeoffs.form.reason_placeholder') }}"></textarea>
             </div>
             <div class="col-12">
-              <button type="submit" class="btn btn-danger"><i class="fas fa-paper-plane"></i> Ajukan Permintaan Penghapusan</button>
+              <button type="submit" class="btn btn-danger" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}"><i class="fas fa-paper-plane"></i> {{ __('uniforms.writeoffs.form.submit') }}</button>
             </div>
           </form>
         </div>
@@ -82,21 +86,21 @@
 
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0"> Permintaan Menunggu Persetujuan </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.writeoffs.pending_title') }}</h5>
         </div>
         <div class="card-body">
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Diajukan Pada</th>
-                <th>Item</th>
-                <th>Ukuran</th>
-                <th>Lot</th>
-                <th>Qty</th>
-                <th>Alasan</th>
-                <th>Diajukan Oleh</th>
-                <th>Aksi</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('uniforms.adjustments.table.requested_at') }}</th>
+                <th>{{ __('common.item') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('common.lot') }}</th>
+                <th>{{ __('common.qty') }}</th>
+                <th>{{ __('common.reason') }}</th>
+                <th>{{ __('uniforms.adjustments.table.requested_by') }}</th>
+                <th>{{ __('common.action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -114,14 +118,14 @@
                     <form method="POST" action="{{ route('admin.uniforms.writeoffs.approve', $r->id) }}" class="d-inline">
                       @csrf
                       <button type="submit" class="btn btn-sm btn-success"
-                        onclick="return confirm('Setujui penghapusan ini?')">Setujui</button>
+                        onclick="return confirm(@json(__('uniforms.writeoffs.confirm_approve')))" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('uniforms.writeoffs.approve') }}</button>
                     </form>
 
                     <form method="POST" action="{{ route('admin.uniforms.writeoffs.reject', $r->id) }}" class="d-inline">
                       @csrf
-                      <input type="hidden" name="rejection_reason" value="Ditolak oleh admin">
+                      <input type="hidden" name="rejection_reason" value="{{ __('common.rejected_by_admin') }}">
                       <button type="submit" class="btn btn-sm btn-outline-danger"
-                        onclick="return confirm('Tolak penghapusan ini?')">Tolak</button>
+                        onclick="return confirm(@json(__('uniforms.writeoffs.confirm_reject')))" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('common.no_access_update') }}">{{ __('uniforms.writeoffs.reject') }}</button>
                     </form>
                   </td>
                 </tr>
@@ -133,22 +137,22 @@
 
       <div class="card">
         <div class="card-header">
-          <h5 class="card-title mb-0"> Riwayat Disetujui / Ditolak </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.writeoffs.recent_title') }}</h5>
         </div>
         <div class="card-body">
           <div class="table-responsive">
             <table class="table table-nowrap table-striped table-bordered w-100">
               <thead>
                 <tr>
-                  <th>No</th>
-                  <th>Status</th>
-                  <th>Item</th>
-                  <th>Ukuran</th>
-                  <th>Lot</th>
-                  <th>Qty</th>
-                  <th>Diajukan Pada</th>
-                  <th>Diproses Pada</th>
-                  <th>Diproses Oleh</th>
+                  <th>{{ __('common.no') }}</th>
+                  <th>{{ __('common.status') }}</th>
+                  <th>{{ __('common.item') }}</th>
+                  <th>{{ __('common.size') }}</th>
+                  <th>{{ __('common.lot') }}</th>
+                  <th>{{ __('common.qty') }}</th>
+                  <th>{{ __('uniforms.adjustments.table.requested_at') }}</th>
+                  <th>{{ __('uniforms.adjustments.table.processed_at') }}</th>
+                  <th>{{ __('uniforms.adjustments.table.processed_by') }}</th>
                 </tr>
               </thead>
               <tbody>

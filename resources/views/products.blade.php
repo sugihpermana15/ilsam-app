@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title')
-  @yield('page_title', 'Ilsam - Products')
+  @yield('page_title', __('website.titles.products'))
 @endsection
 
 @section('main')
@@ -12,7 +12,7 @@
       <div class="row align-items-center justify-content-between">
         <div class="col-12">
           <div class="breadcrumb__content text-center">
-            <h1 class="breadcrumb__title color-white title-animation">@yield('breadcrumb_title', 'Products')</h1>
+            <h1 class="breadcrumb__title color-white title-animation">@yield('breadcrumb_title', __('website.nav.menu.products'))</h1>
             <div class="breadcrumb__menu d-inline-flex justify-content-center">
               <nav>
                 <ul>
@@ -26,11 +26,11 @@
                           <path d="M5.33398 15V8H9.66732V15" stroke="white" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round" />
                         </svg>
-                        Home
+                        {{ __('website.common.home') }}
                       </a>
                     </span>
                   </li>
-                  <li class="active"><span>@yield('breadcrumb_title', 'Products')</span></li>
+                  <li class="active"><span>@yield('breadcrumb_title', __('website.nav.menu.products'))</span></li>
                 </ul>
               </nav>
             </div>

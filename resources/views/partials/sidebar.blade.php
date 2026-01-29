@@ -39,6 +39,60 @@
         <!--end::Brand Image-->
     </div>
     @php
+        $tGroup = function (?string $text): string {
+            $map = [
+                'Main' => __('menu.group.main'),
+                'Application' => __('menu.group.application'),
+                'Web Pages' => __('menu.group.web_pages'),
+                'Settings & UI' => __('menu.group.settings_ui'),
+            ];
+
+            return $map[$text] ?? (string) $text;
+        };
+
+        $tMenu = function (?string $text): string {
+            $map = [
+                'Dashboard' => __('menu.dashboard'),
+
+                'Perlengkapan Aset' => __('menu.assets_equipment'),
+                'Data Asset' => __('menu.assets.data_asset'),
+                'Data Akun' => __('menu.assets.data_account'),
+                'Archived Berkas' => __('menu.assets.archived_documents'),
+                'Aset Jababeka' => __('menu.assets.jababeka'),
+                'Aset Karawang' => __('menu.assets.karawang'),
+                'Aset Masuk' => __('menu.assets.in'),
+                'Aset Keluar' => __('menu.assets.out'),
+
+                'Stok Seragam' => __('menu.uniform_stock'),
+                'Master Seragam' => __('menu.uniforms.master'),
+                'Stok Masuk' => __('menu.uniforms.stock_in'),
+                'Distribusi' => __('menu.uniforms.distribution'),
+                'Riwayat' => __('menu.uniforms.history'),
+
+                'Master Karyawan' => __('menu.employees_master'),
+                'Employees' => __('menu.employees.employees'),
+                'Deleted' => __('menu.employees.deleted'),
+                'Audit Log' => __('menu.employees.audit_log'),
+
+                'Master Data' => __('menu.master_data'),
+                'Departments' => __('menu.master.departments'),
+                'Positions' => __('menu.master.positions'),
+                'Kategori Asset' => __('menu.master.asset_categories'),
+                'Kategori Akun' => __('menu.master.account_categories'),
+                'Lokasi Asset' => __('menu.master.asset_locations'),
+                'Plant/Site' => __('menu.master.plant_sites'),
+                'Satuan Asset' => __('menu.master.asset_uoms'),
+                'Vendor Asset' => __('menu.master.asset_vendors'),
+                'Ukuran Seragam' => __('menu.master.uniform_sizes'),
+                'Nama Item Seragam' => __('menu.master.uniform_item_names'),
+                'Kategori Seragam' => __('menu.master.uniform_categories'),
+                'Warna Seragam' => __('menu.master.uniform_colors'),
+                'UOM Seragam' => __('menu.master.uniform_uoms'),
+            ];
+
+            return $map[$text] ?? (string) $text;
+        };
+
         $menus = [
             1 => [ // Super Admin
                 [
@@ -76,6 +130,8 @@
                             ],
                             'children' => [
                                 ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'default' => true, 'permission_key' => 'assets_data'],
+                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'permission_key' => 'accounts_data'],
+                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'permission_key' => 'documents_archive'],
                                 ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'permission_key' => 'assets_jababeka'],
                                 ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'permission_key' => 'assets_karawang'],
                                 ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'permission_key' => 'assets_in'],
@@ -106,6 +162,7 @@
                         [
                             'title' => 'Master Karyawan',
                             'icon' => 'bi bi-people',
+                            'permission_key' => 'employees',
                             'active_routes' => [
                                 'admin.employees.index',
                                 'admin.employees.store',
@@ -116,14 +173,15 @@
                                 'admin.employees.audit',
                             ],
                             'children' => [
-                                ['title' => 'Employees', 'route' => 'admin.employees.index', 'default' => true],
-                                ['title' => 'Deleted', 'route' => 'admin.employees.deleted'],
-                                ['title' => 'Audit Log', 'route' => 'admin.employees.audit'],
+                                ['title' => 'Employees', 'route' => 'admin.employees.index', 'default' => true, 'permission_key' => 'employees_index'],
+                                ['title' => 'Deleted', 'route' => 'admin.employees.deleted', 'permission_key' => 'employees_deleted'],
+                                ['title' => 'Audit Log', 'route' => 'admin.employees.audit', 'permission_key' => 'employees_audit'],
                             ],
                         ],
                         [
                             'title' => 'Master Data',
                             'icon' => 'bi bi-database',
+                            'permission_key' => 'master_data',
                             'active_routes' => [
                                 'admin.departments.index',
                                 'admin.departments.store',
@@ -157,10 +215,18 @@
                                 'admin.asset_categories.store',
                                 'admin.asset_categories.update',
                                 'admin.asset_categories.toggle',
+                                'admin.account_types.index',
+                                'admin.account_types.store',
+                                'admin.account_types.update',
+                                'admin.account_types.toggle',
                                 'admin.asset_locations.index',
                                 'admin.asset_locations.store',
                                 'admin.asset_locations.update',
                                 'admin.asset_locations.toggle',
+                                'admin.plant_sites.index',
+                                'admin.plant_sites.store',
+                                'admin.plant_sites.update',
+                                'admin.plant_sites.toggle',
                                 'admin.asset_uoms.index',
                                 'admin.asset_uoms.store',
                                 'admin.asset_uoms.update',
@@ -171,17 +237,19 @@
                                 'admin.asset_vendors.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true],
-                                ['title' => 'Positions', 'route' => 'admin.positions.index'],
-                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index'],
-                                ['title' => 'Lokasi Asset', 'route' => 'admin.asset_locations.index'],
-                                ['title' => 'Satuan Asset', 'route' => 'admin.asset_uoms.index'],
-                                ['title' => 'Vendor Asset', 'route' => 'admin.asset_vendors.index'],
-                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index'],
-                                ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index'],
-                                ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index'],
-                                ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index'],
-                                ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index'],
+                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
+                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
+                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index', 'permission_key' => 'asset_categories'],
+                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'permission_key' => 'account_types'],
+                                ['title' => 'Lokasi Asset', 'route' => 'admin.asset_locations.index', 'permission_key' => 'asset_locations'],
+                                ['title' => 'Plant/Site', 'route' => 'admin.plant_sites.index', 'permission_key' => 'plant_sites'],
+                                ['title' => 'Satuan Asset', 'route' => 'admin.asset_uoms.index', 'permission_key' => 'asset_uoms'],
+                                ['title' => 'Vendor Asset', 'route' => 'admin.asset_vendors.index', 'permission_key' => 'asset_vendors'],
+                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'permission_key' => 'uniform_sizes'],
+                                ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index', 'permission_key' => 'uniform_item_names'],
+                                ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index', 'permission_key' => 'uniform_categories'],
+                                ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index', 'permission_key' => 'uniform_colors'],
+                                ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index', 'permission_key' => 'uniform_uoms'],
                             ],
                         ],
                     ],
@@ -218,7 +286,7 @@
                             'title' => 'Career Management',
                             'icon' => 'bi bi-briefcase',
                             'route' => 'admin.careers.index',
-                            'permission_key' => 'settings',
+                            'permission_key' => 'career',
                             'active_routes' => [
                                 'admin.careers.index',
                                 'admin.careers.company.update',
@@ -231,7 +299,7 @@
                             'title' => 'Certificate Management',
                             'icon' => 'bi bi-patch-check',
                             'route' => 'admin.certificates.index',
-                            'permission_key' => 'settings',
+                            'permission_key' => 'certificate',
                             'active_routes' => [
                                 'admin.certificates.index',
                                 'admin.certificates.store',
@@ -247,10 +315,11 @@
                         [
                             'title' => 'Settings and Log',
                             'icon' => 'bi bi-gear-wide-connected',
+                            'permission_key' => 'settings',
                             'children' => [
-                                ['title' => 'Users', 'route' => 'admin.users'],
-                                ['title' => 'History Delete User', 'route' => 'admin.users.history.delete'],
-                                ['title' => 'History Delete Asset', 'route' => 'admin.assets.historyDelete'],
+                                ['title' => 'Users', 'route' => 'admin.users', 'permission_key' => 'settings_users'],
+                                ['title' => 'History Delete User', 'route' => 'admin.users.history.delete', 'permission_key' => 'settings_history_user'],
+                                ['title' => 'History Delete Asset', 'route' => 'admin.assets.historyDelete', 'permission_key' => 'settings_history_asset'],
                             ],
                         ],
                     ],
@@ -274,6 +343,7 @@
                         [
                             'title' => 'Master Karyawan',
                             'icon' => 'bi bi-people',
+                            'permission_key' => 'employees',
                             'active_routes' => [
                                 'admin.employees.index',
                                 'admin.employees.store',
@@ -284,14 +354,15 @@
                                 'admin.employees.audit',
                             ],
                             'children' => [
-                                ['title' => 'Employees', 'route' => 'admin.employees.index', 'default' => true],
-                                ['title' => 'Deleted', 'route' => 'admin.employees.deleted'],
-                                ['title' => 'Audit Log', 'route' => 'admin.employees.audit'],
+                                ['title' => 'Employees', 'route' => 'admin.employees.index', 'default' => true, 'permission_key' => 'employees_index'],
+                                ['title' => 'Deleted', 'route' => 'admin.employees.deleted', 'permission_key' => 'employees_deleted'],
+                                ['title' => 'Audit Log', 'route' => 'admin.employees.audit', 'permission_key' => 'employees_audit'],
                             ],
                         ],
                         [
                             'title' => 'Master Data',
                             'icon' => 'bi bi-database',
+                            'permission_key' => 'master_data',
                             'active_routes' => [
                                 'admin.departments.index',
                                 'admin.departments.store',
@@ -321,15 +392,20 @@
                                 'admin.uniform_sizes.store',
                                 'admin.uniform_sizes.update',
                                 'admin.uniform_sizes.toggle',
+                                'admin.account_types.index',
+                                'admin.account_types.store',
+                                'admin.account_types.update',
+                                'admin.account_types.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true],
-                                ['title' => 'Positions', 'route' => 'admin.positions.index'],
-                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index'],
-                                ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index'],
-                                ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index'],
-                                ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index'],
-                                ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index'],
+                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
+                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
+                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'permission_key' => 'account_types'],
+                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'permission_key' => 'uniform_sizes'],
+                                ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index', 'permission_key' => 'uniform_item_names'],
+                                ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index', 'permission_key' => 'uniform_categories'],
+                                ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index', 'permission_key' => 'uniform_colors'],
+                                ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index', 'permission_key' => 'uniform_uoms'],
                             ],
                         ],
                     ],
@@ -341,7 +417,7 @@
                             'title' => 'Career Management',
                             'icon' => 'bi bi-briefcase',
                             'route' => 'admin.careers.index',
-                            'permission_key' => 'settings',
+                            'permission_key' => 'career',
                             'active_routes' => [
                                 'admin.careers.index',
                                 'admin.careers.company.update',
@@ -349,16 +425,6 @@
                                 'admin.careers.update',
                                 'admin.careers.destroy',
                             ],
-                        ],
-                    ],
-                ],
-                [
-                    'title_group' => 'Applications',
-                    'items' => [
-                        [
-                            'title' => 'Calendar',
-                            'icon' => 'bi bi-calendar-week',
-                            'route' => 'apps-calendar',
                         ],
                     ],
                 ],
@@ -395,6 +461,8 @@
                             ],
                             'children' => [
                                 ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'default' => true, 'permission_key' => 'assets_data'],
+                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'permission_key' => 'accounts_data'],
+                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'permission_key' => 'documents_archive'],
                                 ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'permission_key' => 'assets_jababeka'],
                                 ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'permission_key' => 'assets_karawang'],
                                 ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'permission_key' => 'assets_in'],
@@ -425,65 +493,132 @@
         $user = auth()->user();
         $roleId = $user?->role_id;
 
+        $normalizeMenuLevel = function ($value): string {
+            if ($value === true) {
+                return 'write';
+            }
+            if ($value === false || $value === null) {
+                return 'none';
+            }
+
+            $v = strtolower(trim((string) $value));
+            if ($v === 'write' || $v === 'rw') {
+                return 'write';
+            }
+            if ($v === 'read' || $v === 'r') {
+                return 'read';
+            }
+            if ($v === 'none' || $v === '0' || $v === '') {
+                return 'none';
+            }
+            return 'read';
+        };
+
         $menuDefaults = match ((int) $roleId) {
             3 => [
-                'user_dashboard' => true,
-                'admin_dashboard' => false,
+                'user_dashboard' => 'read',
+                'admin_dashboard' => 'none',
                 // Groups
-                'assets' => false,
-                'uniforms' => false,
+                'assets' => 'none',
+                'uniforms' => 'none',
 
                 // Assets submenus
-                'assets_data' => false,
-                'assets_jababeka' => false,
-                'assets_karawang' => false,
-                'assets_in' => false,
-                'assets_transfer' => false,
+                'assets_data' => 'none',
+                'accounts_data' => 'none',
+                'accounts_secrets' => 'none',
+                'assets_jababeka' => 'none',
+                'assets_karawang' => 'none',
+                'assets_in' => 'none',
+                'assets_transfer' => 'none',
 
                 // Uniforms submenus
-                'uniforms_master' => false,
-                'uniforms_stock' => false,
-                'uniforms_distribution' => false,
-                'uniforms_history' => false,
+                'uniforms_master' => 'none',
+                'uniforms_stock' => 'none',
+                'uniforms_distribution' => 'none',
+                'uniforms_history' => 'none',
 
-                'employees' => false,
-                'master_data' => false,
-                'settings' => false,
+                'employees' => 'none',
+                'master_data' => 'none',
+                'employees_index' => 'none',
+                'employees_deleted' => 'none',
+                'employees_audit' => 'none',
+                'departments' => 'none',
+                'positions' => 'none',
+                'asset_categories' => 'none',
+                'account_types' => 'none',
+                'asset_locations' => 'none',
+                'plant_sites' => 'none',
+                'asset_uoms' => 'none',
+                'asset_vendors' => 'none',
+                'uniform_sizes' => 'none',
+                'uniform_item_names' => 'none',
+                'uniform_categories' => 'none',
+                'uniform_colors' => 'none',
+                'uniform_uoms' => 'none',
+                'career' => 'none',
+                'certificate' => 'none',
+                'settings' => 'none',
+                'settings_users' => 'none',
+                'settings_history_user' => 'none',
+                'settings_history_asset' => 'none',
             ],
             default => [
-                'user_dashboard' => true,
-                'admin_dashboard' => true,
+                'user_dashboard' => 'read',
+                'admin_dashboard' => 'read',
                 // Groups
-                'assets' => true,
-                'uniforms' => true,
+                'assets' => 'write',
+                'uniforms' => 'write',
 
                 // Assets submenus
-                'assets_data' => true,
-                'assets_jababeka' => true,
-                'assets_karawang' => true,
-                'assets_in' => true,
-                'assets_transfer' => true,
+                'assets_data' => 'write',
+                'accounts_data' => 'write',
+                'accounts_secrets' => 'write',
+                'assets_jababeka' => 'write',
+                'assets_karawang' => 'write',
+                'assets_in' => 'write',
+                'assets_transfer' => 'write',
 
                 // Uniforms submenus
-                'uniforms_master' => true,
-                'uniforms_stock' => true,
-                'uniforms_distribution' => true,
-                'uniforms_history' => true,
+                'uniforms_master' => 'write',
+                'uniforms_stock' => 'write',
+                'uniforms_distribution' => 'write',
+                'uniforms_history' => 'write',
 
-                'employees' => true,
-                'master_data' => true,
-                'settings' => true,
+                'employees' => 'write',
+                'master_data' => 'write',
+                'employees_index' => 'write',
+                'employees_deleted' => 'write',
+                'employees_audit' => 'write',
+                'departments' => 'write',
+                'positions' => 'write',
+                'asset_categories' => 'write',
+                'account_types' => 'write',
+                'asset_locations' => 'write',
+                'plant_sites' => 'write',
+                'asset_uoms' => 'write',
+                'asset_vendors' => 'write',
+                'uniform_sizes' => 'write',
+                'uniform_item_names' => 'write',
+                'uniform_categories' => 'write',
+                'uniform_colors' => 'write',
+                'uniform_uoms' => 'write',
+                'career' => 'write',
+                'certificate' => 'write',
+                'settings' => 'write',
+                'settings_users' => 'write',
+                'settings_history_user' => 'write',
+                'settings_history_asset' => 'write',
             ],
         };
 
-        $menuOverrides = is_array($user?->menu_permissions) ? $user->menu_permissions : [];
-        $menuPermissions = array_merge($menuDefaults, $menuOverrides);
+        $menuPermissions = \App\Support\MenuAccess::effectivePermissions($user);
 
         $isMenuAllowed = function (?string $key) use ($menuPermissions): bool {
             if ($key === null) {
                 return true;
             }
-            return (bool) ($menuPermissions[$key] ?? false);
+            $p = $menuPermissions[$key] ?? ['read' => false];
+            return (bool) ($p['read'] ?? false);
         };
 
         $inferPermissionKey = function (array $item): ?string {
@@ -575,6 +710,45 @@
                     // Fallback: treat as assets group
                     return 'assets';
                 }
+
+                if (str_starts_with($routeName, 'admin.accounts.')) {
+                    if (
+                        in_array($routeName, [
+                            'admin.accounts.index',
+                            'admin.accounts.show',
+                            'admin.accounts.json',
+                            'admin.accounts.store',
+                            'admin.accounts.update',
+                            'admin.accounts.destroy',
+                            'admin.accounts.verify',
+                            'admin.accounts.endpoints.open',
+                        ], true)
+                    ) {
+                        return 'accounts_data';
+                    }
+
+                    if (
+                        in_array($routeName, [
+                            'admin.accounts.secrets.reveal',
+                            'admin.accounts.secrets.rotate',
+                            'admin.accounts.secrets.copy_username',
+                            'admin.accounts.approvals.request',
+                            'admin.accounts.approvals.approve',
+                        ], true)
+                    ) {
+                        return 'accounts_secrets';
+                    }
+
+                    return 'accounts_data';
+                }
+
+                if (str_starts_with($routeName, 'admin.documents.')) {
+                    return 'documents_archive';
+                }
+
+                if (str_starts_with($routeName, 'admin.account_types.')) {
+                    return 'account_types';
+                }
                 if (str_starts_with($routeName, 'admin.uniforms.')) {
                     // Uniforms leaf permissions
                     if (
@@ -619,13 +793,64 @@
                     return 'uniforms';
                 }
                 if (str_starts_with($routeName, 'admin.employees.')) {
-                    return 'employees';
+                    if (in_array($routeName, ['admin.employees.deleted', 'admin.employees.restore'], true)) {
+                        return 'employees_deleted';
+                    }
+                    if (in_array($routeName, ['admin.employees.audit'], true)) {
+                        return 'employees_audit';
+                    }
+                    return 'employees_index';
                 }
-                if (preg_match('/^admin\.(departments|positions|uniform_item_names|uniform_categories|uniform_colors|uniform_uoms|uniform_sizes|asset_categories|asset_locations|asset_uoms|asset_vendors)\./', $routeName) === 1) {
-                    return 'master_data';
+                if (preg_match('/^admin\.(departments)\./', $routeName) === 1) {
+                    return 'departments';
                 }
-                if (preg_match('/^admin\.(users(\.|$)|assets\.historyDelete$)/', $routeName) === 1) {
-                    return 'settings';
+                if (preg_match('/^admin\.(positions)\./', $routeName) === 1) {
+                    return 'positions';
+                }
+                if (preg_match('/^admin\.(uniform_sizes)\./', $routeName) === 1) {
+                    return 'uniform_sizes';
+                }
+                if (preg_match('/^admin\.(uniform_item_names)\./', $routeName) === 1) {
+                    return 'uniform_item_names';
+                }
+                if (preg_match('/^admin\.(uniform_categories)\./', $routeName) === 1) {
+                    return 'uniform_categories';
+                }
+                if (preg_match('/^admin\.(uniform_colors)\./', $routeName) === 1) {
+                    return 'uniform_colors';
+                }
+                if (preg_match('/^admin\.(uniform_uoms)\./', $routeName) === 1) {
+                    return 'uniform_uoms';
+                }
+                if (preg_match('/^admin\.(asset_categories)\./', $routeName) === 1) {
+                    return 'asset_categories';
+                }
+                if (preg_match('/^admin\.(asset_locations)\./', $routeName) === 1) {
+                    return 'asset_locations';
+                }
+                if (preg_match('/^admin\.(plant_sites)\./', $routeName) === 1) {
+                    return 'plant_sites';
+                }
+                if (preg_match('/^admin\.(asset_uoms)\./', $routeName) === 1) {
+                    return 'asset_uoms';
+                }
+                if (preg_match('/^admin\.(asset_vendors)\./', $routeName) === 1) {
+                    return 'asset_vendors';
+                }
+                if (str_starts_with($routeName, 'admin.careers.') || str_starts_with($routeName, 'admin.career_candidates.')) {
+                    return 'career';
+                }
+                if (str_starts_with($routeName, 'admin.certificates.')) {
+                    return 'certificate';
+                }
+                if (preg_match('/^admin\.users\./', $routeName) === 1 || $routeName === 'admin.users') {
+                    return 'settings_users';
+                }
+                if ($routeName === 'admin.users.history.delete') {
+                    return 'settings_history_user';
+                }
+                if ($routeName === 'admin.assets.historyDelete') {
+                    return 'settings_history_asset';
                 }
             }
 
@@ -658,7 +883,7 @@
                         @continue
                     @endif
 
-                    <li class="pe-menu-title">{{ $group['title_group'] }}</li>
+                    <li class="pe-menu-title">{{ $tGroup($group['title_group']) }}</li>
                     @foreach($filteredItems as $itemIndex => $item)
                         @php
                             $collapseId = 'collapseMenu_' . preg_replace('/[^a-zA-Z0-9]/', '', $group['title_group']) . '_' . $itemIndex;
@@ -708,7 +933,7 @@
                                 <a href="#{{ $collapseId }}" class="pe-nav-link" data-bs-toggle="collapse"
                                     aria-expanded="{{ $isAnyChildActive ? 'true' : 'false' }}" aria-controls="{{ $collapseId }}">
                                     <i class="{{ $item['icon'] }} pe-nav-icon"></i>
-                                    <span class="pe-nav-content">{{ $item['title'] }}</span>
+                                    <span class="pe-nav-content">{{ $tMenu($item['title'] ?? '') }}</span>
                                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                                 </a>
                                 <ul class="pe-slide-menu collapse{{ $isAnyChildActive ? ' show' : '' }}" id="{{ $collapseId }}">
@@ -732,7 +957,7 @@
                                         <li class="pe-slide-item">
                                             <a href="{{ route($child['route'], $childParams) }}"
                                                 class="pe-nav-link{{ $isActive ? ' active' : '' }}">
-                                                {{ $child['title'] }}
+                                                {{ $tMenu($child['title'] ?? '') }}
                                             </a>
                                         </li>
                                     @endforeach
@@ -753,7 +978,7 @@
                                 <a href="{{ isset($item['route']) ? route($item['route']) : '#' }}"
                                     class="pe-nav-link{{ $isActive ? ' active' : '' }}">
                                     <i class="{{ $item['icon'] }} pe-nav-icon"></i>
-                                    <span class="pe-nav-content">{{ $item['title'] }}</span>
+                                    <span class="pe-nav-content">{{ $tMenu($item['title'] ?? '') }}</span>
                                 </a>
                             </li>
                         @endif

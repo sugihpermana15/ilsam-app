@@ -12,6 +12,11 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'employees_index', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'employees_index', 'update');
+    $canDelete = \App\Support\MenuAccess::can(auth()->user(), 'employees_index', 'delete');
+  @endphp
   <div class="row">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -29,7 +34,7 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Data Master Karyawan</h5>
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">
             <i class="fas fa-plus"></i> Add Employee
           </button>
         </div>
@@ -99,6 +104,7 @@
                         class="btn btn-sm btn-outline-primary js-edit-employee"
                         data-bs-toggle="modal"
                         data-bs-target="#editEmployeeModal"
+                        {{ $canUpdate ? '' : 'disabled' }}
                         data-update-url="{{ route('admin.employees.update', $employee->id) }}"
                         data-employee-id="{{ $employee->id }}"
                         data-no-id="{{ $employee->no_id }}"
@@ -120,7 +126,7 @@
                       <form action="{{ route('admin.employees.destroy', $employee->id) }}" method="POST" class="js-delete-employee">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? '' : 'Tidak punya akses hapus' }}">
                           <i class="fas fa-trash"></i>
                         </button>
                       </form>
@@ -233,7 +239,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-success">Save</button>
+            <button type="submit" class="btn btn-success" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Save</button>
           </div>
         </form>
       </div>
@@ -365,7 +371,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses ubah' }}">Update</button>
           </div>
         </form>
       </div>

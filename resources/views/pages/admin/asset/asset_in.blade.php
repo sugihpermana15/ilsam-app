@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Asset Masuk | IGI')
+@section('title', __('assets.in.title') . ' | IGI')
 
 @section('title-sub', ' Dashboard Asset Management ')
-@section('pagetitle', 'Asset Masuk (Scan Barcode)')
+@section('pagetitle', __('assets.in.pagetitle'))
 
 @section('css')
   <!-- Font Awesome for icons -->
@@ -15,16 +15,19 @@
 @endsection
 
 @section('content')
+  @php
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'assets_in', 'update');
+  @endphp
   <div id="layout-wrapper">
     <div class="row">
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
       <script>
         document.addEventListener('DOMContentLoaded', function () {
           @if(session('success'))
-            Swal.fire({ icon: 'success', title: 'Success', text: @json(session('success')), timer: 1800, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: @json(__('common.success')), text: @json(session('success')), timer: 1800, showConfirmButton: false });
           @endif
           @if(session('error'))
-            Swal.fire({ icon: 'error', title: 'Error', text: @json(session('error')), timer: 2500, showConfirmButton: false });
+            Swal.fire({ icon: 'error', title: @json(__('common.error')), text: @json(session('error')), timer: 2500, showConfirmButton: false });
           @endif
               });
       </script>
@@ -32,26 +35,26 @@
       <div class="col-12">
         <div class="card">
           <div class="card-header">
-            <h5 class="card-title mb-0">Asset Masuk (Karawang) - Scan Barcode</h5>
+            <h5 class="card-title mb-0">{{ __('assets.in.card_title') }}</h5>
           </div>
           <div class="card-body">
             <form id="asset-scan-form" method="POST" action="{{ route('admin.assets.in.scan') }}"
               class="row g-2 align-items-end">
               @csrf
               <div class="col-12 col-md-6">
-                <label class="form-label">Barcode / Asset Code</label>
+                <label class="form-label">{{ __('assets.in.barcode_label') }}</label>
                 <input id="asset-code-input" type="text" name="asset_code"
                   class="form-control @error('asset_code') is-invalid @enderror" value="{{ old('asset_code') }}"
-                  placeholder="Scan barcode di sini..." autofocus autocomplete="off">
+                  placeholder="{{ __('assets.in.barcode_placeholder') }}" autofocus autocomplete="off" {{ $canUpdate ? '' : 'readonly' }}>
                 @error('asset_code')
                   <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
               </div>
               <div class="col-12 col-md-auto">
-                <button id="btn-scan" type="submit" class="btn btn-primary">Scan</button>
+                <button id="btn-scan" type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('assets.actions.no_access_update') }}">{{ __('assets.in.scan') }}</button>
               </div>
               <div class="col-12 col-md-auto">
-                <a href="{{ route('admin.assets.transfer') }}" class="btn btn-light">Lihat Asset Keluar</a>
+                <a href="{{ route('admin.assets.transfer') }}" class="btn btn-light">{{ __('assets.in.view_out') }}</a>
               </div>
             </form>
 
@@ -61,14 +64,14 @@
               <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
                 <thead>
                   <tr>
-                    <th>No</th>
-                    <th>Asset Code</th>
-                    <th>Asset Name</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Requested At</th>
-                    <th>Received At</th>
-                    <th>Status</th>
+                    <th>{{ __('assets.in.table.no') }}</th>
+                    <th>{{ __('assets.in.table.asset_code') }}</th>
+                    <th>{{ __('assets.in.table.asset_name') }}</th>
+                    <th>{{ __('assets.in.table.from') }}</th>
+                    <th>{{ __('assets.in.table.to') }}</th>
+                    <th>{{ __('assets.in.table.requested_at') }}</th>
+                    <th>{{ __('assets.in.table.received_at') }}</th>
+                    <th>{{ __('assets.in.table.status') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -186,8 +189,8 @@
             "<'table-responsive'tr>" +
             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
           language: {
-            search: 'Search : ',
-            searchPlaceholder: 'Type to filter...'
+            search: @json(__('assets.in.datatable.search_label')),
+            searchPlaceholder: @json(__('common.search_placeholder'))
           }
         });
       }

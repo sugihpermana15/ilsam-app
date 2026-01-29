@@ -12,6 +12,11 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'departments', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'departments', 'update');
+    $canDelete = \App\Support\MenuAccess::can(auth()->user(), 'departments', 'delete');
+  @endphp
   <div class="row">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -29,9 +34,15 @@
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Data Master Department</h5>
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
-            <i class="fas fa-plus"></i> Add Department
-          </button>
+          @if($canCreate)
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addDepartmentModal">
+              <i class="fas fa-plus"></i> Add Department
+            </button>
+          @else
+            <button type="button" class="btn btn-success" disabled title="Read-only">
+              <i class="fas fa-plus"></i> Add Department
+            </button>
+          @endif
         </div>
 
         <div class="card-body">
@@ -50,21 +61,33 @@
                   <td>{{ $department->name }}</td>
                   <td>
                     <div class="d-flex gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-primary js-edit-department" data-bs-toggle="modal"
-                        data-bs-target="#editDepartmentModal"
-                        data-update-url="{{ route('admin.departments.update', $department->id) }}"
-                        data-department-id="{{ $department->id }}" data-name="{{ $department->name }}">
-                        <i class="fas fa-pen"></i>
-                      </button>
+                      @if($canUpdate)
+                        <button type="button" class="btn btn-sm btn-outline-primary js-edit-department" data-bs-toggle="modal"
+                          data-bs-target="#editDepartmentModal"
+                          data-update-url="{{ route('admin.departments.update', $department->id) }}"
+                          data-department-id="{{ $department->id }}" data-name="{{ $department->name }}">
+                          <i class="fas fa-pen"></i>
+                        </button>
+                      @else
+                        <button type="button" class="btn btn-sm btn-outline-primary" disabled title="Read-only">
+                          <i class="fas fa-pen"></i>
+                        </button>
+                      @endif
 
-                      <form action="{{ route('admin.departments.destroy', $department->id) }}" method="POST"
-                        class="js-delete-department">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                      @if($canDelete)
+                        <form action="{{ route('admin.departments.destroy', $department->id) }}" method="POST"
+                          class="js-delete-department">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      @else
+                        <button type="button" class="btn btn-sm btn-outline-danger" disabled title="Read-only">
                           <i class="fas fa-trash"></i>
                         </button>
-                      </form>
+                      @endif
                     </div>
                   </td>
                 </tr>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Ilsam - Apply')
+@section('title', __('website.titles.career_apply'))
 
 @section('main')
   @php
@@ -155,21 +155,21 @@
       <div class="row align-items-center justify-content-between">
         <div class="col-12">
           <div class="breadcrumb__content text-center">
-            <h1 class="breadcrumb__title color-white title-animation">Apply</h1>
+            <h1 class="breadcrumb__title color-white title-animation">{{ __('website.career.apply.breadcrumb_title') }}</h1>
             <div class="breadcrumb__menu d-inline-flex justify-content-center">
               <nav>
                 <ul>
                   <li>
                     <span>
-                      <a href="{{ route('home') }}">Home</a>
+                      <a href="{{ route('home') }}">{{ __('website.common.home') }}</a>
                     </span>
                   </li>
                   <li>
                     <span>
-                      <a href="{{ route('career') }}">Career</a>
+                      <a href="{{ route('career') }}">{{ __('website.career.breadcrumb_title') }}</a>
                     </span>
                   </li>
-                  <li class="active"><span>Apply</span></li>
+                  <li class="active"><span>{{ __('website.career.apply.breadcrumb_title') }}</span></li>
                 </ul>
               </nav>
             </div>
@@ -189,7 +189,7 @@
           @if(session('success'))
             Swal.fire({
               icon: 'success',
-              title: 'Success',
+              title: @json(__('website.common.success')),
               text: @json(session('success')),
               timer: 2200,
               showConfirmButton: false
@@ -198,7 +198,7 @@
           @if(session('error'))
             Swal.fire({
               icon: 'error',
-              title: 'Error',
+              title: @json(__('website.common.error')),
               text: @json(session('error')),
               timer: 2600,
               showConfirmButton: false
@@ -211,7 +211,7 @@
         <div class="col-12">
           @if($errors->any())
             <div class="alert alert-danger" role="alert">
-              <div class="fw-semibold mb-1">Mohon lengkapi data yang wajib diisi.</div>
+              <div class="fw-semibold mb-1">{{ __('website.career.apply.errors_required') }}</div>
               <ul class="mb-0">
                 @foreach($errors->all() as $error)
                   <li>{{ $error }}</li>
@@ -224,8 +224,8 @@
             <div class="apply-shell">
               <div class="card">
                 <div class="card-header">
-                  <h5 class="card-title mb-1">Form Kandidat</h5>
-                  <div class="text-muted small">Isi data kandidat dengan lengkap dan unggah CV (PDF, maks 2MB).</div>
+                  <h5 class="card-title mb-1">{{ __('website.career.apply.card.title') }}</h5>
+                  <div class="text-muted small">{{ __('website.career.apply.card.subtitle') }}</div>
                 </div>
 
                 <form id="apply_form" method="POST" action="{{ route('career.apply.submit') }}"
@@ -233,17 +233,17 @@
                   @csrf
                   <div class="card-body">
                     <div class="alert alert-info mb-3">
-                      Jika ada kendala, hubungi HRD: <a href="mailto:{{ $companyEmail }}">{{ $companyEmail }}</a>
+                      {!! __('website.career.apply.help_hrd_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => $companyEmail]) !!}
                     </div>
 
                     <div class="row g-3">
                       <div class="col-12">
-                        <div class="apply-section-title">Data Pribadi</div>
+                        <div class="apply-section-title">{{ __('website.career.apply.sections.personal') }}</div>
                         <hr class="apply-section-rule">
                       </div>
 
                       <div class="col-md-12">
-                        <label class="form-label">Position <span class="apply-required">*</span></label>
+                        <label class="form-label">{{ __('website.career.apply.fields.position') }} <span class="apply-required">*</span></label>
                         @if($selectedJob)
                           <input type="hidden" name="job_id" value="{{ $selectedJobId }}">
                           <input type="hidden" name="job_title" value="{{ $selectedJobTitle }}">
@@ -251,7 +251,7 @@
                         @else
                           <select class="form-select @error('job_id') is-invalid @enderror" name="job_id" id="job_id_select"
                             required>
-                            <option value="">Select position</option>
+                            <option value="">{{ __('website.career.apply.fields.select_position') }}</option>
                             @foreach($openings as $job)
                               @php
                                 $jid = (string) ($job->id ?? '');
@@ -267,11 +267,11 @@
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                           @enderror
                         @endif
-                        <small class="text-muted">Pilih posisi yang dilamar.</small>
+                        <small class="text-muted">{{ __('website.career.apply.fields.position_help') }}</small>
                       </div>
 
                       <div class="col-md-6">
-                        <label class="form-label">Full Name <span class="apply-required">*</span></label>
+                        <label class="form-label">{{ __('website.career.apply.fields.full_name') }} <span class="apply-required">*</span></label>
                         <input type="text" class="form-control @error('full_name') is-invalid @enderror" name="full_name"
                           value="{{ old('full_name') }}" required>
                         @error('full_name')
@@ -280,21 +280,21 @@
                       </div>
 
                       <div class="col-md-6">
-                        <label class="form-label">Domicile</label>
+                        <label class="form-label">{{ __('website.career.apply.fields.domicile') }}</label>
                         <input type="text" class="form-control @error('domicile') is-invalid @enderror" name="domicile"
-                          value="{{ old('domicile') }}" placeholder="Example: Cikarang, Bekasi">
+                          value="{{ old('domicile') }}" placeholder="{{ __('website.career.apply.placeholders.domicile') }}">
                         @error('domicile')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
 
                       <div class="col-12 pt-1">
-                        <div class="apply-section-title">Kontak</div>
+                        <div class="apply-section-title">{{ __('website.career.apply.sections.contact') }}</div>
                         <hr class="apply-section-rule">
                       </div>
 
                       <div class="col-md-6">
-                        <label class="form-label">Email <span class="apply-required">*</span></label>
+                        <label class="form-label">{{ __('website.career.apply.fields.email') }} <span class="apply-required">*</span></label>
                         <input type="email" class="form-control @error('email') is-invalid @enderror" name="email"
                           value="{{ old('email') }}" required>
                         @error('email')
@@ -303,7 +303,7 @@
                       </div>
 
                       <div class="col-md-6">
-                        <label class="form-label">Phone / WhatsApp <span class="apply-required">*</span></label>
+                        <label class="form-label">{{ __('website.career.apply.fields.phone_whatsapp') }} <span class="apply-required">*</span></label>
                         <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone"
                           value="{{ old('phone') }}" required>
                         @error('phone')
@@ -312,42 +312,42 @@
                       </div>
 
                       <div class="col-md-6">
-                        <label class="form-label">LinkedIn (optional)</label>
+                        <label class="form-label">{{ __('website.career.apply.fields.linkedin_optional') }}</label>
                         <input type="url" class="form-control @error('linkedin_url') is-invalid @enderror"
-                          name="linkedin_url" value="{{ old('linkedin_url') }}" placeholder="https://linkedin.com/in/...">
+                          name="linkedin_url" value="{{ old('linkedin_url') }}" placeholder="{{ __('website.career.apply.placeholders.linkedin') }}">
                         @error('linkedin_url')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
 
                       <div class="col-md-6">
-                        <label class="form-label">Portfolio (optional)</label>
+                        <label class="form-label">{{ __('website.career.apply.fields.portfolio_optional') }}</label>
                         <input type="url" class="form-control @error('portfolio_url') is-invalid @enderror"
-                          name="portfolio_url" value="{{ old('portfolio_url') }}" placeholder="https://...">
+                          name="portfolio_url" value="{{ old('portfolio_url') }}" placeholder="{{ __('website.career.apply.placeholders.portfolio') }}">
                         @error('portfolio_url')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
 
                       <div class="col-md-12">
-                        <label class="form-label">Message (optional)</label>
+                        <label class="form-label">{{ __('website.career.apply.fields.message_optional') }}</label>
                         <textarea class="form-control @error('message') is-invalid @enderror" name="message" rows="3"
-                          placeholder="Ceritakan singkat pengalaman dan alasan melamar.">{{ old('message') }}</textarea>
+                          placeholder="{{ __('website.career.apply.placeholders.message') }}">{{ old('message') }}</textarea>
                         @error('message')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
 
                       <div class="col-12 pt-1">
-                        <div class="apply-section-title">Dokumen</div>
+                        <div class="apply-section-title">{{ __('website.career.apply.sections.documents') }}</div>
                         <hr class="apply-section-rule">
                       </div>
 
                       <div class="col-md-12">
-                        <label class="form-label">Upload CV <span class="apply-required">*</span></label>
+                        <label class="form-label">{{ __('website.career.apply.fields.upload_cv') }} <span class="apply-required">*</span></label>
                         <input type="file" class="form-control @error('cv') is-invalid @enderror" name="cv"
                           accept=".pdf,application/pdf" required>
-                        <small class="text-muted">Accepted: PDF. Maximum size: 2MB.</small>
+                        <small class="text-muted">{{ __('website.career.apply.cv_help', ['type' => __('website.common.pdf'), 'max' => '2MB']) }}</small>
                         @error('cv')
                           <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -358,13 +358,13 @@
                           <input class="form-check-input @error('consent') is-invalid @enderror" type="checkbox"
                             name="consent" id="consent" value="1" required @checked(old('consent'))>
                           <label class="form-check-label" for="consent">
-                            Saya menyetujui data diproses HRD
+                            {{ __('website.career.apply.fields.consent_label') }}
                           </label>
                           @error('consent')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                           @enderror
                         </div>
-                        <small class="text-muted">Persetujuan wajib untuk melanjutkan proses rekrutmen.</small>
+                        <small class="text-muted">{{ __('website.career.apply.fields.consent_help') }}</small>
                       </div>
 
                       @php
@@ -375,7 +375,7 @@
 
                       @if($showRecaptcha)
                         <div class="col-md-12">
-                          <label class="form-label">Verification <span class="apply-required">*</span></label>
+                          <label class="form-label">{{ __('website.career.apply.fields.verification') }} <span class="apply-required">*</span></label>
                           <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
                           @error('g-recaptcha-response')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -387,9 +387,9 @@
                   </div>
 
                   <div class="card-footer d-flex justify-content-between align-items-center">
-                    <a class="btn btn-secondary" href="{{ route('career') }}">Kembali</a>
+                    <a class="btn btn-secondary" href="{{ route('career') }}">{{ __('website.common.back') }}</a>
                     <button class="btn btn-primary" id="apply_submit" type="submit">
-                      Submit Application
+                      {{ __('website.career.apply.actions.submit_application') }}
                     </button>
                   </div>
                 </form>
@@ -406,6 +406,8 @@
       var form = document.getElementById('apply_form');
       var submitBtn = document.getElementById('apply_submit');
 
+      var uploadingText = @json(__('website.career.apply.uploading'));
+
       var select = document.getElementById('job_id_select');
       var titleInput = document.getElementById('job_title_input');
 
@@ -415,7 +417,7 @@
           submitBtn.disabled = true;
           submitBtn.setAttribute('aria-busy', 'true');
           submitBtn.innerHTML =
-            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading...';
+            '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>' + uploadingText;
         });
       }
 

@@ -1,6 +1,6 @@
 @extends('layouts.master_auth')
 
-@section('title', 'Ilsam - Reset Password')
+@section('title', 'Ilsam - ' . __('auth.reset_password'))
 
 @section('content')
 
@@ -17,30 +17,30 @@
                         <div class="card-body py-12 px-8">
                             <img src="{{ asset('assets/img/logo.svg') }}" alt="Logo Dark" height="30"
                                 class="mb-4 mx-auto d-block">
-                            <h6 class="mb-3 mb-8 fw-medium text-center">Log in with the new password once it's set.</h6>
+                            <h6 class="mb-3 mb-8 fw-medium text-center">{{ __('auth.reset_password_hint') }}</h6>
                             <form>
                                 <div class="row g-4">
                                     <div class="col-12">
-                                        <label for="email" class="form-label">Email <span
+                                        <label for="email" class="form-label">{{ __('auth.email') }} <span
                                                 class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="email" placeholder="Enter your Email"
+                                        <input type="text" class="form-control" id="email" placeholder="{{ __('auth.enter_email') }}"
                                             required>
                                     </div>
 
                                     <div class="col-12 mt-8">
-                                        <button type="submit" class="btn btn-primary w-full mb-5">Send reset email</button>
+                                        <button type="submit" class="btn btn-primary w-full mb-5">{{ __('auth.send_reset_email') }}</button>
                                     </div>
                                 </div>
-                                <p class="mb-0 fw-semibold position-relative text-center fs-12">Back to <a
-                                        href="{{ route('auth') }}" class="text-decoration-underline text-primary">Log in</a>
+                                    <p class="mb-0 fw-semibold position-relative text-center fs-12">{{ __('auth.back_to') }} <a
+                                        href="{{ route('auth') }}" class="text-decoration-underline text-primary">{{ __('auth.login') }}</a>
                                 </p>
                             </form>
                         </div>
                     </div>
-                    <p class="position-relative text-center fs-12 mb-0">Copyright ©<span
-                            class="current-year">{{ now()->year }}</span> ILSAM
-                        INDONESIA by IT Team.
-                        All rights reserved.</p>
+                    <p class="position-relative text-center fs-12 mb-0">
+                        {{ __('common.footer.copyright', ['year' => now()->year]) }}
+                        {{ __('common.footer.by_it_team') }}
+                    </p>
                 </div>
             </div>
         </div>

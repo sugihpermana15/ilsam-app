@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Ilsam - Privacy Policy')
+@section('title', __('website.titles.privacy_policy'))
 
 @section('main')
   <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
@@ -8,7 +8,7 @@
       <div class="row align-items-center justify-content-between">
         <div class="col-12">
           <div class="breadcrumb__content text-center">
-            <h1 class="breadcrumb__title color-white title-animation">Privacy Policy</h1>
+            <h1 class="breadcrumb__title color-white title-animation">{{ __('website.privacy.title') }}</h1>
             <div class="breadcrumb__menu d-inline-flex justify-content-center">
               <nav>
                 <ul>
@@ -22,11 +22,11 @@
                           <path d="M5.33398 15V8H9.66732V15" stroke="white" stroke-width="1.5" stroke-linecap="round"
                             stroke-linejoin="round" />
                         </svg>
-                        Home
+                        {{ __('website.common.home') }}
                       </a>
                     </span>
                   </li>
-                  <li class="active"><span>Privacy Policy</span></li>
+                  <li class="active"><span>{{ __('website.privacy.title') }}</span></li>
                 </ul>
               </nav>
             </div>
@@ -41,37 +41,32 @@
       <div class="row justify-content-center">
         <div class="col-lg-10">
           <div class="mb-30">
-            <h2 class="mb-15">Privacy Policy</h2>
-            <p class="mb-0">This page explains how PT ILSAM GLOBAL INDONESIA collects, uses, and protects information when
-              you use our website.</p>
+            <h2 class="mb-15">{{ __('website.privacy.title') }}</h2>
+            <p class="mb-0">{{ __('website.privacy.intro') }}</p>
           </div>
 
           <div class="mb-30">
-            <h4 class="mb-10">Information we collect</h4>
-            <p class="mb-0">We may collect information you submit through forms (such as name, email address, phone
-              number, and message content), and technical data such as browser type and pages visited.</p>
+            <h4 class="mb-10">{{ __('website.privacy.sections.collect.title') }}</h4>
+            <p class="mb-0">{{ __('website.privacy.sections.collect.body') }}</p>
           </div>
 
           <div class="mb-30">
-            <h4 class="mb-10">How we use information</h4>
-            <p class="mb-0">We use the information to respond to inquiries, provide requested services, improve our
-              website, and maintain security and performance.</p>
+            <h4 class="mb-10">{{ __('website.privacy.sections.use.title') }}</h4>
+            <p class="mb-0">{{ __('website.privacy.sections.use.body') }}</p>
           </div>
 
           <div class="mb-30">
-            <h4 class="mb-10">Sharing</h4>
-            <p class="mb-0">We do not sell personal data. We may share information with service providers only as needed
-              to operate the website, or when required by law.</p>
+            <h4 class="mb-10">{{ __('website.privacy.sections.sharing.title') }}</h4>
+            <p class="mb-0">{{ __('website.privacy.sections.sharing.body') }}</p>
           </div>
 
           <div class="mb-30">
-            <h4 class="mb-10">Contact</h4>
-            <p class="mb-0">For privacy-related questions, please contact us via the <a
-                href="{{ route('contact') }}">Contact</a> page.</p>
+            <h4 class="mb-10">{{ __('website.privacy.sections.contact.title') }}</h4>
+            <p class="mb-0">{!! __('website.privacy.sections.contact.body_html', ['url' => route('contact'), 'label' => __('website.nav.menu.contact')]) !!}</p>
           </div>
 
           <div class="mb-0" style="opacity:.8; font-size: 14px;">
-            <p class="mb-0">Last updated: {{ now()->format('d M Y') }}</p>
+            <p class="mb-0">{{ __('website.privacy.last_updated', ['date' => now()->format('d M Y')]) }}</p>
           </div>
         </div>
       </div>

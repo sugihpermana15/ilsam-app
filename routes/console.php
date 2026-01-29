@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Schema;
 use App\Models\UniformLot;
 use App\Models\UniformMovement;
@@ -19,10 +20,168 @@ use App\Models\AssetVendor;
 use App\Models\Asset;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\AccountAccessLog;
+use App\Models\Document;
+use App\Models\DocumentReminderLog;
+use Illuminate\Support\Facades\Mail;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+// Scheduler: prune low-value audit logs daily (keep last 50 per account).
+Schedule::command('accounts:audit-prune --keep=50')
+    ->dailyAt('01:30')
+    ->withoutOverlapping();
+
+// Scheduler: documents maintenance (status + reminder)
+Schedule::command('documents:sync-status')
+    ->dailyAt('01:40')
+    ->withoutOverlapping();
+
+Schedule::command('documents:send-reminders')
+    ->dailyAt('07:30')
+    ->withoutOverlapping();
+
+Artisan::command('documents:sync-status', function () {
+    $today = now()->toDateString();
+
+    $count = Document::query()
+        ->whereIn('status', ['Active', 'Draft'])
+        ->whereHas('contractTerms', function ($q) use ($today) {
+            $q->whereNotNull('end_date')->where('end_date', '<', $today);
+        })
+        ->count();
+
+    if ($count <= 0) {
+        $this->info('Tidak ada dokumen yang perlu diubah menjadi Expired.');
+        return self::SUCCESS;
+    }
+
+    $updated = Document::query()
+        ->whereIn('status', ['Active', 'Draft'])
+        ->whereHas('contractTerms', function ($q) use ($today) {
+            $q->whereNotNull('end_date')->where('end_date', '<', $today);
+        })
+        ->update([
+            'status' => 'Expired',
+            'updated_at' => now(),
+        ]);
+
+    $this->info('Selesai. Dokumen diubah menjadi Expired: ' . (int) $updated);
+    return self::SUCCESS;
+})->purpose('Update status dokumen otomatis: Active/Draft -> Expired jika lewat end_date.');
+
+Artisan::command('documents:send-reminders', function () {
+    $daysList = [90, 60, 30, 14, 7];
+    $sent = 0;
+
+    foreach ($daysList as $daysBefore) {
+        $targetDate = now()->addDays($daysBefore)->toDateString();
+
+        $docs = Document::query()
+            ->with(['vendor', 'contractTerms', 'picUser', 'creator'])
+            ->whereIn('status', ['Active', 'Draft'])
+            ->whereHas('contractTerms', function ($q) use ($targetDate) {
+                $q->whereNotNull('end_date')->where('end_date', $targetDate);
+            })
+            ->get();
+
+        foreach ($docs as $doc) {
+            $recipients = collect([
+                $doc->picUser,
+                $doc->creator,
+            ])
+                ->filter()
+                ->unique('id')
+                ->values();
+
+            foreach ($recipients as $u) {
+                $exists = DocumentReminderLog::query()
+                    ->where('document_id', $doc->document_id)
+                    ->where('days_before', $daysBefore)
+                    ->where('user_id', (int) $u->id)
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
+
+                DocumentReminderLog::query()->create([
+                    'document_id' => $doc->document_id,
+                    'days_before' => (int) $daysBefore,
+                    'user_id' => (int) $u->id,
+                    'sent_at' => now(),
+                ]);
+
+                $email = (string) ($u->email ?? '');
+                if ($email !== '') {
+                    try {
+                        $subject = '[Archived Berkas] Reminder: ' . $doc->document_title;
+                        $body = "Dokumen akan berakhir dalam {$daysBefore} hari.\n\n" .
+                            'Judul: ' . $doc->document_title . "\n" .
+                            'Nomor: ' . ($doc->document_number ?? '-') . "\n" .
+                            'Vendor: ' . ($doc->vendor?->name ?? '-') . "\n" .
+                            'End Date: ' . ($doc->contractTerms?->end_date?->format('Y-m-d') ?? '-') . "\n";
+
+                        Mail::raw($body, function ($m) use ($email, $subject) {
+                            $m->to($email)->subject($subject);
+                        });
+                    } catch (\Throwable $e) {
+                        // Do not fail the whole scheduler if mail is not configured.
+                        $this->warn('Gagal kirim email ke ' . $email . ' (mail belum dikonfigurasi?).');
+                    }
+                }
+
+                $sent++;
+            }
+        }
+    }
+
+    $this->info('Selesai. Reminder log baru dibuat: ' . (int) $sent);
+    return self::SUCCESS;
+})->purpose('Kirim reminder (dan catat) sebelum end_date: 90/60/30/14/7 hari.');
+
+Artisan::command('accounts:audit-prune {--keep=50 : Simpan N log low-value terakhir per account}', function () {
+    $keep = max(1, (int) $this->option('keep'));
+
+    $lowValue = (array) config('accounts_audit.low_value_actions', ['ACCOUNT_DETAIL_VIEW']);
+    $this->info('Pruning audit log low-value...');
+    $this->line('- Aksi low-value: ' . implode(', ', $lowValue));
+    $this->line('- Keep per account: ' . $keep);
+
+    $accountIds = AccountAccessLog::query()
+        ->whereNotNull('account_id')
+        ->whereIn('action', $lowValue)
+        ->select('account_id')
+        ->distinct()
+        ->pluck('account_id');
+
+    $deletedTotal = 0;
+    foreach ($accountIds as $accountId) {
+        $cutoffId = AccountAccessLog::query()
+            ->where('account_id', $accountId)
+            ->whereIn('action', $lowValue)
+            ->orderByDesc('id')
+            ->skip($keep - 1)
+            ->value('id');
+
+        if (!$cutoffId) {
+            continue;
+        }
+
+        $deleted = AccountAccessLog::query()
+            ->where('account_id', $accountId)
+            ->whereIn('action', $lowValue)
+            ->where('id', '<', $cutoffId)
+            ->delete();
+
+        $deletedTotal += (int) $deleted;
+    }
+
+    $this->info('Selesai. Total log low-value dihapus: ' . $deletedTotal);
+    return self::SUCCESS;
+})->purpose('Pangkas audit log low-value (mis. view) agar per account hanya tersisa N terakhir.');
 
 Artisan::command('uniforms:backfill-lots {--dry-run : Hanya simulasi, tidak menyimpan perubahan}', function () {
     $dryRun = (bool) $this->option('dry-run');

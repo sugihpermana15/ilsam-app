@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Ilsam - Contact')
+@section('title', __('website.titles.contact'))
 
 @section('main')
     <!-- Breadcrumb area start  -->
@@ -9,7 +9,7 @@
             <div class="row align-items-center justify-content-between">
                 <div class="col-12">
                     <div class="breadcrumb__content text-center">
-                        <h1 class="breadcrumb__title color-white title-animation">@yield('breadcrumb_title', 'Contact Us')
+                        <h1 class="breadcrumb__title color-white title-animation">@yield('breadcrumb_title', __('website.contact.breadcrumb'))
                         </h1>
                         <div class="breadcrumb__menu d-inline-flex justify-content-center">
                             <nav>
@@ -26,11 +26,11 @@
                                                     <path d="M5.33398 15V8H9.66732V15" stroke="white" stroke-width="1.5"
                                                         stroke-linecap="round" stroke-linejoin="round" />
                                                 </svg>
-                                                Home
+                                                {{ __('website.common.home') }}
                                             </a>
                                         </span>
                                     </li>
-                                    <li class="active"><span>@yield('breadcrumb_title', 'Contact Us')</span></li>
+                                    <li class="active"><span>@yield('breadcrumb_title', __('website.contact.breadcrumb'))</span></li>
                                 </ul>
                             </nav>
                         </div>
@@ -58,7 +58,7 @@
                                     <i class="bi bi-envelope" aria-hidden="true"></i>
                                 </div>
                                 <div class="contact-list__item-text">
-                                    <h4 class="title">Email Address</h4>
+                                    <h4 class="title">{{ __('website.home.contact.email_address') }}</h4>
                                     <a href="mailto:market.ilsamindonesia@yahoo.com">market.ilsamindonesia@yahoo.com</a>
                                 </div>
                             </div>
@@ -70,7 +70,7 @@
                                     <i class="bi bi-telephone" aria-hidden="true"></i>
                                 </div>
                                 <div class="contact-list__item-text">
-                                    <h4 class="title">Phone Number</h4>
+                                    <h4 class="title">{{ __('website.home.contact.phone_number') }}</h4>
                                     <a href="tel:+622674868013">+62 (267) 4868013 / 313</a>
                                 </div>
                             </div>
@@ -82,7 +82,7 @@
                                     <i class="bi bi-geo-alt" aria-hidden="true"></i>
                                 </div>
                                 <div class="contact-list__item-text">
-                                    <h4 class="title">Our Location</h4>
+                                    <h4 class="title">{{ __('website.home.contact.our_location') }}</h4>
                                     <a href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6">Jl. Trans Heksa Artha Industrial
                                         Hill Area Block E No.13.</a>
                                 </div>
@@ -95,8 +95,8 @@
                                     <i class="bi bi-clock" aria-hidden="true"></i>
                                 </div>
                                 <div class="contact-list__item-text">
-                                    <h4 class="title">Opening Hour </h4>
-                                    <span>Mon - Sat: 08am - 05pm</span>
+                                    <h4 class="title">{{ __('website.home.contact.opening_hour') }}</h4>
+                                    <span>{{ __('website.home.contact.opening_hours_value') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -105,11 +105,10 @@
                 <div class="col-xl-6">
                     <div class="section__title-wrapper text-center text-xl-start mb-40 mb-xs-35 rr-mt-60-lg">
                         <span class="section__subtitle justify-content-start mb-13"><span data-width="40px"
-                                class="left-separetor"></span>Lets Talk</span>
+                                class="left-separetor"></span>{{ __('website.home.contact.subtitle') }}</span>
                         <h2 class="section__title title-animation text-capitalize mb-15 rr-br-hidden-md"
-                            data-cursor="-opaque">Need a Trusted Chemical Partner? Get in Touch</h2>
-                        <p class="des mb-0">We offer consistent, high-quality chemical solutions designed for efficiency,
-                            safety, and long-term industrial performance.</p>
+                            data-cursor="-opaque">{{ __('website.home.contact.title_line1') }} {{ __('website.home.contact.title_line2') }}</h2>
+                        <p class="des mb-0">{{ __('website.home.contact.desc') }}</p>
                     </div>
 
                     <form id="contact-form" class="request-a-quote__form home-2" method="POST" action="{{ route('contact.send') }}">
@@ -118,35 +117,35 @@
                             <div class="col-xl-6">
                                 <div class="request-a-quote__form-input">
                                     <div class="validation__wrapper-up position-relative">
-                                        <input name="name" id="name" type="text" placeholder="Name">
+                                        <input name="name" id="name" type="text" placeholder="{{ __('website.home.contact.form.name') }}">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-6">
                                 <div class="request-a-quote__form-input">
                                     <div class="validation__wrapper-up position-relative">
-                                        <input name="tel" id="tel" type="tel" placeholder="Phone Number">
+                                        <input name="tel" id="tel" type="tel" placeholder="{{ __('website.home.contact.form.tel') }}">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-6">
                                 <div class="request-a-quote__form-input">
                                     <div class="validation__wrapper-up position-relative">
-                                        <input name="email" id="email" type="email" placeholder="Email Address">
+                                        <input name="email" id="email" type="email" placeholder="{{ __('website.home.contact.form.email') }}">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-xl-6">
                                 <div class="request-a-quote__form-input">
                                     <div class="validation__wrapper-up position-relative">
-                                        <input name="inquiries" id="inquiries" type="text" placeholder="Work Inquiries">
+                                        <input name="inquiries" id="inquiries" type="text" placeholder="{{ __('website.home.contact.form.inquiries') }}">
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="request-a-quote__form-input textarea">
                                     <div class="validation__wrapper-up position-relative">
-                                        <textarea name="textarea" id="textarea" placeholder="Project Details"></textarea>
+                                        <textarea name="textarea" id="textarea" placeholder="{{ __('website.home.contact.form.details') }}"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -154,8 +153,8 @@
                             <div class="col-12">
                                 <button type="submit" class="rr-btn w-auto">
                                     <span class="btn-wrap">
-                                        <span class="text-one">Send Message</span>
-                                        <span class="text-two">Send Message</span>
+                                        <span class="text-one">{{ __('website.home.contact.form.send') }}</span>
+                                        <span class="text-two">{{ __('website.home.contact.form.send') }}</span>
                                     </span>
                                 </button>
                             </div>

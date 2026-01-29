@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Riwayat Seragam | IGI')
-@section('title-sub', ' Dashboard Riwayat Seragam ')
-@section('pagetitle', 'Riwayat Seragam')
+@section('title', __('uniforms.history.page_title'))
+@section('title-sub', __('uniforms.history.title_sub'))
+@section('pagetitle', __('uniforms.history.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -38,34 +38,34 @@
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-          <h5 class="card-title mb-0"> Riwayat Mutasi Stok Seragam </h5>
+          <h5 class="card-title mb-0">{{ __('uniforms.history.card_title') }}</h5>
           <div class="igi-actions">
             <a href="{{ route('admin.uniforms.master') }}" class="btn btn-secondary btn-sm"><i class="fas fa-list"></i>
-              Master</a>
+              {{ __('uniforms.nav.master') }}</a>
             <a href="{{ route('admin.uniforms.stock') }}" class="btn btn-outline-secondary btn-sm"><i
-                class="fas fa-warehouse"></i> Stok Masuk</a>
+                class="fas fa-warehouse"></i> {{ __('uniforms.nav.stock') }}</a>
             <a href="{{ route('admin.uniforms.distribution') }}" class="btn btn-outline-primary btn-sm"><i
-                class="fas fa-people-carry-box"></i> Distribusi</a>
+                class="fas fa-people-carry-box"></i> {{ __('uniforms.nav.distribution') }}</a>
             <a href="{{ route('admin.uniforms.lots') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-layer-group"></i> Lot</a>
+              class="fas fa-layer-group"></i> {{ __('uniforms.nav.lots') }}</a>
             <a href="{{ route('admin.uniforms.reconcile') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-scale-balanced"></i> Rekonsiliasi</a>
+              class="fas fa-scale-balanced"></i> {{ __('uniforms.nav.reconcile') }}</a>
             <a href="{{ route('admin.uniforms.adjustments') }}" class="btn btn-outline-primary btn-sm"><i
-                class="fas fa-sliders"></i> Penyesuaian</a>
+                class="fas fa-sliders"></i> {{ __('uniforms.nav.adjustments') }}</a>
             <a href="{{ route('admin.uniforms.writeoffs') }}" class="btn btn-outline-danger btn-sm"><i
-                class="fas fa-trash"></i> Penghapusan</a>
+                class="fas fa-trash"></i> {{ __('uniforms.nav.writeoffs') }}</a>
           </div>
         </div>
         <div class="card-body">
           @php
             $uniformMovementTypeLabels = [
-              'IN' => 'Stok Masuk',
-              'OUT' => 'Distribusi',
-              'RETURN' => 'Retur',
-              'ADJUSTMENT_IN' => 'Penyesuaian Masuk',
-              'ADJUSTMENT_OUT' => 'Penyesuaian Keluar',
-              'WRITE_OFF' => 'Penghapusan',
-              'REPLACEMENT' => 'Penggantian',
+              'IN' => __('uniforms.movement_types.IN'),
+              'OUT' => __('uniforms.movement_types.OUT'),
+              'RETURN' => __('uniforms.movement_types.RETURN'),
+              'ADJUSTMENT_IN' => __('uniforms.movement_types.ADJUSTMENT_IN'),
+              'ADJUSTMENT_OUT' => __('uniforms.movement_types.ADJUSTMENT_OUT'),
+              'WRITE_OFF' => __('uniforms.movement_types.WRITE_OFF'),
+              'REPLACEMENT' => __('uniforms.movement_types.REPLACEMENT'),
             ];
 
             $uniformMovementTypeBadge = function (?string $movementType): string {
@@ -83,18 +83,18 @@
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Tanggal</th>
-                <th>Tipe</th>
-                <th>Item</th>
-                <th>Ukuran</th>
-                <th>Perubahan Qty</th>
-                <th>Karyawan</th>
-                <th>ID Issue</th>
-                <th>Oleh</th>
-                <th>Lot</th>
-                <th>Kedaluwarsa</th>
-                <th>Catatan</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('common.date') }}</th>
+                <th>{{ __('common.type') }}</th>
+                <th>{{ __('common.item') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('uniforms.history.table.qty_change') }}</th>
+                <th>{{ __('common.employee') }}</th>
+                <th>{{ __('uniforms.history.table.issue_id') }}</th>
+                <th>{{ __('common.by') }}</th>
+                <th>{{ __('common.lot') }}</th>
+                <th>{{ __('common.expired_at') }}</th>
+                <th>{{ __('common.notes') }}</th>
               </tr>
             </thead>
             <tbody>

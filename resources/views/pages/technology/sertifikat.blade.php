@@ -1,7 +1,7 @@
 @extends('technology')
 
-@section('page_title', 'Ilsam - Certification Status')
-@section('breadcrumb_title', 'Certification Status')
+@section('page_title', __('website.titles.certification_status'))
+@section('breadcrumb_title', __('website.nav.menu.certification_status'))
 
 @section('rnd_content')
   @php
@@ -210,14 +210,14 @@
     <div class="ilsam-cert-panel">
       <div class="row align-items-end g-20">
         <div class="col-lg-8">
-          <h3 class="mb-10">Certificate Register</h3>
-          <p class="mb-0 ilsam-muted-sm">Filter by status, supplier, type, or scope. Click “Details” to view proof.</p>
+          <h3 class="mb-10">{{ __('website.cert.title') }}</h3>
+          <p class="mb-0 ilsam-muted-sm">{{ __('website.cert.subtitle') }}</p>
         </div>
         <div class="col-lg-4 d-flex justify-content-lg-end">
           <button type="button" class="rr-btn rr-btn__transparent w-auto" id="certResetBtn">
             <span class="btn-wrap">
-              <span class="text-one">Reset Filters</span>
-              <span class="text-two">Reset Filters</span>
+              <span class="text-one">{{ __('website.cert.actions.reset_filters') }}</span>
+              <span class="text-two">{{ __('website.cert.actions.reset_filters') }}</span>
             </span>
           </button>
         </div>
@@ -225,25 +225,25 @@
 
       <div class="mt-20 ilsam-cert-grid">
         <div>
-          <label class="ilsam-cert-label" for="certSearch">Search</label>
-          <input id="certSearch" class="ilsam-cert-input" type="text" placeholder="Chemical / Supplier / Certificate No"
+          <label class="ilsam-cert-label" for="certSearch">{{ __('website.cert.filters.search') }}</label>
+          <input id="certSearch" class="ilsam-cert-input" type="text" placeholder="{{ __('website.cert.filters.search_placeholder') }}"
             autocomplete="off" />
         </div>
 
         <div>
-          <label class="ilsam-cert-label" for="certStatus">Status</label>
+          <label class="ilsam-cert-label" for="certStatus">{{ __('website.cert.filters.status') }}</label>
           <select id="certStatus" class="ilsam-cert-select">
-            <option value="">All</option>
-            <option value="active">Active</option>
-            <option value="expiring_soon">Expiring Soon</option>
-            <option value="expired">Expired</option>
+            <option value="">{{ __('website.common.all') }}</option>
+            <option value="active">{{ __('website.cert.status.active') }}</option>
+            <option value="expiring_soon">{{ __('website.cert.status.expiring_soon') }}</option>
+            <option value="expired">{{ __('website.cert.status.expired') }}</option>
           </select>
         </div>
 
         <div>
-          <label class="ilsam-cert-label" for="certSupplier">Supplier</label>
+          <label class="ilsam-cert-label" for="certSupplier">{{ __('website.cert.filters.supplier') }}</label>
           <select id="certSupplier" class="ilsam-cert-select">
-            <option value="">All</option>
+            <option value="">{{ __('website.common.all') }}</option>
             @foreach ($uniqueSuppliers as $supplier)
               <option value="{{ $supplier }}">{{ $supplier }}</option>
             @endforeach
@@ -251,9 +251,9 @@
         </div>
 
         <div>
-          <label class="ilsam-cert-label" for="certType">Certification Type</label>
+          <label class="ilsam-cert-label" for="certType">{{ __('website.cert.filters.certification_type') }}</label>
           <select id="certType" class="ilsam-cert-select">
-            <option value="">All</option>
+            <option value="">{{ __('website.common.all') }}</option>
             @foreach ($uniqueTypes as $type)
               <option value="{{ $type }}">{{ $type }}</option>
             @endforeach
@@ -261,9 +261,9 @@
         </div>
 
         <div>
-          <label class="ilsam-cert-label" for="certScope">Scope</label>
+          <label class="ilsam-cert-label" for="certScope">{{ __('website.cert.filters.scope') }}</label>
           <select id="certScope" class="ilsam-cert-select">
-            <option value="">All</option>
+            <option value="">{{ __('website.common.all') }}</option>
             @foreach ($uniqueScopes as $scope)
               <option value="{{ $scope }}">{{ $scope }}</option>
             @endforeach
@@ -271,16 +271,16 @@
         </div>
 
         <div>
-          <label class="ilsam-cert-label" for="certProof">Proof</label>
+          <label class="ilsam-cert-label" for="certProof">{{ __('website.cert.filters.proof') }}</label>
           <select id="certProof" class="ilsam-cert-select">
-            <option value="">All</option>
-            <option value="pdf">PDF</option>
-            <option value="missing">Missing</option>
+            <option value="">{{ __('website.common.all') }}</option>
+            <option value="pdf">{{ __('website.common.pdf') }}</option>
+            <option value="missing">{{ __('website.cert.proof.missing') }}</option>
           </select>
         </div>
 
         <div style="grid-column: 1 / -1;">
-          <div class="ilsam-muted-sm" id="certResultsMeta">Showing all records.</div>
+          <div class="ilsam-muted-sm" id="certResultsMeta">{{ __('website.cert.meta.showing_all') }}</div>
         </div>
       </div>
 
@@ -288,15 +288,15 @@
         <table class="table mb-0 ilsam-table ilsam-cert-table">
           <thead>
             <tr>
-              <th>Chemical Name</th>
-              <th>Supplier</th>
-              <th>Certification Type</th>
-              <th>Certificate No.</th>
-              <th>Issued</th>
-              <th>Expiry</th>
-              <th>Status</th>
-              <th>Proof</th>
-              <th>Action</th>
+              <th>{{ __('website.cert.table.chemical_name') }}</th>
+              <th>{{ __('website.cert.table.supplier') }}</th>
+              <th>{{ __('website.cert.table.certification_type') }}</th>
+              <th>{{ __('website.cert.table.certificate_no') }}</th>
+              <th>{{ __('website.cert.table.issued') }}</th>
+              <th>{{ __('website.cert.table.expiry') }}</th>
+              <th>{{ __('website.cert.table.status') }}</th>
+              <th>{{ __('website.cert.table.proof') }}</th>
+              <th>{{ __('website.cert.table.action') }}</th>
             </tr>
           </thead>
           <tbody id="certTbody">
@@ -306,9 +306,9 @@
                 $expiry = !empty($c['expiry_date']) ? \Carbon\Carbon::parse($c['expiry_date']) : null;
                 $status = $c['status'] ?? 'active';
                 $statusLabel = match ($status) {
-                  'expired' => 'Expired',
-                  'expiring_soon' => 'Expiring Soon',
-                  default => 'Active',
+                  'expired' => __('website.cert.status.expired'),
+                  'expiring_soon' => __('website.cert.status.expiring_soon'),
+                  default => __('website.cert.status.active'),
                 };
                 $statusClass = match ($status) {
                   'expired' => 'ilsam-cert-badge--expired',
@@ -338,18 +338,18 @@
                 <td>
                   <div class="ilsam-cert-badges">
                     @if ($proofType === 'pdf')
-                      <span class="ilsam-cert-badge ilsam-cert-badge--proof">PDF</span>
+                      <span class="ilsam-cert-badge ilsam-cert-badge--proof">{{ __('website.common.pdf') }}</span>
                     @else
-                      <span class="ilsam-cert-badge ilsam-cert-badge--missing">Missing</span>
+                      <span class="ilsam-cert-badge ilsam-cert-badge--missing">{{ __('website.cert.proof.missing') }}</span>
                     @endif
                   </div>
                 </td>
                 <td>
                   <div class="ilsam-cert-actions">
                     <a href="#" class="ilsam-cert-action" data-cert-action="toggle"
-                      data-cert-id="{{ $c['id'] }}">Details</a>
+                      data-cert-id="{{ $c['id'] }}">{{ __('website.common.details') }}</a>
                     @if (!empty($c['zdhc_link']))
-                      <a class="ilsam-cert-action" href="{{ $c['zdhc_link'] }}" target="_blank" rel="noopener">Verify</a>
+                      <a class="ilsam-cert-action" href="{{ $c['zdhc_link'] }}" target="_blank" rel="noopener">{{ __('website.common.verify') }}</a>
                     @endif
                   </div>
                 </td>
@@ -360,58 +360,58 @@
                   <div class="ilsam-cert-detail">
                     <div class="row g-20 align-items-start">
                       <div class="col-lg-6">
-                        <h4 class="mb-10">Detail</h4>
+                        <h4 class="mb-10">{{ __('website.common.details') }}</h4>
                         <div class="ilsam-cert-detail__grid">
                           <div>
-                            <div class="ilsam-cert-detail__k">Chemical</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.chemical_name') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $c['chemical_name'] }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Supplier</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.supplier') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $c['supplier'] }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Type</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.certification_type') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $c['certification_type'] }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Certificate No.</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.certificate_no') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $c['certificate_no'] }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Issued</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.issued') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $issued ? $issued->format('d M Y') : '—' }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Expiry</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.expiry') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $expiry ? $expiry->format('d M Y') : '—' }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Status</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.table.status') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $statusLabel }}</div>
                           </div>
                           <div>
-                            <div class="ilsam-cert-detail__k">Scope</div>
+                            <div class="ilsam-cert-detail__k">{{ __('website.cert.filters.scope') }}</div>
                             <div class="ilsam-cert-detail__v">{{ $c['scope'] }}</div>
                           </div>
                         </div>
                       </div>
 
                       <div class="col-lg-6">
-                        <h4 class="mb-10">Proof</h4>
+                        <h4 class="mb-10">{{ __('website.cert.table.proof') }}</h4>
                         @if ($proofType === 'pdf' && !empty($c['proof_url']))
                           <div class="d-flex gap-2 flex-wrap mb-10">
                             <a class="rr-btn rr-btn__transparent w-auto" href="{{ $c['proof_url'] }}" target="_blank"
                               rel="noopener">
                               <span class="btn-wrap">
-                                <span class="text-one">Open PDF</span>
-                                <span class="text-two">Open PDF</span>
+                                <span class="text-one">{{ __('website.common.open_pdf') }}</span>
+                                <span class="text-two">{{ __('website.common.open_pdf') }}</span>
                               </span>
                             </a>
                           </div>
                           <div class="ilsam-cert-proof"><iframe src="{{ $c['proof_url'] }}"></iframe></div>
                         @else
-                          <div class="ilsam-muted-sm">No proof uploaded for this certificate.</div>
+                          <div class="ilsam-muted-sm">{{ __('website.cert.proof.none_uploaded') }}</div>
                         @endif
                       </div>
                     </div>
@@ -420,7 +420,7 @@
               </tr>
             @empty
               <tr>
-                <td colspan="9" class="text-center py-4">No certificate data available.</td>
+                <td colspan="9" class="text-center py-4">{{ __('website.cert.empty') }}</td>
               </tr>
             @endforelse
           </tbody>
@@ -431,6 +431,11 @@
 
   <script>
     (function () {
+      const i18n = {
+        showing_all: @json(__('website.cert.meta.showing_all')),
+        showing: @json(__('website.cert.meta.showing', ['visible' => ':visible', 'total' => ':total'])),
+      };
+
       const searchEl = document.getElementById('certSearch');
       const statusEl = document.getElementById('certStatus');
       const supplierEl = document.getElementById('certSupplier');
@@ -506,7 +511,13 @@
 
         const totalCount = rows.length;
         if (!resultsMeta) return;
-        resultsMeta.textContent = `Showing ${visibleCount} of ${totalCount} records.`;
+        if (visibleCount === totalCount && query === '' && status === '' && supplier === '' && type === '' && scope === '' && proof === '') {
+          resultsMeta.textContent = i18n.showing_all;
+          return;
+        }
+        resultsMeta.textContent = i18n.showing
+          .replace(':visible', String(visibleCount))
+          .replace(':total', String(totalCount));
       }
 
       function resetFilters() {

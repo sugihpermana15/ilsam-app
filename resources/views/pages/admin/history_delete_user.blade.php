@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
 @endsection
 @section('content')
+    @php
+        $canRestore = \App\Support\MenuAccess::can(auth()->user(), 'settings_users', 'update');
+    @endphp
     <div id="layout-wrapper">
         <div class="row">
             {{-- SweetAlert2 notification --}}
@@ -94,7 +97,7 @@
                                                     style="display:inline-block" class="form-restore-user">
                                                     @csrf
                                                     <button type="button"
-                                                        class="btn btn-sm btn-success btn-restore-user">Restore</button>
+                                                        class="btn btn-sm btn-success btn-restore-user" {{ $canRestore ? '' : 'disabled' }} title="{{ $canRestore ? '' : 'Tidak punya akses restore' }}">Restore</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -143,6 +146,7 @@
 
             // SweetAlert2 for restore confirmation
             $(document).on('click', '.btn-restore-user', function (e) {
+                if ($(this).is(':disabled')) return;
                 e.preventDefault();
                 var form = $(this).closest('form');
                 Swal.fire({

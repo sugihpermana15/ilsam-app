@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Out Asset Jababeka | IGI')
+@section('title', __('assets.transfer.title') . ' | IGI')
 
-@section('title-sub', ' Dashboard Asset Management ')
-@section('pagetitle', 'Out Asset Jababeka')
+@section('title-sub', __('assets.transfer.title_sub'))
+@section('pagetitle', __('assets.transfer.title'))
 @section('css')
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -13,6 +13,11 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" />
 @endsection
 @section('content')
+
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'assets_transfer', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'assets_transfer', 'update');
+  @endphp
 
   <!--begin::App-->
   <div id="layout-wrapper">
@@ -24,7 +29,7 @@
           @if(session('success'))
             Swal.fire({
               icon: 'success',
-              title: 'Success',
+              title: @json(__('common.success')),
               text: @json(session('success')),
               timer: 2000,
               showConfirmButton: false
@@ -33,29 +38,29 @@
           @if(session('error'))
             Swal.fire({
               icon: 'error',
-              title: 'Error',
+              title: @json(__('common.error')),
               text: @json(session('error')),
               timer: 2500,
               showConfirmButton: false
             });
           @endif
-                                        });
+        });
       </script>
       <div class="col-12">
         <div class="card">
           <!--start::card-->
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Out Asset Jababeka</h5>
+            <h5 class="card-title mb-0">{{ __('assets.transfer.title') }}</h5>
             <div class="d-flex gap-2">
               <form id="form-cancel-transfer" method="POST" action="{{ route('admin.assets.transfer.cancel') }}" style="display:inline-block;">
                 @csrf
                 <input type="hidden" name="selected_transfer_ids" id="selected-transfer-ids" value="">
-                <button type="submit" class="btn btn-danger" id="btn-cancel-transfer">
-                  <i class="fas fa-undo"></i> Batalkan
+                <button type="submit" class="btn btn-danger" id="btn-cancel-transfer" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : __('assets.actions.no_access_update') }}">
+                  <i class="fas fa-undo"></i> {{ __('assets.transfer.cancel') }}
                 </button>
               </form>
-              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-cari-asset">
-                <i class="fas fa-search"></i> Cari Asset
+              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-cari-asset" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('assets.actions.no_access_create') }}">
+                <i class="fas fa-search"></i> {{ __('assets.transfer.search_asset') }}
               </button>
             </div>
           </div>
@@ -66,21 +71,21 @@
               <thead>
                 <tr>
                   <th><input type="checkbox" id="select-all-transfer"></th>
-                  <th>No</th>
-                  <th>Asset Code</th>
-                  <th>Asset Name</th>
-                  <th>Category</th>
-                  <th>Location</th>
-                  <th>Person In Charge</th>
-                  <th>Purchase Date</th>
-                  <th>Price</th>
-                  <th>Condition</th>
-                  <th>Ownership Status</th>
-                  <th>Status Asset</th>
-                  <th>Status Transfer</th>
-                  <th>Description</th>
-                  <th>Last Updated</th>
-                  <th>Transferred At</th>
+                  <th>{{ __('assets.transfer.table.no') }}</th>
+                  <th>{{ __('assets.transfer.table.asset_code') }}</th>
+                  <th>{{ __('assets.transfer.table.asset_name') }}</th>
+                  <th>{{ __('assets.transfer.table.category') }}</th>
+                  <th>{{ __('assets.transfer.table.location') }}</th>
+                  <th>{{ __('assets.transfer.table.pic') }}</th>
+                  <th>{{ __('assets.transfer.table.purchase_date') }}</th>
+                  <th>{{ __('assets.transfer.table.price') }}</th>
+                  <th>{{ __('assets.transfer.table.condition') }}</th>
+                  <th>{{ __('assets.transfer.table.ownership_status') }}</th>
+                  <th>{{ __('assets.transfer.table.asset_status') }}</th>
+                  <th>{{ __('assets.transfer.table.transfer_status') }}</th>
+                  <th>{{ __('assets.transfer.table.description') }}</th>
+                  <th>{{ __('assets.transfer.table.last_updated') }}</th>
+                  <th>{{ __('assets.transfer.table.transferred_at') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -96,7 +101,7 @@
                       };
                     @endphp
                     <tr>
-                      <td><input type="checkbox" class="select-transfer" value="{{ $asset->id }}" {{ $isCancellable ? '' : 'disabled' }}></td>
+                      <td><input type="checkbox" class="select-transfer" value="{{ $asset->id }}" {{ ($isCancellable && $canUpdate) ? '' : 'disabled' }}></td>
                       <td>{{ $loop->iteration }}</td>
                       <td>{{ $asset->asset_code }}</td>
                       <td>{{ $asset->asset_name }}</td>
@@ -151,36 +156,46 @@
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="modal-cari-asset-label">Cari Asset</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="modal-cari-asset-label">{{ __('assets.transfer.modal_title') }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ __('common.close') }}"></button>
         </div>
         <div class="modal-body">
           @if($assets->isEmpty())
-            <div class="text-center text-muted mb-3">Tidak ada asset tersedia.</div>
+            <div class="text-center text-muted mb-3">{{ __('assets.transfer.no_assets_available') }}</div>
           @endif
           <table id="alternative-pagination-modal" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
+                          $statusKey = strtolower((string) $status);
+                          $statusLabel = \Illuminate\Support\Facades\Lang::has("assets.options.asset_status.$statusKey")
+                            ? __("assets.options.asset_status.$statusKey")
+                            : $status;
               <tr>
-                <th><input type="checkbox" id="select-all-modal"></th>
-                <th>No</th>
-                <th>Asset Code</th>
-                <th>Asset Name</th>
-                <th>Category</th>
-                <th>Location</th>
-                <th>Person In Charge</th>
-                <th>Purchase Date</th>
-                <th>Price</th>
-                <th>Condition</th>
-                <th>Ownership Status</th>
-                <th>Status</th>
-                <th>Description</th>
-                <th>Last Updated</th>
+                <th><input type="checkbox" id="select-all-modal" {{ $canCreate ? '' : 'disabled' }}></th>
+                <th>{{ __('assets.transfer.table.no') }}</th>
+                <th>{{ __('assets.transfer.table.asset_code') }}</th>
+                <th>{{ __('assets.transfer.table.asset_name') }}</th>
+                <th>{{ __('assets.transfer.table.category') }}</th>
+                <th>{{ __('assets.transfer.table.location') }}</th>
+                <th>{{ __('assets.transfer.table.pic') }}</th>
+                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
+                <th>{{ __('assets.transfer.table.price') }}</th>
+                <th>{{ __('assets.transfer.table.condition') }}</th>
+                        @php
+                          $transferKey = strtolower((string) $transferStatus);
+                          $transferLabel = \Illuminate\Support\Facades\Lang::has("assets.transfer.status.$transferKey")
+                            ? __("assets.transfer.status.$transferKey")
+                            : $transferStatus;
+                        @endphp
+                        <span class="badge {{ $transferBadge }}">{{ $transferLabel }}</span>
+                <th>{{ __('assets.transfer.table.asset_status') }}</th>
+                <th>{{ __('assets.transfer.table.description') }}</th>
+                <th>{{ __('assets.transfer.table.last_updated') }}</th>
               </tr>
             </thead>
             <tbody>
               @foreach($assets as $a)
                 <tr>
-                  <td><input type="checkbox" class="select-asset-modal" value="{{ $a->id }}"></td>
+                  <td><input type="checkbox" class="select-asset-modal" value="{{ $a->id }}" {{ $canCreate ? '' : 'disabled' }}></td>
                   <td>{{ $loop->iteration }}</td>
                   <td>{{ $a->asset_code }}</td>
                   <td>{{ $a->asset_name }}</td>
@@ -200,6 +215,10 @@
                   <td>
                     @php
                       $status = $a->asset_status;
+                      $statusKey = strtolower((string) $status);
+                      $statusLabel = \Illuminate\Support\Facades\Lang::has("assets.options.asset_status.$statusKey")
+                        ? __("assets.options.asset_status.$statusKey")
+                        : $status;
                       $badgeClass = match($status) {
                         'Active' => 'bg-success-subtle text-success',
                         'Inactive' => 'bg-secondary-subtle text-secondary',
@@ -208,7 +227,7 @@
                         default => 'bg-light-subtle text-body',
                       };
                     @endphp
-                    <span class="badge {{ $badgeClass }}">{{ $status }}</span>
+                    <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                   </td>
                   <td>{{ $a->description }}</td>
                   <td>{{ $a->last_updated ? \Carbon\Carbon::parse($a->last_updated)->format('d-m-Y H:i') : '-' }}</td>
@@ -222,9 +241,9 @@
           <form id="form-save-transfer" method="POST" action="{{ route('admin.assets.transfer.save') }}" class="d-flex w-100 justify-content-end gap-2">
             @csrf
             <input type="hidden" name="selected_ids" id="selected-ids-modal" value="">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
-            <button type="submit" class="btn btn-primary" id="btn-save-transfer">
-              <i class="fas fa-save"></i> Save
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('common.close') }}</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-transfer" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('assets.actions.no_access_create') }}">
+              <i class="fas fa-save"></i> {{ __('assets.transfer.save') }}
             </button>
           </form>
         </div>
@@ -278,7 +297,7 @@
         var selected = $('.select-transfer:checked').map(function() { return this.value; }).get();
         if (selected.length === 0) {
           e.preventDefault();
-          Swal.fire({ icon: 'warning', title: 'No data selected', text: 'Pilih minimal 1 asset untuk dibatalkan.' });
+          Swal.fire({ icon: 'warning', title: @json(__('assets.transfer.alerts.no_data_selected_title')), text: @json(__('assets.transfer.alerts.select_at_least_one_to_cancel')) });
           return false;
         }
 
@@ -286,12 +305,12 @@
         $('#selected-transfer-ids').val(selected.join(','));
         var form = this;
         Swal.fire({
-          title: 'Batalkan pengajuan?',
-          text: 'Asset akan dikembalikan ke daftar asset.',
+          title: @json(__('assets.transfer.alerts.cancel_request_title')),
+          text: @json(__('assets.transfer.alerts.cancel_request_text')),
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'OK',
-          cancelButtonText: 'Cancel'
+          confirmButtonText: @json(__('common.ok')),
+          cancelButtonText: @json(__('common.cancel'))
         }).then((result) => {
           if (result.isConfirmed) {
             form.submit();
@@ -326,8 +345,8 @@
               "<'table-responsive'tr>" +
               "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
             language: {
-              search: 'Search : ',
-              searchPlaceholder: 'Type to filter...'
+              search: @json(__('assets.transfer.datatable.search_label')),
+              searchPlaceholder: @json(__('common.search_placeholder'))
             }
           });
         }
@@ -338,7 +357,7 @@
         var selected = $('.select-asset-modal:checked').map(function() { return this.value; }).get();
         if (selected.length === 0) {
           e.preventDefault();
-          Swal.fire({ icon: 'warning', title: 'No asset selected', text: 'Silakan pilih minimal 1 asset.' });
+          Swal.fire({ icon: 'warning', title: @json(__('assets.transfer.alerts.no_asset_selected_title')), text: @json(__('assets.transfer.alerts.select_at_least_one_asset')) });
           return false;
         }
         $('#selected-ids-modal').val(selected.join(','));
@@ -352,14 +371,14 @@
       e.preventDefault();
       var form = $(this).closest('form');
       Swal.fire({
-        title: 'Are you sure?',
-        text: "This action cannot be undone!",
+        title: @json(__('assets.transfer.alerts.delete_confirm_title')),
+        text: @json(__('assets.transfer.alerts.delete_confirm_text')),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel'
+        confirmButtonText: @json(__('common.ok')),
+        cancelButtonText: @json(__('common.cancel'))
       }).then((result) => {
         if (result.isConfirmed) {
           form.submit();

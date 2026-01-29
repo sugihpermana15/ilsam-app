@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Master Warna Seragam | IGI')
+@section('title', __('master_data.uniform_colors.page_title') . ' | IGI')
 
-@section('title-sub', 'Master Data Warna Seragam')
-@section('pagetitle', 'Master Warna Seragam')
+@section('title-sub', __('master_data.uniform_colors.subtitle'))
+@section('pagetitle', __('master_data.uniform_colors.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -12,15 +12,19 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniform_colors', 'create');
+    $canUpdate = \App\Support\MenuAccess::can(auth()->user(), 'uniform_colors', 'update');
+  @endphp
   <div class="row">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         @if(session('success'))
-          Swal.fire({ icon: 'success', title: 'Berhasil', text: @json(session('success')), timer: 2000, showConfirmButton: false });
+          Swal.fire({ icon: 'success', title: @json(__('common.success')), text: @json(session('success')), timer: 2000, showConfirmButton: false });
         @endif
         @if(session('error'))
-          Swal.fire({ icon: 'error', title: 'Gagal', text: @json(session('error')), timer: 2500, showConfirmButton: false });
+          Swal.fire({ icon: 'error', title: @json(__('common.error')), text: @json(session('error')), timer: 2500, showConfirmButton: false });
         @endif
       });
     </script>
@@ -28,9 +32,9 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Master Warna Seragam</h5>
-          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">
-            <i class="fas fa-plus"></i> Tambah
+          <h5 class="card-title mb-0">{{ __('master_data.uniform_colors.card_title') }}</h5>
+          <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}">
+            <i class="fas fa-plus"></i> {{ __('common.add') }}
           </button>
         </div>
 
@@ -38,10 +42,10 @@
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Nama</th>
-                <th>Status</th>
-                <th>Aksi</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('common.name') }}</th>
+                <th>{{ __('common.status') }}</th>
+                <th>{{ __('common.action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -51,12 +55,12 @@
                   <td>{{ $r->name }}</td>
                   <td>
                     <span class="badge {{ $r->is_active ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary' }}">
-                      {{ $r->is_active ? 'Aktif' : 'Nonaktif' }}
+                      {{ $r->is_active ? __('common.active') : __('common.inactive') }}
                     </span>
                   </td>
                   <td>
                     <div class="d-flex gap-2">
-                      <button type="button" class="btn btn-sm btn-outline-primary js-edit" data-bs-toggle="modal"
+                      <button type="button" class="btn btn-sm btn-outline-primary js-edit" data-bs-toggle="modal" {{ $canUpdate ? '' : 'disabled' }}
                         data-bs-target="#editModal"
                         data-update-url="{{ route('admin.uniform_colors.update', $r->id) }}"
                         data-id="{{ $r->id }}" data-name="{{ $r->name }}" data-active="{{ $r->is_active ? '1' : '0' }}">
@@ -65,7 +69,7 @@
 
                       <form action="{{ route('admin.uniform_colors.toggle', $r->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="btn btn-sm {{ $r->is_active ? 'btn-outline-secondary' : 'btn-outline-success' }}" title="Ubah Status">
+                        <button type="submit" class="btn btn-sm {{ $r->is_active ? 'btn-outline-secondary' : 'btn-outline-success' }}" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? __('common.change_status') : __('common.no_access_update') }}">
                           <i class="fas {{ $r->is_active ? 'fa-ban' : 'fa-check' }}"></i>
                         </button>
                       </form>
@@ -87,7 +91,7 @@
           @csrf
           <input type="hidden" name="modal_context" value="create">
           <div class="modal-header">
-            <h5 class="modal-title">Tambah Warna</h5>
+            <h5 class="modal-title">{{ __('master_data.uniform_colors.add_modal_title') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -101,12 +105,12 @@
               </div>
             @endif
 
-            <label class="form-label">Nama</label>
+            <label class="form-label">{{ __('common.name') }}</label>
             <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-success">Simpan</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('common.cancel') }}</button>
+            <button type="submit" class="btn btn-success">{{ __('common.save') }}</button>
           </div>
         </form>
       </div>
@@ -129,7 +133,7 @@
           <input type="hidden" name="id" id="edit_id" value="{{ old('id', $editRow?->id) }}">
 
           <div class="modal-header">
-            <h5 class="modal-title">Edit Warna</h5>
+            <h5 class="modal-title">{{ __('master_data.uniform_colors.edit_modal_title') }}</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -143,18 +147,18 @@
               </div>
             @endif
 
-            <label class="form-label">Nama</label>
+            <label class="form-label">{{ __('common.name') }}</label>
             <input type="text" name="name" class="form-control" id="edit_name" value="{{ old('name', $editRow?->name) }}" required>
 
             <div class="form-check mt-3">
               <input class="form-check-input" type="checkbox" value="1" id="edit_active" name="is_active"
                 {{ old('is_active', $editRow?->is_active) ? 'checked' : '' }}>
-              <label class="form-check-label" for="edit_active">Aktif</label>
+              <label class="form-check-label" for="edit_active">{{ __('common.active') }}</label>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">Update</button>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('common.cancel') }}</button>
+            <button type="submit" class="btn btn-primary">{{ __('common.update') }}</button>
           </div>
         </form>
       </div>

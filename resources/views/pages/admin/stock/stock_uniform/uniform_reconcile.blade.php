@@ -1,8 +1,8 @@
 @extends('layouts.master')
 
-@section('title', 'Rekonsiliasi Stok Seragam | IGI')
-@section('title-sub', ' Dashboard Rekonsiliasi Stok Seragam ')
-@section('pagetitle', 'Rekonsiliasi Stok Seragam')
+@section('title', __('uniforms.reconcile.page_title'))
+@section('title-sub', __('uniforms.reconcile.title_sub'))
+@section('pagetitle', __('uniforms.reconcile.pagetitle'))
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -11,19 +11,22 @@
 @endsection
 
 @section('content')
+  @php
+    $canCreate = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'create');
+  @endphp
   <div class="row">
     <div class="col-12">
       <div class="card">
         <div
           class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-            <h5 class="card-title mb-0"> Rekonsiliasi current_stock vs Sisa Lot </h5>
+            <h5 class="card-title mb-0">{{ __('uniforms.reconcile.card_title') }}</h5>
           <div class="d-flex gap-2 flex-wrap">
             <a href="{{ route('admin.uniforms.lots') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-layer-group"></i> Lot</a>
+              class="fas fa-layer-group"></i> {{ __('uniforms.nav.lots') }}</a>
             <a href="{{ route('admin.uniforms.adjustments') }}" class="btn btn-outline-primary btn-sm"><i
-              class="fas fa-sliders"></i> Penyesuaian</a>
+              class="fas fa-sliders"></i> {{ __('uniforms.nav.adjustments') }}</a>
             <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm"><i
-              class="fas fa-clock"></i> Riwayat</a>
+              class="fas fa-clock"></i> {{ __('uniforms.nav.history') }}</a>
           </div>
         </div>
         <div class="card-body">
@@ -35,21 +38,20 @@
           @endif
 
           <div class="alert alert-info">
-            <strong>Catatan audit:</strong> halaman ini tidak mengubah stok otomatis. Jika ada selisih, sistem membuat
-            <em>Permintaan Penyesuaian (Menunggu)</em> agar ada jejak persetujuan.
+            <strong>{{ __('uniforms.reconcile.audit_note_title') }}</strong> {{ __('uniforms.reconcile.audit_note_text') }}
           </div>
 
           <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
               <tr>
-                <th>No</th>
-                <th>Item</th>
-                <th>Ukuran</th>
-                <th>Lokasi</th>
-                <th>Stok (cache)</th>
-                <th>Total Sisa Lot</th>
-                <th>Selisih</th>
-                <th>Aksi</th>
+                <th>{{ __('common.no') }}</th>
+                <th>{{ __('common.item') }}</th>
+                <th>{{ __('common.size') }}</th>
+                <th>{{ __('common.location') }}</th>
+                <th>{{ __('uniforms.reconcile.table.stock_cache') }}</th>
+                <th>{{ __('uniforms.reconcile.table.total_lots_remaining') }}</th>
+                <th>{{ __('uniforms.reconcile.table.diff') }}</th>
+                <th>{{ __('common.action') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -73,12 +75,12 @@
                         @csrf
                         <input type="hidden" name="uniform_item_id" value="{{ $item->id }}">
                         <input type="hidden" name="diff" value="{{ $diff }}">
-                        <input type="hidden" name="reason" value="Rekonsiliasi (otomatis) untuk item {{ $item->item_code }}">
+                        <input type="hidden" name="reason" value="{{ __('uniforms.reconcile.auto_reason', ['item_code' => $item->item_code]) }}">
                         <button type="submit" class="btn btn-sm btn-primary"
-                          onclick="return confirm('Buat permintaan penyesuaian untuk selisih {{ $diff }}?')">Buat Permintaan</button>
+                          onclick="return confirm(@json(__('uniforms.reconcile.confirm_create_request', ['diff' => $diff])))" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('common.no_access_create') }}">{{ __('uniforms.reconcile.action_create_request') }}</button>
                       </form>
                     @else
-                      <span class="text-muted">OK</span>
+                      <span class="text-muted">{{ __('common.ok') }}</span>
                     @endif
                   </td>
                 </tr>
