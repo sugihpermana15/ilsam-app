@@ -51,6 +51,7 @@ class AuthController extends Controller
 
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']], $remember)) {
             $request->session()->regenerate();
+            $request->session()->put('login_at', now()->timestamp);
 
             /** @var User|null $user */
             $user = Auth::user();

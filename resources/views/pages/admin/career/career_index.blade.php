@@ -49,13 +49,13 @@
           </div>
           <div class="d-flex gap-2 flex-wrap">
             <a href="{{ route('admin.career_candidates.index') }}" class="btn btn-outline-primary btn-sm">
-              <i class="bi bi-people"></i> Candidates
+              <i class="fas fa-users"></i> Candidates
             </a>
             <a href="{{ url('/career') }}" target="_blank" class="btn btn-outline-secondary btn-sm">
-              <i class="bi bi-box-arrow-up-right"></i> Preview Career Page
+              <i class="fas fa-external-link-alt"></i> Preview Career Page
             </a>
             <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addCareerModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">
-              <i class="bi bi-plus-lg"></i> Add Job Opening
+              <i class="fas fa-plus"></i> Add Job Opening
             </button>
           </div>
         </div>
@@ -89,7 +89,7 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h6 class="mb-0">Job Openings</h6>
           <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#addCareerModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">
-            <i class="bi bi-plus-lg"></i> Add Opening
+            <i class="fas fa-plus"></i> Add Opening
           </button>
         </div>
         <div class="card-body table-responsive">
@@ -153,7 +153,7 @@
                           data-apply-url="{{ $career->apply_url ?? $career['apply_url'] ?? '' }}"
                           data-deadline="{{ $career->deadline instanceof \Carbon\Carbon ? $career->deadline->format('Y-m-d') : ($career['deadline'] ?? '') }}"
                           data-is-active="{{ (int) ($career->is_active ?? $career['is_active'] ?? 1) }}">
-                          <i class="bi bi-pencil"></i>
+                          <i class="fas fa-pencil-alt"></i>
                         </button>
 
                         <form action="{{ $career->delete_url ?? url('/admin/careers/' . ($career->id ?? '')) }}"
@@ -161,7 +161,7 @@
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="btn btn-sm btn-outline-danger" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? '' : 'Tidak punya akses hapus' }}">
-                            <i class="bi bi-trash"></i>
+                            <i class="fas fa-trash-alt"></i>
                           </button>
                         </form>
                       </div>

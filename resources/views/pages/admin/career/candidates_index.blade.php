@@ -28,7 +28,7 @@
           </div>
           <div class="d-flex gap-2 flex-wrap">
             <a href="{{ route('admin.careers.index') }}" class="btn btn-outline-secondary btn-sm">
-              <i class="bi bi-arrow-left"></i> Back to Career Management
+              <i class="fas fa-arrow-left"></i> Back to Career Management
             </a>
           </div>
         </div>
@@ -90,7 +90,7 @@
                     </td>
                     <td>
                       <a class="btn btn-sm btn-outline-primary" href="{{ route('admin.career_candidates.cv', $c) }}">
-                        <i class="bi bi-download"></i> Download
+                        <i class="fas fa-download"></i> Download
                       </a>
                       <div class="text-muted small mt-1">
                         {{ $c->cv_original_name }}

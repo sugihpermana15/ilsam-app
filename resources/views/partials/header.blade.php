@@ -76,7 +76,7 @@
                     <button type="button"
                         class="vertical-toggle btn btn-light-light text-muted icon-btn fs-5 rounded-pill"
                         id="toggleSidebar">
-                        <i class="bi bi-arrow-bar-left header-icon"></i>
+                        <i class="fas fa-bars header-icon"></i>
                     </button>
                     <button type="button"
                         class="horizontal-toggle btn btn-light-light text-muted icon-btn fs-5 rounded-pill d-none"
@@ -93,24 +93,104 @@
             <div class="shrink-0 d-flex align-items-center gap-2">
                 <button type="button" class="btn header-btn d-none d-md-block" data-bs-toggle="modal"
                     data-bs-target="#exampleModal" data-bs-whatever="@mdo">
-                    <i class="bi bi-search"></i>
+                    <i class="fas fa-search"></i>
                 </button>
                 {{-- <button class="btn header-btn d-none d-md-block" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
-                    <i class="bi bi-gear"></i>
+                    <i class="fas fa-cog"></i>
                 </button> --}}
                 <div class="dark-mode-btn" id="toggleMode">
                     <button class="btn header-btn active" id="lightModeBtn">
-                        <i class="bi bi-brightness-high"></i>
+                        <i class="fas fa-sun"></i>
                     </button>
                     <button class="btn header-btn" id="darkModeBtn">
-                        <i class="bi bi-moon-stars"></i>
+                        <i class="fas fa-moon"></i>
                     </button>
+                </div>
+
+                <!-- Mobile: combine Profile + Language into one dropdown (md down) -->
+                <div class="dropdown d-md-none">
+                    <button class="header-profile-btn btn gap-1 text-start" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false" aria-label="Profile">
+                        <span class="header-btn btn position-relative">
+                            @if(auth()->check())
+                                <img src="{{ Avatar::create(auth()->user()->name ?? auth()->user()->username ?? 'User')->toBase64() }}"
+                                    alt="Avatar Image" class="img-fluid rounded-circle">
+                                <span
+                                    class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
+                                        class="visually-hidden">online</span></span>
+                            @else
+                                <img src="{{ asset('assets/img/users/avatar-10.jpg') }}" alt="Avatar Image"
+                                    class="img-fluid rounded-circle">
+                                <span
+                                    class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
+                                        class="visually-hidden">online</span></span>
+                            @endif
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end header-dropdown-menu p-0" style="min-width: 260px;">
+                        <div class="p-3 border-bottom">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="shrink-0">
+                                    @if(auth()->check())
+                                        <img src="{{ Avatar::create(auth()->user()->name ?? auth()->user()->username ?? 'User')->toBase64() }}"
+                                            alt="Avatar Image" class="avatar-md">
+                                    @else
+                                        <img src="{{ asset('assets/img/avatar/avatar-10.jpg') }}" alt="Avatar Image"
+                                            class="avatar-md">
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    @if(auth()->check())
+                                        <div class="fw-semibold text-truncate">{{ auth()->user()->name ?? auth()->user()->username }}</div>
+                                        <div class="small text-muted text-truncate">{{ auth()->user()->email }}</div>
+                                    @else
+                                        <div class="fw-semibold">Guest</div>
+                                        <div class="small text-muted">Guest</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2 border-bottom">
+                            @if(auth()->check())
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}
+                                    </button>
+                                </form>
+                            @else
+                                <a class="dropdown-item" href="{{ route('auth') }}">
+                                    <i class="fas fa-sign-in-alt me-1"></i>
+                                    {{ __('auth.login') === 'auth.login' ? 'Login' : __('auth.login') }}
+                                </a>
+                            @endif
+                        </div>
+
+                        <div class="p-3 border-bottom">
+                            <h6 class="mb-0">{{ __('settings.choose_language') }}</h6>
+                        </div>
+                        <div class="p-2">
+                            @foreach($languageOptions as $code => $label)
+                                <form action="{{ route('language.update') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="locale" value="{{ $code }}">
+                                    <button type="submit" class="dropdown-item d-flex align-items-center justify-content-between">
+                                        <span>{{ $label }}</span>
+                                        @if($currentLocale === $code)
+                                            <i class="fas fa-check"></i>
+                                        @endif
+                                    </button>
+                                </form>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
                 <div class="dropdown pe-dropdown-mega d-none d-md-block">
                     <button class="btn header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-translate"></i>
+                        <i class="fas fa-language"></i>
                     </button>
                     <div class="dropdown-menu dropdown-mega-md header-dropdown-menu p-0" style="min-width: 220px;">
                         <div class="p-3 border-bottom">
@@ -124,7 +204,7 @@
                                     <button type="submit" class="dropdown-item d-flex align-items-center justify-content-between">
                                         <span>{{ $label }}</span>
                                         @if($currentLocale === $code)
-                                            <i class="bi bi-check2"></i>
+                                            <i class="fas fa-check"></i>
                                         @endif
                                     </button>
                                 </form>
@@ -135,7 +215,7 @@
 
                 <div class="dropdown pe-dropdown-mega d-none d-md-block">
                     <button class="btn header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-bell"></i>
+                        <i class="fas fa-bell"></i>
                     </button>
                     <div class="dropdown-menu dropdown-mega-md header-dropdown-menu pe-noti-dropdown-menu p-0">
                         <div class="p-3 border-bottom">
@@ -259,7 +339,7 @@
                             @endif
                         </div>
                         {{-- <ul class="list-unstyled mb-1 border-bottom pb-1">
-                            <li><a class="dropdown-item" href="javascript:void(0)"><i class="bi bi-person me-1"></i>
+                            <li><a class="dropdown-item" href="javascript:void(0)"><i class="fas fa-user me-1"></i>
                                     View Profile</a></li>
                         </ul> --}}
                         <ul class="list-unstyled mb-0">
@@ -268,11 +348,11 @@
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="dropdown-item"><i
-                                                class="bi bi-box-arrow-right me-1"></i> {{ __('auth.logout') }}</button>
+                                                    class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}</button>
                                     </form>
                                 </li>
                             @else
-                                <li><a class="dropdown-item" href=""><i class="bi bi-box-arrow-right me-1"></i> {{ __('auth.logout') }}</a>
+                                    <li><a class="dropdown-item" href=""><i class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}</a>
                                 </li>
                             @endif
                         </ul>
@@ -330,7 +410,7 @@
         <div class="modal-content border-0 bg-transparent">
             <div class="d-flex justify-content-between align-items-center bg-body">
                 <div class="d-flex align-items-center border-0 px-3">
-                    <i class="bi bi-search me-2"></i>
+                    <i class="fas fa-search me-2"></i>
                     <input class="d-flex w-full py-3 bg-transparent border-0 focus-ring" placeholder="{{ __('common.search_here') }}"
                         autocomplete="off" autocorrect="off" spellcheck="false" aria-autocomplete="list" role="combobox"
                         aria-expanded="true" type="text">

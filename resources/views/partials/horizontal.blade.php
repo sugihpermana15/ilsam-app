@@ -30,7 +30,7 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapseDashboards" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapseDashboards">
-                    <i class="bi bi-speedometer2 pe-nav-icon"></i>
+                    <i class="fas fa-gauge-high pe-nav-icon"></i>
                     <span class="pe-nav-content">Dashboards</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
@@ -73,33 +73,33 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapseApplications" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapseApplications">
-                    <i class="bi bi-window-stack pe-nav-icon"></i>
+                    <i class="fas fa-layer-group pe-nav-icon"></i>
                     <span class="pe-nav-content">Applications</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
                 <ul class="pe-slide-menu collapse" id="collapseApplications">
                     <li class="pe-slide pe-has-sub">
                         <a href="apps-calendar" class="pe-nav-link">
-                            <i class="bi bi-calendar-week pe-nav-icon"></i>
+                            <i class="fas fa-calendar-week pe-nav-icon"></i>
                             <span class="pe-nav-content">Calendar</span>
                         </a>
                     </li>
                     <li class="pe-slide pe-has-sub">
                         <a href="apps-chat" class="pe-nav-link">
-                            <i class="bi bi-chat-square-text pe-nav-icon"></i>
+                            <i class="fas fa-comments pe-nav-icon"></i>
                             <span class="pe-nav-content">Chat</span>
                         </a>
                     </li>
                     <li class="pe-slide pe-has-sub">
                         <a href="apps-email" class="pe-nav-link">
-                            <i class="bi bi-envelope-at pe-nav-icon"></i>
+                            <i class="fas fa-envelope pe-nav-icon"></i>
                             <span class="pe-nav-content">Email</span>
                         </a>
                     </li>
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseEcommerce" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseEcommerce">
-                            <i class="bi bi-cart4 pe-nav-icon"></i>
+                            <i class="fas fa-shopping-cart pe-nav-icon"></i>
                             <span class="pe-nav-content">E-Commerce</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -157,7 +157,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseAcademy" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseAcademy">
-                            <i class="bi bi-mortarboard pe-nav-icon"></i>
+                            <i class="fas fa-graduation-cap pe-nav-icon"></i>
                             <span class="pe-nav-content">Academy</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -200,7 +200,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseCMS" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseCMS">
-                            <i class="bi bi-book pe-nav-icon"></i>
+                            <i class="fas fa-book pe-nav-icon"></i>
                             <span class="pe-nav-content">CMS</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -233,7 +233,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseLogistics" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseLogistics">
-                            <i class="bi bi-truck pe-nav-icon"></i>
+                            <i class="fas fa-truck pe-nav-icon"></i>
                             <span class="pe-nav-content">Logistics</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -261,7 +261,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseCRM" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseCRM">
-                            <i class="bi bi-binoculars pe-nav-icon"></i>
+                            <i class="fas fa-binoculars pe-nav-icon"></i>
                             <span class="pe-nav-content">CRM</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -289,7 +289,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseProjects" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseProjects">
-                            <i class="bi bi-cast pe-nav-icon"></i>
+                            <i class="fas fa-broadcast-tower pe-nav-icon"></i>
                             <span class="pe-nav-content">Projects</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -317,7 +317,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseInvoices" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseInvoices">
-                            <i class="bi bi-receipt pe-nav-icon"></i>
+                            <i class="fas fa-receipt pe-nav-icon"></i>
                             <span class="pe-nav-content">Invoices</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -350,7 +350,7 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapsePages" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapsePages">
-                    <i class="bi bi-airplane pe-nav-icon"></i>
+                    <i class="fas fa-plane pe-nav-icon"></i>
                     <span class="pe-nav-content">Pages</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
@@ -462,7 +462,7 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapseAuth" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapseAuth">
-                    <i class="bi bi-person pe-nav-icon"></i>
+                    <i class="fas fa-user pe-nav-icon"></i>
                     <span class="pe-nav-content">Authentication</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
@@ -515,7 +515,7 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapseError" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapseError">
-                    <i class="bi bi-bug pe-nav-icon"></i>
+                    <i class="fas fa-bug pe-nav-icon"></i>
                     <span class="pe-nav-content">Error</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
@@ -548,7 +548,7 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapseBaseUI" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapseBaseUI">
-                    <i class="bi bi-feather2 pe-nav-icon"></i>
+                    <i class="fas fa-feather-alt pe-nav-icon"></i>
                     <span class="pe-nav-content">Base UI</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
@@ -643,7 +643,7 @@
             <li class="pe-slide pe-has-sub">
                 <a href="#collapseMore" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                     aria-controls="collapseMore">
-                    <i class="bi bi-bag-plus pe-nav-icon"></i>
+                    <i class="fas fa-shopping-bag pe-nav-icon"></i>
                     <span class="pe-nav-content">More</span>
                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                 </a>
@@ -651,7 +651,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseAdvancedUI" class="pe-nav-link" data-bs-toggle="collapse"
                             aria-expanded="false" aria-controls="collapseAdvancedUI">
-                            <i class="bi bi-feather pe-nav-icon"></i>
+                            <i class="fas fa-feather-alt pe-nav-icon"></i>
                             <span class="pe-nav-content">Advanced UI</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -700,7 +700,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseFroms" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseFroms">
-                            <i class="bi bi-input-cursor-text pe-nav-icon"></i>
+                            <i class="fas fa-i-cursor pe-nav-icon"></i>
                             <span class="pe-nav-content">Forms</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -771,7 +771,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseTables" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseTables">
-                            <i class="bi bi-table pe-nav-icon"></i>
+                            <i class="fas fa-table pe-nav-icon"></i>
                             <span class="pe-nav-content">Tables</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -804,7 +804,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseCharts" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseCharts">
-                            <i class="bi bi-bar-chart pe-nav-icon"></i>
+                            <i class="fas fa-chart-bar pe-nav-icon"></i>
                             <span class="pe-nav-content">Charts</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -835,7 +835,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseIcons" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseIcons">
-                            <i class="bi bi-recycle pe-nav-icon"></i>
+                            <i class="fas fa-recycle pe-nav-icon"></i>
                             <span class="pe-nav-content">Icons</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -858,7 +858,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseMaps" class="pe-nav-link" data-bs-toggle="collapse" aria-expanded="false"
                             aria-controls="collapseMaps">
-                            <i class="bi bi-map pe-nav-icon"></i>
+                            <i class="fas fa-map pe-nav-icon"></i>
                             <span class="pe-nav-content">Maps</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>
@@ -889,7 +889,7 @@
                     <li class="pe-slide pe-has-sub">
                         <a href="#collapseMenuLavels" class="pe-nav-link" data-bs-toggle="collapse"
                             aria-expanded="false" aria-controls="collapseMenuLavels">
-                            <i class="bi bi-diagram-3 pe-nav-icon"></i>
+                            <i class="fas fa-project-diagram pe-nav-icon"></i>
                             <span class="pe-nav-content">Menu levels</span>
                             <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                         </a>

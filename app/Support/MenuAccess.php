@@ -108,6 +108,9 @@ final class MenuAccess
                 'assets' => self::none(),
                 'uniforms' => self::none(),
 
+                // Devices
+                'devices' => self::none(),
+
                 // Assets submenus
                 'assets_data' => self::none(),
                 'assets_jababeka' => self::none(),
@@ -164,6 +167,9 @@ final class MenuAccess
             // Groups
             'assets' => self::all(),
             'uniforms' => self::all(),
+
+            // Devices
+            'devices' => self::all(),
 
             // Assets submenus
             'assets_data' => self::all(),

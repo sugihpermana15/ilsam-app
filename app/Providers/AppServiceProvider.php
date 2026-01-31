@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,6 +24,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        RateLimiter::for('vault-reveal', function (Request $request) {
+            $userId = $request->user()?->id;
+            $key = 'vault-reveal:' . ($userId ? ('u:' . $userId) : ('ip:' . $request->ip()));
+
+            return [
+                Limit::perMinute(3)->by($key),
+                Limit::perHour(15)->by($key),
+            ];
+        });
+
         if (! $this->app->runningInConsole()) {
             return;
         }

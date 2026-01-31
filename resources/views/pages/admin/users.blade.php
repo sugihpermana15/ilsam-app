@@ -283,7 +283,7 @@
                                                         name="password" required>
                                                     <button class="btn btn-primary" type="button" tabindex="-1"
                                                         onclick="togglePassword()">
-                                                        <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                                                        <i class="fas fa-eye-slash" id="togglePasswordIcon"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -384,9 +384,9 @@
                                                         <div class="sticky-right">
                                                             <span class="sticky-title">Actions</span>
                                                             <span class="sticky-icons">
-                                                                <i class="bi bi-plus-lg" title="Add" aria-hidden="true"></i>
-                                                                <i class="bi bi-pencil" title="Edit" aria-hidden="true"></i>
-                                                                <i class="bi bi-trash" title="Delete" aria-hidden="true"></i>
+                                                                <i class="fas fa-plus" title="Add" aria-hidden="true"></i>
+                                                                <i class="fas fa-pencil-alt" title="Edit" aria-hidden="true"></i>
+                                                                <i class="fas fa-trash-alt" title="Delete" aria-hidden="true"></i>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -808,7 +808,7 @@
                                                         name="password" placeholder="Leave blank to keep current password">
                                                     <button class="btn btn-primary" type="button" tabindex="-1"
                                                         onclick="toggleEditPassword()">
-                                                        <i class="bi bi-eye-slash" id="toggleEditPasswordIcon"></i>
+                                                        <i class="fas fa-eye-slash" id="toggleEditPasswordIcon"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -909,9 +909,9 @@
                                                         <div class="sticky-right">
                                                             <span class="sticky-title">Actions</span>
                                                             <span class="sticky-icons">
-                                                                <i class="bi bi-plus-lg" title="Add" aria-hidden="true"></i>
-                                                                <i class="bi bi-pencil" title="Edit" aria-hidden="true"></i>
-                                                                <i class="bi bi-trash" title="Delete" aria-hidden="true"></i>
+                                                                <i class="fas fa-plus" title="Add" aria-hidden="true"></i>
+                                                                <i class="fas fa-pencil-alt" title="Edit" aria-hidden="true"></i>
+                                                                <i class="fas fa-trash-alt" title="Delete" aria-hidden="true"></i>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -1886,15 +1886,15 @@
                         '<div class="btn-group btn-group-sm" role="group">' +
                         '<input class="btn-check" type="checkbox" id="' + createId + '" name="menu_' + key + '_create" value="1">' +
                         '<label class="btn btn-outline-secondary" for="' + createId + '" title="Add (boleh tambah data)">' +
-                        '<i class="bi bi-plus-lg" aria-hidden="true"></i>' +
+                        '<i class="fas fa-plus" aria-hidden="true"></i>' +
                         '</label>' +
                         '<input class="btn-check" type="checkbox" id="' + updateId + '" name="menu_' + key + '_update" value="1">' +
                         '<label class="btn btn-outline-secondary" for="' + updateId + '" title="Edit (boleh ubah data)">' +
-                        '<i class="bi bi-pencil" aria-hidden="true"></i>' +
+                        '<i class="fas fa-pencil-alt" aria-hidden="true"></i>' +
                         '</label>' +
                         '<input class="btn-check" type="checkbox" id="' + deleteId + '" name="menu_' + key + '_delete" value="1">' +
                         '<label class="btn btn-outline-secondary" for="' + deleteId + '" title="Delete (boleh hapus data)">' +
-                        '<i class="bi bi-trash" aria-hidden="true"></i>' +
+                        '<i class="fas fa-trash-alt" aria-hidden="true"></i>' +
                         '</label>' +
                         '</div>' +
                         '</div>'
@@ -2191,12 +2191,12 @@
                 const icon = document.getElementById('togglePasswordIcon');
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    icon.classList.remove('bi-eye-slash');
-                    icon.classList.add('bi-eye');
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
                 } else {
                     passwordInput.type = 'password';
-                    icon.classList.remove('bi-eye');
-                    icon.classList.add('bi-eye-slash');
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
                 }
             }
             // Toggle password visibility for Edit User Modal
@@ -2205,12 +2205,12 @@
                 const icon = document.getElementById('toggleEditPasswordIcon');
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    icon.classList.remove('bi-eye-slash');
-                    icon.classList.add('bi-eye');
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
                 } else {
                     passwordInput.type = 'password';
-                    icon.classList.remove('bi-eye');
-                    icon.classList.add('bi-eye-slash');
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
                 }
             }
         </script>

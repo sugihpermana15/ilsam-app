@@ -16,6 +16,10 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "@popperjs/core": "^2.11.8"
+        "@popperjs/core": "^2.11.8",
+        "bootstrap": "^5.3.3",
+        "lucide": "^0.507.0",
+        "prismjs": "^1.29.0",
+        "simplebar": "^6.2.7"
     }
 }

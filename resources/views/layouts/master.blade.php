@@ -13,9 +13,12 @@
 
 <!-- App favicon -->
 <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}">
+@include('partials.head-css')
 
 @yield('css')
-@include('partials.head-css')
+
+<!-- Font Awesome (global) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 <body>
 

@@ -44,7 +44,7 @@
     aria-expanded="false"
   >
     <span class="lang-dropdown__icon" aria-hidden="true">
-      <i class="bi bi-translate"></i>
+      <i class="fas fa-language"></i>
     </span>
 
     <span class="lang-dropdown__flag" aria-hidden="true">
@@ -76,7 +76,7 @@
     </span>
 
     <span class="lang-dropdown__label" aria-hidden="true">{{ $label }}</span>
-    <span class="lang-dropdown__chevron" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+    <span class="lang-dropdown__chevron" aria-hidden="true"><i class="fas fa-chevron-down"></i></span>
 
     <span class="visually-hidden">{{ $name }}</span>
   </button>

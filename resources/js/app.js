@@ -1,8 +1,8 @@
-
-
 import bootstrap from 'bootstrap/dist/js/bootstrap.min';
+import { createIcons } from 'lucide';
 
 window.bootstrap = bootstrap;
+window.lucide = { createIcons };
 
 import 'simplebar'
 import 'prismjs/prism'
@@ -20,7 +20,7 @@ try {
 
 try {
     // Icon
-    lucide.createIcons();
+    createIcons();
 } catch (err) { }
 
 
