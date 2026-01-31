@@ -96,6 +96,11 @@ $(function () {
         $("#alternative-pagination").length &&
         !$.fn.dataTable.isDataTable("#alternative-pagination")
     ) {
+        // Some pages use a custom server-side DataTables init.
+        // Opt-out by adding data-dt-server="1" on the table element.
+        if ($("#alternative-pagination").attr("data-dt-server") === "1") {
+            return;
+        }
         $("#alternative-pagination").DataTable({
             pagingType: "full_numbers",
             searching: true,

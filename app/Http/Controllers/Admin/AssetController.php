@@ -360,6 +360,26 @@ class AssetController extends Controller
     $departments = Department::query()->orderBy('name')->get();
     $employees = Employee::query()->orderBy('name')->get();
 
+    // Data table is loaded via server-side DataTables (AJAX)
+    return view('pages.admin.asset.asset_pt', compact('assetCategories', 'assetLocations', 'assetUoms', 'assetVendors', 'departments', 'employees'));
+  }
+
+  public function datatable(Request $request)
+  {
+    $draw = (int) $request->input('draw', 0);
+    $start = max(0, (int) $request->input('start', 0));
+    $length = (int) $request->input('length', 10);
+    $length = $length < 0 ? 200 : $length;
+    $length = max(1, min($length, 200));
+
+    $location = $request->input('location');
+    $filterLocation = trim((string) $request->input('f_location', ''));
+    $filterCategory = trim((string) $request->input('f_category', ''));
+    $filterStatus = trim((string) $request->input('f_status', ''));
+    $filterCondition = trim((string) $request->input('f_condition', ''));
+    $filterPicEmployeeId = (int) $request->input('f_pic_employee_id', 0);
+    $search = trim((string) data_get($request->all(), 'search.value', ''));
+
     $activeTransferIds = TransferAsset::query()
       ->whereNull('cancelled_at')
       ->whereNull('received_at')
@@ -367,13 +387,120 @@ class AssetController extends Controller
       ->filter()
       ->all();
 
-    $assets = Asset::query()
+    $query = Asset::query()
+      // Keep support for legacy location filter via URL/query param
       ->when(!empty($location), fn($q) => $q->where('asset_location', $location))
-      ->when(!empty($activeTransferIds), fn($q) => $q->whereNotIn('id', $activeTransferIds))
-      ->orderByDesc('id')
-      ->paginate(10)
-      ->withQueryString();
-    return view('pages.admin.asset.asset_pt', compact('assets', 'assetCategories', 'assetLocations', 'assetUoms', 'assetVendors', 'departments', 'employees'));
+      // Optional server-side filters from UI
+      ->when($filterLocation !== '', fn($q) => $q->where('asset_location', $filterLocation))
+      ->when($filterCategory !== '', fn($q) => $q->where('asset_category', $filterCategory))
+      ->when($filterStatus !== '', fn($q) => $q->where('asset_status', $filterStatus))
+      ->when($filterCondition !== '', fn($q) => $q->where('asset_condition', $filterCondition))
+      ->when($filterPicEmployeeId > 0, fn($q) => $q->where('person_in_charge_employee_id', $filterPicEmployeeId))
+      ->when(!empty($activeTransferIds), fn($q) => $q->whereNotIn('id', $activeTransferIds));
+
+    $recordsTotal = (clone $query)->count();
+
+    if ($search !== '') {
+      $query->where(function ($q) use ($search) {
+        $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $search) . '%';
+        $q->where('asset_code', 'like', $like)
+          ->orWhere('asset_name', 'like', $like)
+          ->orWhere('serial_number', 'like', $like)
+          ->orWhere('asset_category', 'like', $like)
+          ->orWhere('asset_location', 'like', $like)
+          ->orWhere('person_in_charge', 'like', $like)
+          ->orWhere('ownership_status', 'like', $like)
+          ->orWhere('asset_status', 'like', $like)
+          ->orWhere('description', 'like', $like);
+      });
+    }
+
+    $recordsFiltered = (clone $query)->count();
+
+    $orderColumnIndex = (int) data_get($request->all(), 'order.0.column', -1);
+    $orderDir = strtolower((string) data_get($request->all(), 'order.0.dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+    $orderDataKey = (string) data_get($request->all(), "columns.$orderColumnIndex.data", '');
+
+    $sortable = [
+      'id' => 'id',
+      'asset_code' => 'asset_code',
+      'asset_name' => 'asset_name',
+      'serial_number' => 'serial_number',
+      'asset_category' => 'asset_category',
+      'asset_location' => 'asset_location',
+      'person_in_charge' => 'person_in_charge',
+      'purchase_date' => 'purchase_date',
+      'price' => 'price',
+      'qty' => 'qty',
+      'satuan' => 'satuan',
+      'asset_condition' => 'asset_condition',
+      'ownership_status' => 'ownership_status',
+      'asset_status' => 'asset_status',
+      'description' => 'description',
+      'last_updated' => 'last_updated',
+    ];
+
+    if (!empty($orderDataKey) && isset($sortable[$orderDataKey])) {
+      $query->orderBy($sortable[$orderDataKey], $orderDir);
+    } else {
+      $query->orderByDesc('id');
+    }
+
+    $rows = $query
+      ->skip($start)
+      ->take($length)
+      ->get([
+        'id',
+        'asset_code',
+        'asset_name',
+        'serial_number',
+        'asset_category',
+        'asset_location',
+        'person_in_charge',
+        'purchase_date',
+        'price',
+        'qty',
+        'satuan',
+        'asset_condition',
+        'ownership_status',
+        'asset_status',
+        'description',
+        'last_updated',
+      ])
+      ->map(function (Asset $asset) {
+        $purchaseDate = $asset->purchase_date ? \Carbon\Carbon::parse($asset->purchase_date)->format('d-m-Y') : '-';
+        $lastUpdated = $asset->last_updated ? \Carbon\Carbon::parse($asset->last_updated)->format('d-m-Y H:i') : '-';
+        $priceDisplay = $asset->price !== null
+          ? 'Rp. ' . number_format((float) $asset->price, 0, ',', '.')
+          : '-';
+
+        return [
+          'id' => $asset->id,
+          'asset_code' => $asset->asset_code,
+          'asset_name' => $asset->asset_name,
+          'serial_number' => $asset->serial_number,
+          'asset_category' => $asset->asset_category,
+          'asset_location' => $asset->asset_location,
+          'person_in_charge' => $asset->person_in_charge,
+          'purchase_date' => $purchaseDate,
+          'price' => $priceDisplay,
+          'qty' => $asset->qty,
+          'satuan' => $asset->satuan,
+          'asset_condition' => $asset->asset_condition,
+          'ownership_status' => $asset->ownership_status,
+          'asset_status' => $asset->asset_status,
+          'description' => $asset->description,
+          'last_updated' => $lastUpdated,
+        ];
+      })
+      ->values();
+
+    return response()->json([
+      'draw' => $draw,
+      'recordsTotal' => $recordsTotal,
+      'recordsFiltered' => $recordsFiltered,
+      'data' => $rows,
+    ]);
   }
 
   public function jababeka()

@@ -6,6 +6,7 @@ return [
     'error' => 'Error',
     'cancel' => 'Cancel',
     'close' => 'Close',
+    'all' => 'All',
     'save' => 'Save',
     'back' => 'Back',
     'continue' => 'Continue',

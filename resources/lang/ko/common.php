@@ -6,6 +6,7 @@ return [
     'error' => '오류',
     'cancel' => '취소',
     'close' => '닫기',
+    'all' => '전체',
     'save' => '저장',
     'back' => '뒤로',
     'continue' => '계속',

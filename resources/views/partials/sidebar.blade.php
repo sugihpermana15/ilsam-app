@@ -100,7 +100,7 @@
                     'items' => [
                         [
                             'title' => 'Dashboard',
-                            'icon' => 'bi bi-speedometer2',
+                            'icon' => 'fas fa-gauge-high',
                             'route' => 'admin.dashboard',
                             'active_routes' => [
                                 'admin',
@@ -116,7 +116,7 @@
                     'items' => [
                         [
                             'title' => 'Perlengkapan Aset',
-                            'icon' => 'bi bi-hdd-stack',
+                            'icon' => 'fas fa-hard-drive',
                             'permission_key' => 'assets',
                             'active_routes' => [
                                 'admin.assets.index',
@@ -129,18 +129,33 @@
                                 'admin.assets.karawang',
                             ],
                             'children' => [
-                                ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'default' => true, 'permission_key' => 'assets_data'],
-                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'permission_key' => 'accounts_data'],
-                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'permission_key' => 'documents_archive'],
-                                ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'permission_key' => 'assets_jababeka'],
-                                ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'permission_key' => 'assets_karawang'],
-                                ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'permission_key' => 'assets_in'],
-                                ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'permission_key' => 'assets_transfer'],
+                                ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'active_routes' => ['admin.assets.datatable'], 'default' => true, 'permission_key' => 'assets_data'],
+                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'active_routes' => ['admin.accounts.show', 'admin.accounts.json', 'admin.accounts.endpoints.open', 'admin.accounts.store', 'admin.accounts.update', 'admin.accounts.destroy', 'admin.accounts.verify'], 'permission_key' => 'accounts_data'],
+                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'active_routes' => ['admin.documents.dashboard', 'admin.documents.show', 'admin.documents.create', 'admin.documents.store', 'admin.documents.update', 'admin.documents.destroy', 'admin.documents.restore', 'admin.documents.files.download', 'admin.documents.files.upload'], 'permission_key' => 'documents_archive'],
+                                ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Jababeka'], 'permission_key' => 'assets_jababeka'],
+                                ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Karawang'], 'permission_key' => 'assets_karawang'],
+                                ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'active_routes' => ['admin.assets.in.scan'], 'permission_key' => 'assets_in'],
+                                ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'active_routes' => ['admin.assets.transfer.list'], 'permission_key' => 'assets_transfer'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Device',
+                            'icon' => 'fas fa-desktop',
+                            'route' => 'admin.devices.index',
+                            'permission_key' => 'devices',
+                            'active_routes' => [
+                                'admin.devices.index',
+                                'admin.devices.create',
+                                'admin.devices.store',
+                                'admin.devices.show',
+                                'admin.devices.edit',
+                                'admin.devices.update',
+                                'admin.devices.destroy',
                             ],
                         ],
                         [
                             'title' => 'Stok Seragam',
-                            'icon' => 'bi bi-box-seam',
+                            'icon' => 'fas fa-box-open',
                             'permission_key' => 'uniforms',
                             'active_routes' => [
                                 'admin.uniforms.master',
@@ -153,15 +168,15 @@
                                 'admin.uniforms.history',
                             ],
                             'children' => [
-                                ['title' => 'Master Seragam', 'route' => 'admin.uniforms.master', 'default' => true, 'permission_key' => 'uniforms_master'],
-                                ['title' => 'Stok Masuk', 'route' => 'admin.uniforms.stock', 'permission_key' => 'uniforms_stock'],
-                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distribution', 'permission_key' => 'uniforms_distribution'],
+                                ['title' => 'Master Seragam', 'route' => 'admin.uniforms.master', 'active_routes' => ['admin.uniforms.items.store', 'admin.uniforms.items.update', 'admin.uniforms.items.toggle'], 'default' => true, 'permission_key' => 'uniforms_master'],
+                                ['title' => 'Stok Masuk', 'route' => 'admin.uniforms.stock', 'active_routes' => ['admin.uniforms.stock.in', 'admin.uniforms.adjustments', 'admin.uniforms.adjustments.store', 'admin.uniforms.adjustments.approve', 'admin.uniforms.adjustments.reject', 'admin.uniforms.writeoffs', 'admin.uniforms.writeoffs.store', 'admin.uniforms.writeoffs.approve', 'admin.uniforms.writeoffs.reject', 'admin.uniforms.lots', 'admin.uniforms.reconcile', 'admin.uniforms.reconcile.adjustment'], 'permission_key' => 'uniforms_stock'],
+                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distribution', 'active_routes' => ['admin.uniforms.distribution.issue', 'admin.uniforms.issues.return', 'admin.uniforms.issues.replace'], 'permission_key' => 'uniforms_distribution'],
                                 ['title' => 'Riwayat', 'route' => 'admin.uniforms.history', 'permission_key' => 'uniforms_history'],
                             ],
                         ],
                         [
                             'title' => 'Master Karyawan',
-                            'icon' => 'bi bi-people',
+                            'icon' => 'fas fa-users',
                             'permission_key' => 'employees',
                             'active_routes' => [
                                 'admin.employees.index',
@@ -180,7 +195,7 @@
                         ],
                         [
                             'title' => 'Master Data',
-                            'icon' => 'bi bi-database',
+                            'icon' => 'fas fa-database',
                             'permission_key' => 'master_data',
                             'active_routes' => [
                                 'admin.departments.index',
@@ -259,12 +274,12 @@
                 //     'items' => [
                 //         [
                 //             'title' => 'Calendar',
-                //             'icon' => 'bi bi-calendar-week',
+                //             'icon' => 'fas fa-calendar-week',
                 //             'route' => 'apps-calendar',
                 //         ],
                 //         [
                 //             'title' => 'E-Commerce',
-                //             'icon' => 'bi bi-cart4',
+                //             'icon' => 'fas fa-shopping-cart',
                 //             'children' => [
                 //                 ['title' => 'Products', 'route' => 'apps-ecommerce-products'],
                 //                 ['title' => 'Product Details', 'route' => 'apps-ecommerce-products-details'],
@@ -284,7 +299,7 @@
                     'items' => [
                         [
                             'title' => 'Career Management',
-                            'icon' => 'bi bi-briefcase',
+                            'icon' => 'fas fa-briefcase',
                             'route' => 'admin.careers.index',
                             'permission_key' => 'career',
                             'active_routes' => [
@@ -297,7 +312,7 @@
                         ],
                         [
                             'title' => 'Certificate Management',
-                            'icon' => 'bi bi-patch-check',
+                            'icon' => 'fas fa-circle-check',
                             'route' => 'admin.certificates.index',
                             'permission_key' => 'certificate',
                             'active_routes' => [
@@ -314,7 +329,7 @@
                     'items' => [
                         [
                             'title' => 'Settings and Log',
-                            'icon' => 'bi bi-gear-wide-connected',
+                            'icon' => 'fas fa-gears',
                             'permission_key' => 'settings',
                             'children' => [
                                 ['title' => 'Users', 'route' => 'admin.users', 'permission_key' => 'settings_users'],
@@ -331,7 +346,7 @@
                     'items' => [
                         [
                             'title' => 'Dashboard',
-                            'icon' => 'bi bi-speedometer2',
+                            'icon' => 'fas fa-gauge-high',
                             'route' => 'admin.dashboard',
                             'active_routes' => [
                                 'admin',
@@ -342,7 +357,7 @@
                         ],
                         [
                             'title' => 'Master Karyawan',
-                            'icon' => 'bi bi-people',
+                            'icon' => 'fas fa-users',
                             'permission_key' => 'employees',
                             'active_routes' => [
                                 'admin.employees.index',
@@ -361,7 +376,7 @@
                         ],
                         [
                             'title' => 'Master Data',
-                            'icon' => 'bi bi-database',
+                            'icon' => 'fas fa-database',
                             'permission_key' => 'master_data',
                             'active_routes' => [
                                 'admin.departments.index',
@@ -415,7 +430,7 @@
                     'items' => [
                         [
                             'title' => 'Career Management',
-                            'icon' => 'bi bi-briefcase',
+                            'icon' => 'fas fa-briefcase',
                             'route' => 'admin.careers.index',
                             'permission_key' => 'career',
                             'active_routes' => [
@@ -435,7 +450,7 @@
                     'items' => [
                         [
                             'title' => 'Dashboard',
-                            'icon' => 'bi bi-speedometer2',
+                            'icon' => 'fas fa-gauge-high',
                             'route' => 'user.dashboard',
                             'permission_key' => 'user_dashboard',
                             'active_routes' => [
@@ -449,7 +464,7 @@
                     'items' => [
                         [
                             'title' => 'Perlengkapan Aset',
-                            'icon' => 'bi bi-hdd-stack',
+                            'icon' => 'fas fa-hard-drive',
                             'permission_key' => 'assets',
                             'active_routes' => [
                                 'admin.assets.index',
@@ -460,18 +475,18 @@
                                 'admin.assets.transfer',
                             ],
                             'children' => [
-                                ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'default' => true, 'permission_key' => 'assets_data'],
-                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'permission_key' => 'accounts_data'],
-                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'permission_key' => 'documents_archive'],
-                                ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'permission_key' => 'assets_jababeka'],
-                                ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'permission_key' => 'assets_karawang'],
-                                ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'permission_key' => 'assets_in'],
-                                ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'permission_key' => 'assets_transfer'],
+                                ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'active_routes' => ['admin.assets.datatable'], 'default' => true, 'permission_key' => 'assets_data'],
+                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'active_routes' => ['admin.accounts.show', 'admin.accounts.json', 'admin.accounts.endpoints.open', 'admin.accounts.store', 'admin.accounts.update', 'admin.accounts.destroy', 'admin.accounts.verify'], 'permission_key' => 'accounts_data'],
+                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'active_routes' => ['admin.documents.dashboard', 'admin.documents.show', 'admin.documents.create', 'admin.documents.store', 'admin.documents.update', 'admin.documents.destroy', 'admin.documents.restore', 'admin.documents.files.download', 'admin.documents.files.upload'], 'permission_key' => 'documents_archive'],
+                                ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Jababeka'], 'permission_key' => 'assets_jababeka'],
+                                ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Karawang'], 'permission_key' => 'assets_karawang'],
+                                ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'active_routes' => ['admin.assets.in.scan'], 'permission_key' => 'assets_in'],
+                                ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'active_routes' => ['admin.assets.transfer.list'], 'permission_key' => 'assets_transfer'],
                             ],
                         ],
                         [
                             'title' => 'Stok Seragam',
-                            'icon' => 'bi bi-box-seam',
+                            'icon' => 'fas fa-box-open',
                             'permission_key' => 'uniforms',
                             'active_routes' => [
                                 'admin.uniforms.master',
@@ -480,10 +495,20 @@
                                 'admin.uniforms.history',
                             ],
                             'children' => [
-                                ['title' => 'Master Seragam', 'route' => 'admin.uniforms.master', 'default' => true, 'permission_key' => 'uniforms_master'],
-                                ['title' => 'Stok Masuk', 'route' => 'admin.uniforms.stock', 'permission_key' => 'uniforms_stock'],
-                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distribution', 'permission_key' => 'uniforms_distribution'],
+                                ['title' => 'Master Seragam', 'route' => 'admin.uniforms.master', 'active_routes' => ['admin.uniforms.items.store', 'admin.uniforms.items.update', 'admin.uniforms.items.toggle'], 'default' => true, 'permission_key' => 'uniforms_master'],
+                                ['title' => 'Stok Masuk', 'route' => 'admin.uniforms.stock', 'active_routes' => ['admin.uniforms.stock.in', 'admin.uniforms.adjustments', 'admin.uniforms.adjustments.store', 'admin.uniforms.adjustments.approve', 'admin.uniforms.adjustments.reject', 'admin.uniforms.writeoffs', 'admin.uniforms.writeoffs.store', 'admin.uniforms.writeoffs.approve', 'admin.uniforms.writeoffs.reject', 'admin.uniforms.lots', 'admin.uniforms.reconcile', 'admin.uniforms.reconcile.adjustment'], 'permission_key' => 'uniforms_stock'],
+                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distribution', 'active_routes' => ['admin.uniforms.distribution.issue', 'admin.uniforms.issues.return', 'admin.uniforms.issues.replace'], 'permission_key' => 'uniforms_distribution'],
                                 ['title' => 'Riwayat', 'route' => 'admin.uniforms.history', 'permission_key' => 'uniforms_history'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Device',
+                            'icon' => 'fas fa-desktop',
+                            'route' => 'admin.devices.index',
+                            'permission_key' => 'devices',
+                            'active_routes' => [
+                                'admin.devices.index',
+                                'admin.devices.show',
                             ],
                         ],
                     ],
@@ -521,6 +546,9 @@
                 // Groups
                 'assets' => 'none',
                 'uniforms' => 'none',
+
+                // Devices
+                'devices' => 'none',
 
                 // Assets submenus
                 'assets_data' => 'none',
@@ -568,6 +596,9 @@
                 // Groups
                 'assets' => 'write',
                 'uniforms' => 'write',
+
+                // Devices
+                'devices' => 'write',
 
                 // Assets submenus
                 'assets_data' => 'write',
@@ -746,6 +777,10 @@
                     return 'documents_archive';
                 }
 
+                if (str_starts_with($routeName, 'admin.devices.')) {
+                    return 'devices';
+                }
+
                 if (str_starts_with($routeName, 'admin.account_types.')) {
                     return 'account_types';
                 }
@@ -901,10 +936,29 @@
                                 }
 
                                 $childMatches = function ($child) use ($currentRoute) {
-                                    if ($currentRoute !== ($child['route'] ?? null)) {
+                                    $childRoute = $child['route'] ?? null;
+                                    $childActiveRoutes = (array) ($child['active_routes'] ?? []);
+
+                                    // Special-case: Assets index with location query should highlight the
+                                    // dedicated location submenu (Jababeka/Karawang), not the generic "Data Asset".
+                                    $childParams = $child['params'] ?? [];
+                                    $location = request()->query('location');
+                                    if (
+                                        $childRoute === 'admin.assets.index'
+                                        && empty($childParams)
+                                        && in_array($location, ['Jababeka', 'Karawang'], true)
+                                    ) {
                                         return false;
                                     }
-                                    $childParams = $child['params'] ?? [];
+
+                                    $routeMatched = ($currentRoute === $childRoute);
+                                    if (!$routeMatched && !empty($childActiveRoutes)) {
+                                        $routeMatched = in_array($currentRoute, $childActiveRoutes, true);
+                                    }
+                                    if (!$routeMatched) {
+                                        return false;
+                                    }
+
                                     if (empty($childParams)) {
                                         return true;
                                     }
@@ -973,9 +1027,19 @@
                                 if (!$isActive && !empty($item['route']) && $currentRoute === $item['route']) {
                                     $isActive = true;
                                 }
+
+                                // Optional query-param match for leaf items
+                                if ($isActive && !empty($item['params']) && is_array($item['params'])) {
+                                    foreach ($item['params'] as $key => $value) {
+                                        if (request()->query($key) != $value) {
+                                            $isActive = false;
+                                            break;
+                                        }
+                                    }
+                                }
                             @endphp
                             <li class="pe-slide">
-                                <a href="{{ isset($item['route']) ? route($item['route']) : '#' }}"
+                                <a href="{{ isset($item['route']) ? route($item['route'], $item['params'] ?? []) : '#' }}"
                                     class="pe-nav-link{{ $isActive ? ' active' : '' }}">
                                     <i class="{{ $item['icon'] }} pe-nav-icon"></i>
                                     <span class="pe-nav-content">{{ $tMenu($item['title'] ?? '') }}</span>

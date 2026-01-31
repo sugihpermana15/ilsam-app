@@ -165,10 +165,6 @@
           @endif
           <table id="alternative-pagination-modal" class="table table-nowrap table-striped table-bordered w-100">
             <thead>
-                          $statusKey = strtolower((string) $status);
-                          $statusLabel = \Illuminate\Support\Facades\Lang::has("assets.options.asset_status.$statusKey")
-                            ? __("assets.options.asset_status.$statusKey")
-                            : $status;
               <tr>
                 <th><input type="checkbox" id="select-all-modal" {{ $canCreate ? '' : 'disabled' }}></th>
                 <th>{{ __('assets.transfer.table.no') }}</th>
@@ -177,16 +173,10 @@
                 <th>{{ __('assets.transfer.table.category') }}</th>
                 <th>{{ __('assets.transfer.table.location') }}</th>
                 <th>{{ __('assets.transfer.table.pic') }}</th>
-                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
+                <th>{{ __('assets.fields.purchase_date') }}</th>
                 <th>{{ __('assets.transfer.table.price') }}</th>
                 <th>{{ __('assets.transfer.table.condition') }}</th>
-                        @php
-                          $transferKey = strtolower((string) $transferStatus);
-                          $transferLabel = \Illuminate\Support\Facades\Lang::has("assets.transfer.status.$transferKey")
-                            ? __("assets.transfer.status.$transferKey")
-                            : $transferStatus;
-                        @endphp
-                        <span class="badge {{ $transferBadge }}">{{ $transferLabel }}</span>
+                <th>{{ __('assets.fields.ownership_status') }}</th>
                 <th>{{ __('assets.transfer.table.asset_status') }}</th>
                 <th>{{ __('assets.transfer.table.description') }}</th>
                 <th>{{ __('assets.transfer.table.last_updated') }}</th>

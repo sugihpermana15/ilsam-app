@@ -91,9 +91,64 @@
             </div>
           </div>
           <div class="card-body">
+            <div class="row g-2 align-items-end mb-3">
+              <div class="col-12 col-md-3">
+                <label class="form-label mb-1">{{ __('assets.fields.location') }}</label>
+                <select class="form-select" id="filter-asset-location">
+                  <option value="">{{ __('common.all') }}</option>
+                  @foreach(($assetLocations ?? collect()) as $l)
+                    <option value="{{ $l->name }}">{{ $l->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-12 col-md-3">
+                <label class="form-label mb-1">{{ __('assets.fields.category') }}</label>
+                <select class="form-select" id="filter-asset-category">
+                  <option value="">{{ __('common.all') }}</option>
+                  @foreach(($assetCategories ?? collect()) as $c)
+                    <option value="{{ $c->code }}">{{ $c->code }} - {{ $c->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+              <div class="col-12 col-md-2">
+                <label class="form-label mb-1">{{ __('assets.fields.status') }}</label>
+                <select class="form-select" id="filter-asset-status">
+                  <option value="">{{ __('common.all') }}</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Sold">Sold</option>
+                  <option value="Disposed">Disposed</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-2">
+                <label class="form-label mb-1">{{ __('assets.fields.condition') }}</label>
+                <select class="form-select" id="filter-asset-condition">
+                  <option value="">{{ __('common.all') }}</option>
+                  <option value="Good">{{ __('assets.options.condition.good') }}</option>
+                  <option value="Minor Damage">{{ __('assets.options.condition.minor_damage') }}</option>
+                  <option value="Major Damage">{{ __('assets.options.condition.major_damage') }}</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-2">
+                <label class="form-label mb-1">{{ __('assets.fields.pic') }}</label>
+                <select class="form-select" id="filter-asset-pic">
+                  <option value="">{{ __('common.all') }}</option>
+                  @foreach(($employees ?? collect()) as $e)
+                    <option value="{{ $e->id }}">{{ $e->name }}</option>
+                  @endforeach
+                </select>
+              </div>
+
+              <div class="col-12 d-flex justify-content-end">
+                <button type="button" class="btn btn-outline-secondary" id="btn-clear-asset-filters" title="{{ __('common.reset') }}">
+                  <i class="fas fa-rotate-left"></i> {{ __('common.reset') }}
+                </button>
+              </div>
+            </div>
+
             <!-- DataTables search only -->
             <!-- start:: Alternative Pagination Datatable -->
-            <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100">
+            <table id="alternative-pagination" class="table table-nowrap table-striped table-bordered w-100" data-dt-server="1">
               <thead>
                 <tr>
                   <th><input type="checkbox" id="select-all"></th>
@@ -116,69 +171,7 @@
                   <th>{{ __('assets.pt.table.action') }}</th>
                 </tr>
               </thead>
-                <tbody>
-                  @foreach($assets as $asset)
-                    <tr>
-                      <td><input type="checkbox" class="select-asset" value="{{ $asset->id }}"></td>
-                      <td>{{ $loop->iteration }}</td>
-                      <td>{{ $asset->asset_code }}</td>
-                      <td>{{ $asset->asset_name }}</td>
-                      <td>{{ $asset->serial_number ?? '-' }}</td>
-                      <td>{{ $asset->asset_category }}</td>
-                      <td>{{ $asset->asset_location }}</td>
-                      <td>{{ $asset->person_in_charge }}</td>
-                      <td>{{ $asset->purchase_date ? \Carbon\Carbon::parse($asset->purchase_date)->format('d-m-Y') : '-' }}</td>
-                      <td>
-                        @if($asset->price !== null)
-                          Rp. {{ number_format($asset->price, 0, ',', '.') }}
-                        @else
-                          -
-                        @endif
-                      </td>
-                      <td>{{ $asset->qty ?? '-' }}</td>
-                      <td>{{ $asset->satuan ?? '-' }}</td>
-                      <td>{{ $asset->asset_condition }}</td>
-                      <td>{{ $asset->ownership_status }}</td>
-                      <td>
-                        @php
-                          $statusRaw = (string) ($asset->asset_status ?? '');
-                          $badgeClass = match($statusRaw) {
-                            'Active' => 'bg-success-subtle text-success',
-                            'Inactive' => 'bg-secondary-subtle text-secondary',
-                            'Sold' => 'bg-warning-subtle text-warning',
-                            'Disposed' => 'bg-danger-subtle text-danger',
-                            default => 'bg-light-subtle text-body',
-                          };
-
-                          $statusKey = strtolower($statusRaw);
-                          $statusLabel = $statusRaw === ''
-                            ? '-'
-                            : (\Illuminate\Support\Facades\Lang::has("assets.options.asset_status.$statusKey")
-                              ? __("assets.options.asset_status.$statusKey")
-                              : $statusRaw);
-                        @endphp
-                        <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
-                      </td>
-                      <td>{{ $asset->description }}</td>
-                      <td>{{ $asset->last_updated ? \Carbon\Carbon::parse($asset->last_updated)->format('d-m-Y H:i') : '-' }}</td>
-                      <td>
-                        <a href="{{ route('admin.assets.show', $asset->id) }}" class="btn btn-sm btn-info" title="{{ __('assets.actions.detail') }}">
-                          <i class="fas fa-eye"></i>
-                        </a>
-                        <button type="button" class="btn btn-sm btn-warning btn-edit-asset" data-id="{{ $asset->id }}" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? __('assets.actions.edit') : __('assets.actions.no_access_update') }}">
-                          <i class="fas fa-edit"></i>
-                        </button>
-                        <form action="{{ route('admin.assets.destroy', $asset->id) }}" method="POST" style="display:inline-block" class="form-delete-asset" title="{{ __('assets.actions.delete') }}">
-                          @csrf
-                          @method('DELETE')
-                          <button type="button" class="btn btn-sm btn-danger btn-delete-asset" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? __('assets.actions.delete') : __('assets.actions.no_access_delete') }}">
-                            <i class="fas fa-trash-alt"></i>
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
+              <tbody></tbody>
             </table>
             <!-- DataTables handles pagination -->
             <!-- end:: Alternative Pagination Datatable -->
@@ -671,6 +664,188 @@
 
   <script>
     $(document).ready(function() {
+      // --- DataTables server-side for assets (fix pagination / per-page size) ---
+      const canUpdate = @json($canUpdate);
+      const canDelete = @json($canDelete);
+      const csrfToken = @json(csrf_token());
+      const currentLocation = @json(request('location'));
+      const dtUrl = @json(route('admin.assets.datatable'));
+
+      // Filters (server-side)
+      const $filterLocation = $('#filter-asset-location');
+      const $filterCategory = $('#filter-asset-category');
+      const $filterStatus = $('#filter-asset-status');
+      const $filterCondition = $('#filter-asset-condition');
+      const $filterPic = $('#filter-asset-pic');
+
+      if (currentLocation) {
+        $filterLocation.val(String(currentLocation));
+      }
+
+      const labels = {
+        detail: @json(__('assets.actions.detail')),
+        edit: @json(__('assets.actions.edit')),
+        noAccessUpdate: @json(__('assets.actions.no_access_update')),
+        delete: @json(__('assets.actions.delete')),
+        noAccessDelete: @json(__('assets.actions.no_access_delete')),
+      };
+
+      const selectedIds = new Set();
+
+      const syncSelectedIdsInput = () => {
+        $('#selected-ids').val(Array.from(selectedIds).join(','));
+      };
+
+      const syncSelectAllState = (dt) => {
+        const nodes = dt.rows({ page: 'current' }).nodes();
+        const $checks = $(nodes).find('input.select-asset');
+        if ($checks.length === 0) {
+          $('#select-all').prop('checked', false).prop('indeterminate', false);
+          return;
+        }
+        const total = $checks.length;
+        const checked = $checks.filter(':checked').length;
+        $('#select-all')
+          .prop('checked', checked === total)
+          .prop('indeterminate', checked > 0 && checked < total);
+      };
+
+      const statusBadgeHtml = (statusRaw) => {
+        const s = (statusRaw || '').toString();
+        if (!s) return '-';
+        const cls = {
+          'Active': 'bg-success-subtle text-success',
+          'Inactive': 'bg-secondary-subtle text-secondary',
+          'Sold': 'bg-warning-subtle text-warning',
+          'Disposed': 'bg-danger-subtle text-danger',
+        }[s] || 'bg-light-subtle text-body';
+        return `<span class="badge ${cls}">${$('<div/>').text(s).html()}</span>`;
+      };
+
+      const dt = $('#alternative-pagination').DataTable({
+        processing: true,
+        serverSide: true,
+        pageLength: 10,
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        ajax: {
+          url: dtUrl,
+          data: function (d) {
+            if (currentLocation) d.location = currentLocation;
+            const fl = ($filterLocation.val() || '').toString().trim();
+            const fc = ($filterCategory.val() || '').toString().trim();
+            const fs = ($filterStatus.val() || '').toString().trim();
+            const fcond = ($filterCondition.val() || '').toString().trim();
+            const fpic = ($filterPic.val() || '').toString().trim();
+            if (fl) d.f_location = fl;
+            if (fc) d.f_category = fc;
+            if (fs) d.f_status = fs;
+            if (fcond) d.f_condition = fcond;
+            if (fpic) d.f_pic_employee_id = fpic;
+          }
+        },
+        order: [[2, 'desc']],
+        columns: [
+          {
+            data: 'id',
+            orderable: false,
+            searchable: false,
+            render: function (data) {
+              const id = String(data);
+              const checked = selectedIds.has(id) ? 'checked' : '';
+              return `<input type="checkbox" class="select-asset" value="${id}" ${checked}>`;
+            }
+          },
+          {
+            data: 'id',
+            orderable: false,
+            searchable: false,
+            render: function (_data, _type, _row, meta) {
+              return meta.row + meta.settings._iDisplayStart + 1;
+            }
+          },
+          { data: 'asset_code', defaultContent: '-' },
+          { data: 'asset_name', defaultContent: '-' },
+          { data: 'serial_number', defaultContent: '-' },
+          { data: 'asset_category', defaultContent: '-' },
+          { data: 'asset_location', defaultContent: '-' },
+          { data: 'person_in_charge', defaultContent: '-' },
+          { data: 'purchase_date', defaultContent: '-' },
+          { data: 'price', defaultContent: '-' },
+          { data: 'qty', defaultContent: '-' },
+          { data: 'satuan', defaultContent: '-' },
+          { data: 'asset_condition', defaultContent: '-' },
+          { data: 'ownership_status', defaultContent: '-' },
+          {
+            data: 'asset_status',
+            defaultContent: '-',
+            render: function (data) {
+              return statusBadgeHtml(data);
+            }
+          },
+          { data: 'description', defaultContent: '-' },
+          { data: 'last_updated', defaultContent: '-' },
+          {
+            data: 'id',
+            orderable: false,
+            searchable: false,
+            render: function (data, _type, row) {
+              const id = String(data);
+              const urlShow = `{{ url('/admin/assets') }}/${id}`;
+              const urlDestroy = `{{ url('/admin/assets') }}/${id}`;
+
+              const editDisabled = canUpdate ? '' : 'disabled';
+              const deleteDisabled = canDelete ? '' : 'disabled';
+              const editTitle = canUpdate ? labels.edit : labels.noAccessUpdate;
+              const deleteTitle = canDelete ? labels.delete : labels.noAccessDelete;
+
+              return `
+                <a href="${urlShow}" class="btn btn-sm btn-info" title="${labels.detail}">
+                  <i class="fas fa-eye"></i>
+                </a>
+                <button type="button" class="btn btn-sm btn-warning btn-edit-asset" data-id="${id}" ${editDisabled} title="${editTitle}">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <form action="${urlDestroy}" method="POST" style="display:inline-block" class="form-delete-asset" title="${labels.delete}">
+                  <input type="hidden" name="_token" value="${csrfToken}">
+                  <input type="hidden" name="_method" value="DELETE">
+                  <button type="button" class="btn btn-sm btn-danger btn-delete-asset" ${deleteDisabled} title="${deleteTitle}">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </form>
+              `.trim();
+            }
+          },
+        ],
+        drawCallback: function () {
+          const api = this.api();
+          // re-apply selected state after redraw
+          api.rows({ page: 'current' }).nodes().to$().find('input.select-asset').each(function () {
+            const id = String(this.value);
+            this.checked = selectedIds.has(id);
+          });
+          syncSelectAllState(api);
+        }
+      });
+
+      const redrawAssets = () => {
+        dt.ajax.reload(null, true);
+      };
+
+      $filterLocation.on('change', redrawAssets);
+      $filterCategory.on('change', redrawAssets);
+      $filterStatus.on('change', redrawAssets);
+      $filterCondition.on('change', redrawAssets);
+      $filterPic.on('change', redrawAssets);
+
+      $('#btn-clear-asset-filters').on('click', function () {
+        $filterCategory.val('');
+        $filterStatus.val('');
+        $filterCondition.val('');
+        $filterPic.val('');
+        $filterLocation.val(currentLocation ? String(currentLocation) : '');
+        redrawAssets();
+      });
+
       const initSelect2InModal = ($modal) => {
         const $modalSelects = $modal.find('.js-select2-modal');
         if (!$modalSelects.length || !$.fn.select2) {
@@ -814,25 +989,38 @@
         openEditModal(editId);
       }
 
-      // Select all checkbox
+      // Select all checkbox (current page only)
       $('#select-all').on('change', function() {
-        $('.select-asset').prop('checked', $(this).prop('checked'));
-        updateSelectedIds();
+        const checked = $(this).prop('checked');
+        const nodes = dt.rows({ page: 'current' }).nodes();
+        $(nodes).find('input.select-asset').each(function () {
+          const id = String(this.value);
+          this.checked = checked;
+          if (checked) {
+            selectedIds.add(id);
+          } else {
+            selectedIds.delete(id);
+          }
+        });
+        syncSelectedIdsInput();
+        syncSelectAllState(dt);
       });
 
-      // On any checkbox change, update hidden input
-      $('.select-asset').on('change', function() {
-        updateSelectedIds();
+      // On any checkbox change (delegated, works across DataTables redraw)
+      $(document).on('change', '.select-asset', function() {
+        const id = String(this.value);
+        if (this.checked) {
+          selectedIds.add(id);
+        } else {
+          selectedIds.delete(id);
+        }
+        syncSelectedIdsInput();
+        syncSelectAllState(dt);
       });
-
-      function updateSelectedIds() {
-        var selected = $('.select-asset:checked').map(function() { return this.value; }).get();
-        $('#selected-ids').val(selected.join(','));
-      }
 
       // On form submit, check if any selected
       $('#form-print-selected-barcode').on('submit', function(e) {
-        var selected = $('.select-asset:checked').map(function() { return this.value; }).get();
+        const selected = Array.from(selectedIds);
         if (selected.length === 0) {
           e.preventDefault();
           Swal.fire({ icon: 'warning', title: @json(__('assets.pt.alerts.no_asset_selected_title')), text: @json(__('assets.pt.alerts.no_asset_selected_text')) });

@@ -6,6 +6,7 @@ return [
     'error' => 'Error',
     'cancel' => 'Batal',
     'close' => 'Tutup',
+    'all' => 'Semua',
     'save' => 'Simpan',
     'back' => 'Kembali',
     'continue' => 'Lanjut',

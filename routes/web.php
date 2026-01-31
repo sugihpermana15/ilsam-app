@@ -33,6 +33,7 @@ use App\Http\Controllers\Admin\AssetVendorController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AccountTypeController;
 use App\Http\Controllers\Admin\DocumentController;
+use App\Http\Controllers\Admin\DeviceController;
 use App\Http\Controllers\Admin\CareerController as AdminCareerController;
 use App\Http\Controllers\Admin\CareerCandidateController as AdminCareerCandidateController;
 use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
@@ -122,6 +123,29 @@ Route::prefix('admin')->middleware([
     Route::get('/dashboard/assets', [AdminController::class, 'dashboardAssets'])->middleware('menu:admin_dashboard')->name('admin.dashboard.assets');
     Route::get('/dashboard/uniforms', [AdminController::class, 'dashboardUniforms'])->middleware('menu:admin_dashboard')->name('admin.dashboard.uniforms');
 
+    // Device (Computer) Management
+    Route::get('/devices', [DeviceController::class, 'index'])->middleware('menu:devices')->name('admin.devices.index');
+    Route::get('/devices/create', [DeviceController::class, 'create'])->middleware('menu:devices,create')->name('admin.devices.create');
+    Route::post('/devices', [DeviceController::class, 'store'])->middleware('menu:devices,create')->name('admin.devices.store');
+    Route::get('/devices/{device}', [DeviceController::class, 'show'])->middleware('menu:devices')->name('admin.devices.show');
+    Route::get('/devices/{device}/edit', [DeviceController::class, 'edit'])->middleware('menu:devices,update')->name('admin.devices.edit');
+    Route::put('/devices/{device}', [DeviceController::class, 'update'])->middleware('menu:devices,update')->name('admin.devices.update');
+    Route::delete('/devices/{device}', [DeviceController::class, 'destroy'])->middleware('menu:devices,delete')->name('admin.devices.destroy');
+
+    // Asset lookup for auto-fill (no page refresh)
+    Route::get('/devices/assets/{asset}', [DeviceController::class, 'lookupAsset'])->middleware('menu:devices')->name('admin.devices.assets.lookup');
+    Route::get('/devices/assets/code/{asset_code}', [DeviceController::class, 'lookupAssetByCode'])->middleware('menu:devices')->name('admin.devices.assets.lookup_by_code');
+
+    // Maintenance history
+    Route::post('/devices/{device}/maintenances', [DeviceController::class, 'storeMaintenance'])->middleware('menu:devices,update')->name('admin.devices.maintenances.store');
+    Route::get('/devices/maintenances/{maintenance}/download', [DeviceController::class, 'downloadMaintenanceAttachment'])->middleware('menu:devices')->name('admin.devices.maintenances.download');
+    Route::delete('/devices/maintenances/{maintenance}', [DeviceController::class, 'destroyMaintenance'])->middleware('menu:devices,update')->name('admin.devices.maintenances.destroy');
+
+    // Vault (sensitive): requires update permission + re-auth on each reveal
+    Route::post('/devices/{device}/vault/reveal', [DeviceController::class, 'revealVault'])
+        ->middleware(['menu:devices,update', 'throttle:vault-reveal'])
+        ->name('admin.devices.vault.reveal');
+
     // Employee Master
     Route::get('/employees', [EmployeeController::class, 'index'])->middleware('menu:employees_index')->name('admin.employees.index');
     Route::get('/employees/deleted', [EmployeeController::class, 'deleted'])->middleware('menu:employees_deleted')->name('admin.employees.deleted');
@@ -198,6 +222,7 @@ Route::prefix('admin')->middleware([
 ])->group(function () {
     // Assets (read-only)
     Route::get('/assets', [AssetController::class, 'index'])->middleware('menu:assets_data')->name('admin.assets.index');
+    Route::get('/assets/datatables', [AssetController::class, 'datatable'])->middleware('menu:assets_data')->name('admin.assets.datatable');
     Route::get('/assets/jababeka', [AssetController::class, 'jababeka'])->middleware('menu:assets_jababeka')->name('admin.assets.jababeka');
     Route::get('/assets/karawang', [AssetController::class, 'karawang'])->middleware('menu:assets_karawang')->name('admin.assets.karawang');
     Route::get('/assets/transfer', [AssetController::class, 'transfer'])->middleware('menu:assets_transfer')->name('admin.assets.transfer');
