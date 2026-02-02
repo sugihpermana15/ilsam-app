@@ -28,6 +28,15 @@ class DailyTaskController extends Controller
         return in_array((string) ($user?->role?->role_name ?? ''), ['Super Admin', 'Admin'], true);
     }
 
+    private function makeDailyTaskCode(int $taskId, string $typeName): string
+    {
+        $typeCode = Str::upper(preg_replace('/[^A-Za-z0-9]+/', '', Str::substr($typeName, 0, 3)));
+        $typeCode = $typeCode !== '' ? $typeCode : 'DT';
+        $uniquePlusOne = $taskId + 1;
+
+        return 'IGI-' . $typeCode . '-' . str_pad((string) $uniquePlusOne, 4, '0', STR_PAD_LEFT);
+    }
+
     public function index(Request $request)
     {
         $user = $request->user();
@@ -200,6 +209,9 @@ class DailyTaskController extends Controller
                 $dueStart = $task->due_start ? Carbon::parse($task->due_start)->format('Y-m-d') : null;
                 $dueEnd = $task->due_end ? Carbon::parse($task->due_end)->format('Y-m-d') : null;
 
+                $typeName = $typeLabels[(int) $task->task_type] ?? '-';
+                $code = $this->makeDailyTaskCode((int) $task->id, $typeName);
+
                 $today = Carbon::today();
                 $dueEndDate = $task->due_end ? Carbon::parse($task->due_end)->startOfDay() : null;
                 $isClosed = in_array($task->status?->value, [DailyTaskStatus::Done->value, DailyTaskStatus::Canceled->value], true);
@@ -230,7 +242,8 @@ class DailyTaskController extends Controller
 
                 return [
                     'id' => $task->id,
-                    'task_type' => $typeLabels[(int) $task->task_type] ?? '-',
+                    'code' => $code,
+                    'task_type' => $typeName,
                     'title' => $task->title,
                     'description_preview' => $task->description_preview,
                     'due_start' => $dueStart,
@@ -274,6 +287,8 @@ class DailyTaskController extends Controller
         ]);
 
         $typeLabels = DailyTaskType::query()->pluck('name', 'id')->mapWithKeys(fn ($v, $k) => [(int) $k => (string) $v])->all();
+            $typeName = $typeLabels[(int) $task->task_type] ?? '-';
+            $code = $this->makeDailyTaskCode((int) $task->id, $typeName);
         $priorityLabels = DailyTaskPriority::query()->pluck('name', 'id')->mapWithKeys(fn ($v, $k) => [(int) $k => (string) $v])->all();
         $statusLabels = DailyTaskStatusMaster::query()->pluck('name', 'id')->mapWithKeys(fn ($v, $k) => [(int) $k => (string) $v])->all();
 
@@ -330,8 +345,9 @@ class DailyTaskController extends Controller
 
         return response()->json([
             'id' => $task->id,
+            'code' => $code,
             'is_admin' => $isAdmin,
-            'task_type' => ['value' => (int) $task->task_type, 'label' => $typeLabels[(int) $task->task_type] ?? '-'],
+            'task_type' => ['value' => (int) $task->task_type, 'label' => $typeName],
             'title' => $task->title,
             'description' => $task->description,
             'due_start' => $dueStart,
@@ -455,6 +471,7 @@ class DailyTaskController extends Controller
             'id',
             'task_type',
             'title',
+            'description_preview',
             'due_start',
             'due_end',
             'status',
@@ -465,10 +482,15 @@ class DailyTaskController extends Controller
             'created_at',
             'updated_at',
         ])->map(function (DailyTask $task) use ($typeLabels, $priorityLabels, $statusLabels) {
+            $typeName = $typeLabels[(int) $task->task_type] ?? '-';
+            $code = $this->makeDailyTaskCode((int) $task->id, $typeName);
+
             return [
                 'id' => $task->id,
-                'task_type' => $typeLabels[(int) $task->task_type] ?? '-',
+                'code' => $code,
+                'task_type' => $typeName,
                 'title' => (string) $task->title,
+                'description' => trim((string) ($task->description_preview ?? '')),
                 'due_start' => $task->due_start ? Carbon::parse($task->due_start)->format('Y-m-d') : '-',
                 'due_end' => $task->due_end ? Carbon::parse($task->due_end)->format('Y-m-d') : '-',
                 'status' => $statusLabels[(int) ($task->status?->value ?? 0)] ?? ($task->status?->label() ?? '-'),

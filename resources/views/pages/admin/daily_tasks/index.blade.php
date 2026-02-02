@@ -465,7 +465,12 @@
               return meta.row + meta.settings._iDisplayStart + 1;
             }
           },
-          { data: 'id' },
+          {
+            data: 'id',
+            render: function (data, _type, row) {
+              return row && row.code ? $('<div/>').text(row.code).html() : String(data ?? '');
+            }
+          },
           { data: 'task_type', defaultContent: '-' },
           {
             data: 'title',
@@ -614,7 +619,8 @@
         const data = await res.json();
 
         const hasOpenChecklist = (data.checklists || []).some((i) => !i.is_done);
-        $('#detail-title').text(`#${data.id} - ${data.title}`);
+        const code = (data && data.code) ? String(data.code) : `#${data.id}`;
+        $('#detail-title').text(`${code} - ${data.title}`);
         $('#detail-meta').text(`${data.task_type?.label || '-'} | ${data.status?.label || '-'} | SLA: ${data.sla || '-'} | ${data.priority?.label || '-'} | Due: ${data.due_start || '-'} → ${data.due_end || '-'}`);
 
         // Status change UI (role + flow restricted by server)

@@ -96,9 +96,14 @@
     <tbody>
       @forelse(($tasks ?? []) as $t)
         <tr>
-          <td class="nowrap">{{ $t['id'] }}</td>
+          <td class="nowrap">{{ $t['code'] ?? $t['id'] }}</td>
           <td class="nowrap">{{ $t['task_type'] }}</td>
-          <td>{{ $t['title'] }}</td>
+          <td>
+            <div>{{ $t['title'] }}</div>
+            @if(!empty($t['description']))
+              <div class="muted small">{{ $t['description'] }}</div>
+            @endif
+          </td>
           <td class="nowrap">{{ $t['due_start'] }}</td>
           <td class="nowrap">{{ $t['due_end'] }}</td>
           <td class="nowrap">{{ $t['status'] }}</td>
