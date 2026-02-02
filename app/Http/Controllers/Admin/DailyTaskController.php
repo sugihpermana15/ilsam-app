@@ -609,9 +609,17 @@ class DailyTaskController extends Controller
     {
         $this->authorize('manageAttachments', $task);
 
-        $request->validate([
-            'file' => ['required', 'file', 'max:10240'],
-        ]);
+        $request->validate(
+            [
+                'file' => ['required', 'file', 'max:10240'],
+            ],
+            [
+                // Happens when server/PHP rejects the payload before Laravel can read the file.
+                'file.uploaded' => 'File gagal diunggah. Biasanya karena batas upload server (upload_max_filesize / post_max_size).',
+                'file.max' => 'Ukuran file maksimal 10MB.',
+                'file.required' => 'File wajib dipilih.',
+            ]
+        );
 
         $file = $request->file('file');
         $disk = 'public';
