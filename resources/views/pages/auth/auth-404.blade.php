@@ -1,4 +1,4 @@
-@extends('partials.layouts.master_auth')
+@extends('layouts.master_auth')
 
 @section('title', __('errors.titles.404'))
 
