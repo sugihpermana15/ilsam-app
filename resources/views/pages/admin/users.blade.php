@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Ilsam - Users Management')
+@section('title', 'Ilsam - Manajemen Pengguna')
 
 @section('title-sub', 'Settings & UI')
-@section('pagetitle', 'Users Management')
+@section('pagetitle', 'Manajemen Pengguna')
 @section('css')
     <!--datatable css-->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
@@ -242,9 +242,9 @@
                 <div class="card">
                     <!--start::card-->
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0"> Users Management </h5>
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Add
-                            User</button>
+                        <h5 class="card-title mb-0"> Manajemen Pengguna </h5>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUserModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Tambah
+                            Pengguna</button>
                     </div>
                     <div class="card-body">
                         <!-- Add User Modal -->
@@ -257,15 +257,15 @@
                                         <input type="hidden" name="dash_permissions_present" value="1">
                                         <input type="hidden" name="menu_permissions_present" value="1">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                                            <h5 class="modal-title" id="addUserModalLabel">Tambah Pengguna</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                                aria-label="Tutup"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row g-3">
                                                 <div class="col-12 col-lg-5">
                                             <div class="mb-3">
-                                                <label for="name" class="form-label">Name</label>
+                                                <label for="name" class="form-label">Nama</label>
                                                 <input type="text" class="form-control" id="name" name="name" required>
                                             </div>
                                             <div class="mb-3">
@@ -288,21 +288,21 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="role" class="form-label">Role</label>
+                                                <label for="role" class="form-label">Peran</label>
                                                 <select class="form-select" id="role" name="role_id" required>
-                                                    <option value="">Select Role</option>
+                                                    <option value="">Pilih Peran</option>
                                                     <option value="1">Super Admin</option>
                                                     <option value="2">Admin</option>
-                                                    <option value="3">User</option>
+                                                    <option value="3">Pengguna</option>
                                                 </select>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label">Dashboard Widgets</label>
+                                                <label class="form-label">Widget Dashboard</label>
                                                 <div class="row g-2">
                                                     <div class="col-12 col-md-6">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Asset</div>
+                                                            <div class="fw-semibold mb-2">Aset</div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="add_dash_asset_kpi" name="dash_asset_kpi" value="1"
@@ -315,20 +315,20 @@
                                                                     id="add_dash_asset_charts" name="dash_asset_charts"
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
-                                                                    for="add_dash_asset_charts">Charts</label>
+                                                                    for="add_dash_asset_charts">Grafik</label>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="add_dash_asset_recent" name="dash_asset_recent"
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
-                                                                    for="add_dash_asset_recent">Recent</label>
+                                                                    for="add_dash_asset_recent">Terbaru</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-md-6">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Uniform</div>
+                                                            <div class="fw-semibold mb-2">Seragam</div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="add_dash_uniform_kpi" name="dash_uniform_kpi"
@@ -341,14 +341,14 @@
                                                                     id="add_dash_uniform_charts" name="dash_uniform_charts"
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
-                                                                    for="add_dash_uniform_charts">Charts</label>
+                                                                    for="add_dash_uniform_charts">Grafik</label>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="add_dash_uniform_recent" name="dash_uniform_recent"
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
-                                                                    for="add_dash_uniform_recent">Recent</label>
+                                                                    for="add_dash_uniform_recent">Terbaru</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -361,16 +361,16 @@
                                                 <div class="col-12 col-lg-7">
 
                                             <div class="mb-3">
-                                                <label class="form-label">Menu Access</label>
+                                                <label class="form-label">Akses Menu</label>
                                                 <div class="menu-access-toolbar d-flex align-items-center gap-2 flex-wrap">
                                                     <div class="grow" style="min-width: 200px;">
                                                         <input type="text" class="form-control form-control-sm" id="add_menu_filter"
-                                                            placeholder="Cari menu... (contoh: asset, deleted, history)">
+                                                            placeholder="Cari menu... (contoh: aset, terhapus, riwayat)">
                                                     </div>
                                                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="add_menu_select_all">Select all</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="add_menu_clear_all">Clear</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" id="add_menu_reset_default">Reset ke default role</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="add_menu_select_all">Pilih semua</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="add_menu_clear_all">Kosongkan</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" id="add_menu_reset_default">Reset ke default peran</button>
                                                     </div>
                                                     <div class="menu-access-muted w-100">Tips: gunakan checkbox parent untuk toggle submenu.</div>
                                                 </div>
@@ -378,15 +378,15 @@
                                                 <div class="menu-access-box menu-access-surface" id="add_menu_access_container">
                                                     <div class="menu-access-sticky">
                                                         <div class="sticky-left">
-                                                            <span class="sticky-title">Read</span>
+                                                            <span class="sticky-title">Lihat</span>
                                                             <span class="sticky-help">(boleh buka halaman)</span>
                                                         </div>
                                                         <div class="sticky-right">
-                                                            <span class="sticky-title">Actions</span>
+                                                            <span class="sticky-title">Aksi</span>
                                                             <span class="sticky-icons">
-                                                                <i class="fas fa-plus" title="Add" aria-hidden="true"></i>
-                                                                <i class="fas fa-pencil-alt" title="Edit" aria-hidden="true"></i>
-                                                                <i class="fas fa-trash-alt" title="Delete" aria-hidden="true"></i>
+                                                                <i class="fas fa-plus" title="Tambah" aria-hidden="true"></i>
+                                                                <i class="fas fa-pencil-alt" title="Ubah" aria-hidden="true"></i>
+                                                                <i class="fas fa-trash-alt" title="Hapus" aria-hidden="true"></i>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -394,7 +394,7 @@
                                                     <div class="row g-2">
                                                     <div class="col-12">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">User Area</div>
+                                                            <div class="fw-semibold mb-2">Area Pengguna</div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="add_menu_user_dashboard" name="menu_user_dashboard"
@@ -407,7 +407,7 @@
 
                                                     <div class="col-12">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Admin Area</div>
+                                                            <div class="fw-semibold mb-2">Area Admin</div>
                                                             <div class="row g-2">
                                                                 <div class="col-12 col-xl-6">
                                                                     <div class="form-check">
@@ -431,14 +431,14 @@
                                                                                 id="add_menu_employees_index"
                                                                                 name="menu_employees_index" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_employees_index">Employees</label>
+                                                                                for="add_menu_employees_index">Karyawan</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_employees_deleted"
                                                                                 name="menu_employees_deleted" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_employees_deleted">Deleted</label>
+                                                                                for="add_menu_employees_deleted">Terhapus</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
@@ -448,12 +448,28 @@
                                                                                 for="add_menu_employees_audit">Audit Log</label>
                                                                         </div>
                                                                     </div>
+
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            id="add_menu_master_data"
-                                                                            name="menu_master_data" value="1">
+                                                                            id="add_menu_daily_tasks" name="menu_daily_tasks"
+                                                                            value="1">
                                                                         <label class="form-check-label"
-                                                                            for="add_menu_master_data">Master Data <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_data"></span></label>
+                                                                            for="add_menu_daily_tasks">Tugas Harian</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_devices" name="menu_devices"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_devices">Master Device</label>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_master_hr"
+                                                                            name="menu_master_hr" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_master_hr">Master HR <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_hr"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">
@@ -461,22 +477,70 @@
                                                                                 id="add_menu_departments" name="menu_departments"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_departments">Departments</label>
+                                                                                for="add_menu_departments">Departemen</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_positions" name="menu_positions"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_positions">Positions</label>
+                                                                                for="add_menu_positions">Posisi</label>
                                                                         </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_master_assets"
+                                                                            name="menu_master_assets" value="1">
+                                                                        <label class="form-check-label"
+                                                                                for="add_menu_master_assets">Master Aset <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_assets"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_asset_categories"
                                                                                 name="menu_asset_categories" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_asset_categories">Kategori Asset</label>
+                                                                                for="add_menu_asset_categories">Kategori Aset</label>
                                                                         </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_asset_locations"
+                                                                                name="menu_asset_locations" value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_asset_locations">Lokasi Aset</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_plant_sites" name="menu_plant_sites"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_plant_sites">Plant/Site</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_asset_uoms" name="menu_asset_uoms"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_asset_uoms">Satuan Aset</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_asset_vendors"
+                                                                                name="menu_asset_vendors" value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_asset_vendors">Vendor Aset</label>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_master_accounts"
+                                                                            name="menu_master_accounts" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_master_accounts">Master Akun <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_accounts"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_account_types"
@@ -484,27 +548,16 @@
                                                                             <label class="form-check-label"
                                                                                 for="add_menu_account_types">Kategori Akun</label>
                                                                         </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_asset_locations"
-                                                                                name="menu_asset_locations" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_asset_locations">Lokasi Asset</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_asset_uoms" name="menu_asset_uoms"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_asset_uoms">Satuan Asset</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_asset_vendors"
-                                                                                name="menu_asset_vendors" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_asset_vendors">Vendor Asset</label>
-                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_master_uniform"
+                                                                            name="menu_master_uniform" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_master_uniform">Master Seragam <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_uniform"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_uniform_sizes" name="menu_uniform_sizes"
@@ -539,6 +592,37 @@
                                                                                 value="1">
                                                                             <label class="form-check-label"
                                                                                 for="add_menu_uniform_uoms">UOM Seragam</label>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_master_daily_task"
+                                                                            name="menu_master_daily_task" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_master_daily_task">Master Daily Task <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_daily_task"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_daily_task_types" name="menu_daily_task_types"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_daily_task_types">Task Type (Daily Task)</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_daily_task_priorities" name="menu_daily_task_priorities"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_daily_task_priorities">Priority (Daily Task)</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_daily_task_statuses" name="menu_daily_task_statuses"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="add_menu_daily_task_statuses">Status (Daily Task)</label>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-check">
@@ -677,7 +761,7 @@
                                                                             id="add_menu_settings" name="menu_settings"
                                                                             value="1">
                                                                         <label class="form-check-label"
-                                                                            for="add_menu_settings">Settings & Log <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_settings"></span></label>
+                                                                            for="add_menu_settings">Pengaturan & Log <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_settings"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">
@@ -685,21 +769,21 @@
                                                                                 id="add_menu_settings_users"
                                                                                 name="menu_settings_users" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_settings_users">Users</label>
+                                                                                for="add_menu_settings_users">Pengguna</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_settings_history_user"
                                                                                 name="menu_settings_history_user" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_settings_history_user">History Delete User</label>
+                                                                                for="add_menu_settings_history_user">Riwayat Hapus Pengguna</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_settings_history_asset"
                                                                                 name="menu_settings_history_asset" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_settings_history_asset">History Delete Asset</label>
+                                                                                for="add_menu_settings_history_asset">Riwayat Hapus Aset</label>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -717,8 +801,8 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Save</button>
+                                                data-bs-dismiss="modal">Tutup</button>
+                                            <button type="submit" class="btn btn-primary" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">Simpan</button>
                                         </div>
                                     </form>
                                 </div>
@@ -729,11 +813,11 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th>Name</th>
+                                    <th>Nama</th>
                                     <th>Username</th>
                                     <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Action</th>
+                                    <th>Peran</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -751,14 +835,14 @@
                                                 data-role="{{ $user->role_id }}"
                                                 data-dashboard='@json($user->dashboard_permissions)'
                                                 data-menu='@json($user->menu_permissions)'>
-                                                Edit
+                                                Ubah
                                             </button>
                                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                                                 style="display:inline-block" class="form-delete-user">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                    class="btn btn-sm btn-danger btn-delete-user" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? '' : 'Tidak punya akses hapus' }}">Delete</button>
+                                                        class="btn btn-sm btn-danger btn-delete-user" {{ $canDelete ? '' : 'disabled' }} title="{{ $canDelete ? '' : 'Tidak punya akses hapus' }}">Hapus</button>
                                             </form>
                                         </td>
                                     </tr>
@@ -780,16 +864,16 @@
                                         <input type="hidden" name="dash_permissions_present" value="1">
                                         <input type="hidden" name="menu_permissions_present" value="1">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                                            <h5 class="modal-title" id="editUserModalLabel">Ubah Pengguna</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                                aria-label="Tutup"></button>
                                         </div>
                                         <div class="modal-body">
                                             <input type="hidden" id="edit_user_id" name="user_id">
                                             <div class="row g-3">
                                                 <div class="col-12 col-lg-5">
                                             <div class="mb-3">
-                                                <label for="edit_name" class="form-label">Name</label>
+                                                <label for="edit_name" class="form-label">Nama</label>
                                                 <input type="text" class="form-control" id="edit_name" name="name" required>
                                             </div>
                                             <div class="mb-3">
@@ -805,7 +889,7 @@
                                                 <label for="edit_password" class="form-label">Password</label>
                                                 <div class="input-group">
                                                     <input type="password" class="form-control" id="edit_password"
-                                                        name="password" placeholder="Leave blank to keep current password">
+                                                        name="password" placeholder="Kosongkan untuk mempertahankan password saat ini">
                                                     <button class="btn btn-primary" type="button" tabindex="-1"
                                                         onclick="toggleEditPassword()">
                                                         <i class="fas fa-eye-slash" id="toggleEditPasswordIcon"></i>
@@ -813,21 +897,21 @@
                                                 </div>
                                             </div>
                                             <div class="mb-3">
-                                                <label for="edit_role" class="form-label">Role</label>
+                                                <label for="edit_role" class="form-label">Peran</label>
                                                 <select class="form-select" id="edit_role" name="role_id" required>
-                                                    <option value="">Select Role</option>
+                                                    <option value="">Pilih Peran</option>
                                                     <option value="1">Super Admin</option>
                                                     <option value="2">Admin</option>
-                                                    <option value="3">User</option>
+                                                    <option value="3">Pengguna</option>
                                                 </select>
                                             </div>
 
                                             <div class="mb-3">
-                                                <label class="form-label">Dashboard Widgets</label>
+                                                <label class="form-label">Widget Dashboard</label>
                                                 <div class="row g-2">
                                                     <div class="col-12 col-md-6">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Asset</div>
+                                                            <div class="fw-semibold mb-2">Aset</div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="edit_dash_asset_kpi" name="dash_asset_kpi"
@@ -840,20 +924,20 @@
                                                                     id="edit_dash_asset_charts" name="dash_asset_charts"
                                                                     value="1">
                                                                 <label class="form-check-label"
-                                                                    for="edit_dash_asset_charts">Charts</label>
+                                                                    for="edit_dash_asset_charts">Grafik</label>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="edit_dash_asset_recent" name="dash_asset_recent"
                                                                     value="1">
                                                                 <label class="form-check-label"
-                                                                    for="edit_dash_asset_recent">Recent</label>
+                                                                    for="edit_dash_asset_recent">Terbaru</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-12 col-md-6">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Uniform</div>
+                                                            <div class="fw-semibold mb-2">Seragam</div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="edit_dash_uniform_kpi" name="dash_uniform_kpi"
@@ -866,36 +950,36 @@
                                                                     id="edit_dash_uniform_charts" name="dash_uniform_charts"
                                                                     value="1">
                                                                 <label class="form-check-label"
-                                                                    for="edit_dash_uniform_charts">Charts</label>
+                                                                    for="edit_dash_uniform_charts">Grafik</label>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="edit_dash_uniform_recent" name="dash_uniform_recent"
                                                                     value="1">
                                                                 <label class="form-check-label"
-                                                                    for="edit_dash_uniform_recent">Recent</label>
+                                                                    for="edit_dash_uniform_recent">Terbaru</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="form-text">Matikan bagian tertentu untuk menyembunyikannya dari
-                                                    user.</div>
+                                                    pengguna.</div>
                                             </div>
 
                                                 </div>
                                                 <div class="col-12 col-lg-7">
 
                                             <div class="mb-3">
-                                                <label class="form-label">Menu Access</label>
+                                                <label class="form-label">Akses Menu</label>
                                                 <div class="menu-access-toolbar d-flex align-items-center gap-2 flex-wrap">
                                                     <div class="grow" style="min-width: 200px;">
                                                         <input type="text" class="form-control form-control-sm" id="edit_menu_filter"
-                                                            placeholder="Cari menu... (contoh: asset, deleted, history)">
+                                                            placeholder="Cari menu... (contoh: aset, terhapus, riwayat)">
                                                     </div>
                                                     <div class="d-flex align-items-center gap-2 flex-wrap">
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit_menu_select_all">Select all</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit_menu_clear_all">Clear</button>
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" id="edit_menu_reset_default">Reset ke default role</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit_menu_select_all">Pilih semua</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="edit_menu_clear_all">Kosongkan</button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" id="edit_menu_reset_default">Reset ke default peran</button>
                                                     </div>
                                                     <div class="menu-access-muted w-100">Tips: gunakan checkbox parent untuk toggle submenu.</div>
                                                 </div>
@@ -903,15 +987,15 @@
                                                 <div class="menu-access-box menu-access-surface" id="edit_menu_access_container">
                                                     <div class="menu-access-sticky">
                                                         <div class="sticky-left">
-                                                            <span class="sticky-title">Read</span>
+                                                            <span class="sticky-title">Lihat</span>
                                                             <span class="sticky-help">(boleh buka halaman)</span>
                                                         </div>
                                                         <div class="sticky-right">
-                                                            <span class="sticky-title">Actions</span>
+                                                            <span class="sticky-title">Aksi</span>
                                                             <span class="sticky-icons">
-                                                                <i class="fas fa-plus" title="Add" aria-hidden="true"></i>
-                                                                <i class="fas fa-pencil-alt" title="Edit" aria-hidden="true"></i>
-                                                                <i class="fas fa-trash-alt" title="Delete" aria-hidden="true"></i>
+                                                                <i class="fas fa-plus" title="Tambah" aria-hidden="true"></i>
+                                                                <i class="fas fa-pencil-alt" title="Ubah" aria-hidden="true"></i>
+                                                                <i class="fas fa-trash-alt" title="Hapus" aria-hidden="true"></i>
                                                             </span>
                                                         </div>
                                                     </div>
@@ -919,7 +1003,7 @@
                                                     <div class="row g-2">
                                                     <div class="col-12">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">User Area</div>
+                                                            <div class="fw-semibold mb-2">Area Pengguna</div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
                                                                     id="edit_menu_user_dashboard" name="menu_user_dashboard"
@@ -933,7 +1017,7 @@
 
                                                     <div class="col-12">
                                                         <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Admin Area</div>
+                                                            <div class="fw-semibold mb-2">Area Admin</div>
                                                             <div class="row g-2">
                                                                 <div class="col-12 col-xl-6">
                                                                     <div class="form-check">
@@ -958,14 +1042,14 @@
                                                                                 id="edit_menu_employees_index"
                                                                                 name="menu_employees_index" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_employees_index">Employees</label>
+                                                                                for="edit_menu_employees_index">Karyawan</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_employees_deleted"
                                                                                 name="menu_employees_deleted" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_employees_deleted">Deleted</label>
+                                                                                for="edit_menu_employees_deleted">Terhapus</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
@@ -975,12 +1059,28 @@
                                                                                 for="edit_menu_employees_audit">Audit Log</label>
                                                                         </div>
                                                                     </div>
+
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            id="edit_menu_master_data"
-                                                                            name="menu_master_data" value="1">
+                                                                            id="edit_menu_daily_tasks" name="menu_daily_tasks"
+                                                                            value="1">
                                                                         <label class="form-check-label"
-                                                                            for="edit_menu_master_data">Master Data <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_data"></span></label>
+                                                                            for="edit_menu_daily_tasks">Tugas Harian</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_devices" name="menu_devices"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_devices">Master Device</label>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_master_hr"
+                                                                            name="menu_master_hr" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_master_hr">Master HR <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_hr"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">
@@ -988,22 +1088,70 @@
                                                                                 id="edit_menu_departments" name="menu_departments"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_departments">Departments</label>
+                                                                                for="edit_menu_departments">Departemen</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_positions" name="menu_positions"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_positions">Positions</label>
+                                                                                for="edit_menu_positions">Posisi</label>
                                                                         </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_master_assets"
+                                                                            name="menu_master_assets" value="1">
+                                                                        <label class="form-check-label"
+                                                                                for="edit_menu_master_assets">Master Aset <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_assets"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_asset_categories"
                                                                                 name="menu_asset_categories" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_asset_categories">Kategori Asset</label>
+                                                                                for="edit_menu_asset_categories">Kategori Aset</label>
                                                                         </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_asset_locations"
+                                                                                name="menu_asset_locations" value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_asset_locations">Lokasi Aset</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_plant_sites" name="menu_plant_sites"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_plant_sites">Plant/Site</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_asset_uoms" name="menu_asset_uoms"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_asset_uoms">Satuan Aset</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_asset_vendors"
+                                                                                name="menu_asset_vendors" value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_asset_vendors">Vendor Aset</label>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_master_accounts"
+                                                                            name="menu_master_accounts" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_master_accounts">Master Akun <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_accounts"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_account_types"
@@ -1011,27 +1159,16 @@
                                                                             <label class="form-check-label"
                                                                                 for="edit_menu_account_types">Kategori Akun</label>
                                                                         </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_asset_locations"
-                                                                                name="menu_asset_locations" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_asset_locations">Lokasi Asset</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_asset_uoms" name="menu_asset_uoms"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_asset_uoms">Satuan Asset</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_asset_vendors"
-                                                                                name="menu_asset_vendors" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_asset_vendors">Vendor Asset</label>
-                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_master_uniform"
+                                                                            name="menu_master_uniform" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_master_uniform">Master Seragam <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_uniform"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_uniform_sizes" name="menu_uniform_sizes"
@@ -1066,6 +1203,37 @@
                                                                                 value="1">
                                                                             <label class="form-check-label"
                                                                                 for="edit_menu_uniform_uoms">UOM Seragam</label>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_master_daily_task"
+                                                                            name="menu_master_daily_task" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_master_daily_task">Master Daily Task <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_daily_task"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_daily_task_types" name="menu_daily_task_types"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_daily_task_types">Task Type (Daily Task)</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_daily_task_priorities" name="menu_daily_task_priorities"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_daily_task_priorities">Priority (Daily Task)</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_daily_task_statuses" name="menu_daily_task_statuses"
+                                                                                value="1">
+                                                                            <label class="form-check-label"
+                                                                                for="edit_menu_daily_task_statuses">Status (Daily Task)</label>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-check">
@@ -1204,7 +1372,7 @@
                                                                             id="edit_menu_settings" name="menu_settings"
                                                                             value="1">
                                                                         <label class="form-check-label"
-                                                                            for="edit_menu_settings">Settings & Log <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_settings"></span></label>
+                                                                            for="edit_menu_settings">Pengaturan & Log <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_settings"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">
@@ -1212,21 +1380,21 @@
                                                                                 id="edit_menu_settings_users"
                                                                                 name="menu_settings_users" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_settings_users">Users</label>
+                                                                                for="edit_menu_settings_users">Pengguna</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_settings_history_user"
                                                                                 name="menu_settings_history_user" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_settings_history_user">History Delete User</label>
+                                                                                for="edit_menu_settings_history_user">Riwayat Hapus Pengguna</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_settings_history_asset"
                                                                                 name="menu_settings_history_asset" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_settings_history_asset">History Delete Asset</label>
+                                                                                for="edit_menu_settings_history_asset">Riwayat Hapus Aset</label>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1244,8 +1412,8 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}">Update</button>
+                                                data-bs-dismiss="modal">Tutup</button>
+                                            <button type="submit" class="btn btn-primary" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}">Simpan Perubahan</button>
                                         </div>
                                     </form>
                                 </div>
@@ -1297,11 +1465,17 @@
                     'settings_history_asset',
                 ]);
 
-                // Role IDs: 1 Super Admin, 2 Admin, 3 User
+                // Role IDs: 1 Super Admin, 2 Admin, 3 Pengguna
                 if (String(roleId) === '3') {
                     return {
                         user_dashboard: readOnly,
                         admin_dashboard: none,
+
+                        // Daily Tasks
+                        daily_tasks: { read: true, create: true, update: true, delete: false },
+
+                        // Devices
+                        devices: none,
 
                         // Groups
                         assets: none,
@@ -1328,12 +1502,21 @@
                         employees_index: none,
                         employees_deleted: none,
                         employees_audit: none,
+
+                        // Master groups (granular)
+                        master_hr: none,
+                        master_assets: none,
+                        master_accounts: none,
+                        master_uniform: none,
+                        master_daily_task: none,
+
                         master_data: none,
                         departments: none,
                         positions: none,
                         asset_categories: none,
                         account_types: none,
                         asset_locations: none,
+                        plant_sites: none,
                         asset_uoms: none,
                         asset_vendors: none,
                         uniform_sizes: none,
@@ -1341,6 +1524,12 @@
                         uniform_categories: none,
                         uniform_colors: none,
                         uniform_uoms: none,
+
+                        // Daily Tasks Masters
+                        daily_task_types: none,
+                        daily_task_priorities: none,
+                        daily_task_statuses: none,
+
                         career: none,
                         certificate: none,
                         settings: none,
@@ -1353,6 +1542,12 @@
                 const perms = {
                     user_dashboard: readOnly,
                     admin_dashboard: readOnly,
+
+                    // Daily Tasks
+                    daily_tasks: all,
+
+                    // Devices
+                    devices: all,
 
                     // Groups
                     assets: all,
@@ -1379,12 +1574,21 @@
                     employees_index: all,
                     employees_deleted: all,
                     employees_audit: all,
+
+                    // Master groups (granular)
+                    master_hr: all,
+                    master_assets: all,
+                    master_accounts: all,
+                    master_uniform: all,
+                    master_daily_task: all,
+
                     master_data: all,
                     departments: all,
                     positions: all,
                     asset_categories: all,
                     account_types: all,
                     asset_locations: all,
+                    plant_sites: all,
                     asset_uoms: all,
                     asset_vendors: all,
                     uniform_sizes: all,
@@ -1392,6 +1596,12 @@
                     uniform_categories: all,
                     uniform_colors: all,
                     uniform_uoms: all,
+
+                    // Daily Tasks Masters
+                    daily_task_types: all,
+                    daily_task_priorities: all,
+                    daily_task_statuses: all,
+
                     career: all,
                     certificate: all,
                     settings: all,
@@ -1465,6 +1675,8 @@
                 // Read checkboxes (existing)
                 $('#' + prefix + '_menu_user_dashboard').prop('checked', hasRead(permissions.user_dashboard));
                 $('#' + prefix + '_menu_admin_dashboard').prop('checked', hasRead(permissions.admin_dashboard));
+                $('#' + prefix + '_menu_daily_tasks').prop('checked', hasRead(permissions.daily_tasks));
+                $('#' + prefix + '_menu_devices').prop('checked', hasRead(permissions.devices));
                 $('#' + prefix + '_menu_assets').prop('checked', hasRead(permissions.assets));
                 $('#' + prefix + '_menu_assets_data').prop('checked', hasRead(permissions.assets_data));
                 $('#' + prefix + '_menu_accounts_data').prop('checked', hasRead(permissions.accounts_data));
@@ -1484,12 +1696,17 @@
                 $('#' + prefix + '_menu_employees_index').prop('checked', hasRead(permissions.employees_index));
                 $('#' + prefix + '_menu_employees_deleted').prop('checked', hasRead(permissions.employees_deleted));
                 $('#' + prefix + '_menu_employees_audit').prop('checked', hasRead(permissions.employees_audit));
-                $('#' + prefix + '_menu_master_data').prop('checked', hasRead(permissions.master_data));
+                $('#' + prefix + '_menu_master_hr').prop('checked', hasRead(permissions.master_hr));
+                $('#' + prefix + '_menu_master_assets').prop('checked', hasRead(permissions.master_assets));
+                $('#' + prefix + '_menu_master_accounts').prop('checked', hasRead(permissions.master_accounts));
+                $('#' + prefix + '_menu_master_uniform').prop('checked', hasRead(permissions.master_uniform));
+                $('#' + prefix + '_menu_master_daily_task').prop('checked', hasRead(permissions.master_daily_task));
                 $('#' + prefix + '_menu_departments').prop('checked', hasRead(permissions.departments));
                 $('#' + prefix + '_menu_positions').prop('checked', hasRead(permissions.positions));
                 $('#' + prefix + '_menu_asset_categories').prop('checked', hasRead(permissions.asset_categories));
                 $('#' + prefix + '_menu_account_types').prop('checked', hasRead(permissions.account_types));
                 $('#' + prefix + '_menu_asset_locations').prop('checked', hasRead(permissions.asset_locations));
+                $('#' + prefix + '_menu_plant_sites').prop('checked', hasRead(permissions.plant_sites));
                 $('#' + prefix + '_menu_asset_uoms').prop('checked', hasRead(permissions.asset_uoms));
                 $('#' + prefix + '_menu_asset_vendors').prop('checked', hasRead(permissions.asset_vendors));
                 $('#' + prefix + '_menu_uniform_sizes').prop('checked', hasRead(permissions.uniform_sizes));
@@ -1497,6 +1714,9 @@
                 $('#' + prefix + '_menu_uniform_categories').prop('checked', hasRead(permissions.uniform_categories));
                 $('#' + prefix + '_menu_uniform_colors').prop('checked', hasRead(permissions.uniform_colors));
                 $('#' + prefix + '_menu_uniform_uoms').prop('checked', hasRead(permissions.uniform_uoms));
+                $('#' + prefix + '_menu_daily_task_types').prop('checked', hasRead(permissions.daily_task_types));
+                $('#' + prefix + '_menu_daily_task_priorities').prop('checked', hasRead(permissions.daily_task_priorities));
+                $('#' + prefix + '_menu_daily_task_statuses').prop('checked', hasRead(permissions.daily_task_statuses));
                 $('#' + prefix + '_menu_career').prop('checked', hasRead(permissions.career));
                 $('#' + prefix + '_menu_certificate').prop('checked', hasRead(permissions.certificate));
                 $('#' + prefix + '_menu_settings').prop('checked', hasRead(permissions.settings));
@@ -1507,11 +1727,14 @@
                 // Action toggles (injected)
                 const keys = [
                     'user_dashboard', 'admin_dashboard',
+                    'daily_tasks', 'devices',
                     'assets', 'assets_data', 'accounts_data', 'accounts_secrets', 'documents_archive', 'documents_restricted', 'assets_jababeka', 'assets_karawang', 'assets_in', 'assets_transfer',
                     'uniforms', 'uniforms_master', 'uniforms_stock', 'uniforms_distribution', 'uniforms_history',
                     'employees', 'employees_index', 'employees_deleted', 'employees_audit',
-                    'master_data', 'departments', 'positions', 'asset_categories', 'account_types', 'asset_locations', 'asset_uoms', 'asset_vendors',
+                    'master_hr', 'master_assets', 'master_accounts', 'master_uniform', 'master_daily_task',
+                    'departments', 'positions', 'asset_categories', 'account_types', 'asset_locations', 'plant_sites', 'asset_uoms', 'asset_vendors',
                     'uniform_sizes', 'uniform_item_names', 'uniform_categories', 'uniform_colors', 'uniform_uoms',
+                    'daily_task_types', 'daily_task_priorities', 'daily_task_statuses',
                     'career', 'certificate',
                     'settings', 'settings_users', 'settings_history_user', 'settings_history_asset',
                 ];
@@ -1630,7 +1853,7 @@
                 }, 0);
 
                 $badge.text('R' + readCount + ' A' + createCount + ' E' + updateCount + ' D' + deleteCount);
-                $badge.attr('title', 'Read ' + readCount + '/' + total + ', Add ' + createCount + '/' + total + ', Edit ' + updateCount + '/' + total + ', Delete ' + deleteCount + '/' + total);
+                $badge.attr('title', 'Lihat ' + readCount + '/' + total + ', Tambah ' + createCount + '/' + total + ', Ubah ' + updateCount + '/' + total + ', Hapus ' + deleteCount + '/' + total);
             }
 
             function updateGroupCounters(prefix) {
@@ -1659,19 +1882,35 @@
                     'employees_audit',
                 ]);
 
-                updateGroupCounter(prefix, 'master_data', [
+                updateGroupCounter(prefix, 'master_hr', [
                     'departments',
                     'positions',
+                ]);
+
+                updateGroupCounter(prefix, 'master_assets', [
                     'asset_categories',
-                    'account_types',
                     'asset_locations',
+                    'plant_sites',
                     'asset_uoms',
                     'asset_vendors',
+                ]);
+
+                updateGroupCounter(prefix, 'master_accounts', [
+                    'account_types',
+                ]);
+
+                updateGroupCounter(prefix, 'master_uniform', [
                     'uniform_sizes',
                     'uniform_item_names',
                     'uniform_categories',
                     'uniform_colors',
                     'uniform_uoms',
+                ]);
+
+                updateGroupCounter(prefix, 'master_daily_task', [
+                    'daily_task_types',
+                    'daily_task_priorities',
+                    'daily_task_statuses',
                 ]);
 
                 updateGroupCounter(prefix, 'settings', [
@@ -1707,19 +1946,35 @@
                     'employees_audit',
                 ]);
 
-                updateGroupState(prefix, 'master_data', [
+                updateGroupState(prefix, 'master_hr', [
                     'departments',
                     'positions',
+                ]);
+
+                updateGroupState(prefix, 'master_assets', [
                     'asset_categories',
-                    'account_types',
                     'asset_locations',
+                    'plant_sites',
                     'asset_uoms',
                     'asset_vendors',
+                ]);
+
+                updateGroupState(prefix, 'master_accounts', [
+                    'account_types',
+                ]);
+
+                updateGroupState(prefix, 'master_uniform', [
                     'uniform_sizes',
                     'uniform_item_names',
                     'uniform_categories',
                     'uniform_colors',
                     'uniform_uoms',
+                ]);
+
+                updateGroupState(prefix, 'master_daily_task', [
+                    'daily_task_types',
+                    'daily_task_priorities',
+                    'daily_task_statuses',
                 ]);
 
                 updateGroupState(prefix, 'settings', [
@@ -1882,18 +2137,18 @@
                     const $right = $formCheck.find('.menu-row-right');
 
                     const $actions = $(
-                        '<div class="rw-actions" role="group" aria-label="Actions">' +
+                        '<div class="rw-actions" role="group" aria-label="Aksi">' +
                         '<div class="btn-group btn-group-sm" role="group">' +
                         '<input class="btn-check" type="checkbox" id="' + createId + '" name="menu_' + key + '_create" value="1">' +
-                        '<label class="btn btn-outline-secondary" for="' + createId + '" title="Add (boleh tambah data)">' +
+                        '<label class="btn btn-outline-secondary" for="' + createId + '" title="Tambah (boleh tambah data)">' +
                         '<i class="fas fa-plus" aria-hidden="true"></i>' +
                         '</label>' +
                         '<input class="btn-check" type="checkbox" id="' + updateId + '" name="menu_' + key + '_update" value="1">' +
-                        '<label class="btn btn-outline-secondary" for="' + updateId + '" title="Edit (boleh ubah data)">' +
+                        '<label class="btn btn-outline-secondary" for="' + updateId + '" title="Ubah (boleh ubah data)">' +
                         '<i class="fas fa-pencil-alt" aria-hidden="true"></i>' +
                         '</label>' +
                         '<input class="btn-check" type="checkbox" id="' + deleteId + '" name="menu_' + key + '_delete" value="1">' +
-                        '<label class="btn btn-outline-secondary" for="' + deleteId + '" title="Delete (boleh hapus data)">' +
+                        '<label class="btn btn-outline-secondary" for="' + deleteId + '" title="Hapus (boleh hapus data)">' +
                         '<i class="fas fa-trash-alt" aria-hidden="true"></i>' +
                         '</label>' +
                         '</div>' +
@@ -2083,6 +2338,10 @@
                 // Keep group/submenu checkboxes in sync
                 bindGroupToggle('add', 'assets', [
                     'assets_data',
+                    'accounts_data',
+                    'accounts_secrets',
+                    'documents_archive',
+                    'documents_restricted',
                     'assets_jababeka',
                     'assets_karawang',
                     'assets_in',
@@ -2101,18 +2360,35 @@
                     'employees_audit',
                 ]);
 
-                bindGroupToggle('add', 'master_data', [
+                bindGroupToggle('add', 'master_hr', [
                     'departments',
                     'positions',
+                ]);
+
+                bindGroupToggle('add', 'master_assets', [
                     'asset_categories',
                     'asset_locations',
+                    'plant_sites',
                     'asset_uoms',
                     'asset_vendors',
+                ]);
+
+                bindGroupToggle('add', 'master_accounts', [
+                    'account_types',
+                ]);
+
+                bindGroupToggle('add', 'master_uniform', [
                     'uniform_sizes',
                     'uniform_item_names',
                     'uniform_categories',
                     'uniform_colors',
                     'uniform_uoms',
+                ]);
+
+                bindGroupToggle('add', 'master_daily_task', [
+                    'daily_task_types',
+                    'daily_task_priorities',
+                    'daily_task_statuses',
                 ]);
 
                 bindGroupToggle('add', 'settings', [
@@ -2123,6 +2399,10 @@
 
                 bindGroupToggle('edit', 'assets', [
                     'assets_data',
+                    'accounts_data',
+                    'accounts_secrets',
+                    'documents_archive',
+                    'documents_restricted',
                     'assets_jababeka',
                     'assets_karawang',
                     'assets_in',
@@ -2141,18 +2421,35 @@
                     'employees_audit',
                 ]);
 
-                bindGroupToggle('edit', 'master_data', [
+                bindGroupToggle('edit', 'master_hr', [
                     'departments',
                     'positions',
+                ]);
+
+                bindGroupToggle('edit', 'master_assets', [
                     'asset_categories',
                     'asset_locations',
+                    'plant_sites',
                     'asset_uoms',
                     'asset_vendors',
+                ]);
+
+                bindGroupToggle('edit', 'master_accounts', [
+                    'account_types',
+                ]);
+
+                bindGroupToggle('edit', 'master_uniform', [
                     'uniform_sizes',
                     'uniform_item_names',
                     'uniform_categories',
                     'uniform_colors',
                     'uniform_uoms',
+                ]);
+
+                bindGroupToggle('edit', 'master_daily_task', [
+                    'daily_task_types',
+                    'daily_task_priorities',
+                    'daily_task_statuses',
                 ]);
 
                 bindGroupToggle('edit', 'settings', [
@@ -2170,14 +2467,14 @@
                 e.preventDefault();
                 var form = $(this).closest('form');
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "This action cannot be undone!",
+                    title: 'Yakin?',
+                    text: "Tindakan ini tidak dapat dibatalkan!",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'OK',
-                    cancelButtonText: 'Cancel'
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit();

@@ -1,6 +1,8 @@
 @extends('about')
 @section('title', __('website.titles.ceo_message'))
 @section('breadcrumb_title', __('website.about.ceo_message.title'))
+@section('meta_description', 'Read the CEO message from PT ILSAM GLOBAL INDONESIA—our commitment, direction, and vision for sustainable growth.')
+@section('meta_image', asset('assets/img/img6.jpg'))
 @section('aboutus')
   <div class="row g-40 align-items-start">
     <div class="col-12 col-lg-7 order-2 order-lg-1">

@@ -45,7 +45,7 @@ class UserController extends Controller
     return $allTrue ? null : $permissions;
   }
 
-  private function extractMenuPermissions(Request $request): ?array
+  private function extractMenuPermissions(Request $request, ?User $existingUser = null): ?array
   {
     if (!$request->boolean('menu_permissions_present')) {
       return null;
@@ -53,7 +53,24 @@ class UserController extends Controller
 
     $roleId = (int) $request->input('role_id', 0);
 
-    $permFor = function (string $key) use ($request): array {
+    $defaults = MenuAccess::defaultsForRole(null, $roleId);
+    $existingOverrides = is_array($existingUser?->menu_permissions) ? $existingUser->menu_permissions : [];
+
+    $permFor = function (string $key) use ($request, $defaults, $existingOverrides): array {
+      $hasAny = $request->has('menu_' . $key)
+        || $request->has('menu_' . $key . '_create')
+        || $request->has('menu_' . $key . '_update')
+        || $request->has('menu_' . $key . '_delete');
+
+      // If a key is not present in the form submission, keep existing override (if any),
+      // otherwise fall back to role defaults. This avoids accidentally clearing unknown/hidden keys.
+      if (!$hasAny) {
+        if (array_key_exists($key, $existingOverrides)) {
+          return MenuAccess::normalize($existingOverrides[$key]);
+        }
+        return MenuAccess::normalize($defaults[$key] ?? MenuAccess::none());
+      }
+
       $read = $request->boolean('menu_' . $key);
       $create = $request->boolean('menu_' . $key . '_create');
       $update = $request->boolean('menu_' . $key . '_update');
@@ -78,6 +95,13 @@ class UserController extends Controller
 
       // Admin area
       'admin_dashboard' => $permFor('admin_dashboard'),
+
+      // Daily Tasks
+      'daily_tasks' => $permFor('daily_tasks'),
+
+      // Devices
+      'devices' => $permFor('devices'),
+
       // Groups
       'assets' => $permFor('assets'),
       'uniforms' => $permFor('uniforms'),
@@ -86,6 +110,8 @@ class UserController extends Controller
       'assets_data' => $permFor('assets_data'),
       'accounts_data' => $permFor('accounts_data'),
       'accounts_secrets' => $permFor('accounts_secrets'),
+      'documents_archive' => $permFor('documents_archive'),
+      'documents_restricted' => $permFor('documents_restricted'),
       'assets_jababeka' => $permFor('assets_jababeka'),
       'assets_karawang' => $permFor('assets_karawang'),
       'assets_in' => $permFor('assets_in'),
@@ -101,12 +127,21 @@ class UserController extends Controller
       'employees_index' => $permFor('employees_index'),
       'employees_deleted' => $permFor('employees_deleted'),
       'employees_audit' => $permFor('employees_audit'),
+
+      // Master groups (granular)
+      'master_hr' => $permFor('master_hr'),
+      'master_assets' => $permFor('master_assets'),
+      'master_accounts' => $permFor('master_accounts'),
+      'master_uniform' => $permFor('master_uniform'),
+      'master_daily_task' => $permFor('master_daily_task'),
+
       'master_data' => $permFor('master_data'),
       'departments' => $permFor('departments'),
       'positions' => $permFor('positions'),
       'asset_categories' => $permFor('asset_categories'),
       'account_types' => $permFor('account_types'),
       'asset_locations' => $permFor('asset_locations'),
+      'plant_sites' => $permFor('plant_sites'),
       'asset_uoms' => $permFor('asset_uoms'),
       'asset_vendors' => $permFor('asset_vendors'),
       'uniform_sizes' => $permFor('uniform_sizes'),
@@ -114,6 +149,12 @@ class UserController extends Controller
       'uniform_categories' => $permFor('uniform_categories'),
       'uniform_colors' => $permFor('uniform_colors'),
       'uniform_uoms' => $permFor('uniform_uoms'),
+
+      // Daily Tasks Masters
+      'daily_task_types' => $permFor('daily_task_types'),
+      'daily_task_priorities' => $permFor('daily_task_priorities'),
+      'daily_task_statuses' => $permFor('daily_task_statuses'),
+
       'career' => $permFor('career'),
       'certificate' => $permFor('certificate'),
       'settings' => $permFor('settings'),
@@ -122,7 +163,6 @@ class UserController extends Controller
       'settings_history_asset' => $permFor('settings_history_asset'),
     ];
 
-    $defaults = MenuAccess::defaultsForRole(null, $roleId);
     return $permissions == $defaults ? null : $permissions;
   }
 
@@ -234,7 +274,7 @@ class UserController extends Controller
     ]);
 
     $dashboardPermissions = $this->extractDashboardPermissions($request);
-    $menuPermissions = $this->extractMenuPermissions($request);
+    $menuPermissions = $this->extractMenuPermissions($request, $user);
 
     $user->name = $validated['name'];
     $user->username = $validated['username'] ?? null;

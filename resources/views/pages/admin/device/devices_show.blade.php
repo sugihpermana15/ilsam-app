@@ -507,7 +507,7 @@
         <div class="card-header">
           <div class="d-flex align-items-center gap-2">
             <i class="fas fa-box text-primary"></i>
-            <h6 class="card-title mb-0">Asset Snapshot</h6>
+            <h6 class="card-title mb-0">Ringkasan Aset</h6>
           </div>
         </div>
         <div class="card-body">
@@ -516,19 +516,19 @@
               <table class="table table-sm table-borderless mb-0 kv-table">
                 <tbody>
                   <tr>
-                    <th>Kode Asset</th>
+                    <th>Kode Aset</th>
                     <td><span class="font-monospace">{{ $device->asset_code ?? '-' }}</span></td>
                   </tr>
                   <tr>
-                    <th>Asset Name</th>
+                    <th>Nama Aset</th>
                     <td>{{ $device->asset_name ?? '-' }}</td>
                   </tr>
                   <tr>
-                    <th>Serial Number</th>
+                    <th>Nomor Seri</th>
                     <td><span class="font-monospace">{{ $device->asset_serial_number ?? '-' }}</span></td>
                   </tr>
                   <tr>
-                    <th>Status Asset</th>
+                    <th>Status Aset</th>
                     <td>
                       @if(($device->asset_status ?? null) !== null && $device->asset_status !== '')
                         <span class="badge {{ $assetStatusBadge }}">{{ $device->asset_status }}</span>
@@ -544,15 +544,15 @@
               <table class="table table-sm table-borderless mb-0 kv-table">
                 <tbody>
                   <tr>
-                    <th>Location</th>
+                    <th>Lokasi</th>
                     <td>{{ $device->asset_location ?? '-' }}</td>
                   </tr>
                   <tr>
-                    <th>User/PIC</th>
+                    <th>Pengguna/PIC</th>
                     <td>{{ $device->asset_person_in_charge ?? '-' }}</td>
                   </tr>
                   <tr>
-                    <th>Department</th>
+                    <th>Departemen</th>
                     <td>{{ $device->asset_department ?? '-' }}</td>
                   </tr>
                   <tr>
@@ -581,7 +581,7 @@
               <table class="table table-sm table-borderless mb-0 kv-table">
                 <tbody>
                   <tr>
-                    <th>Device Name (Hostname)</th>
+                    <th>Nama Perangkat (Hostname)</th>
                     <td>{{ $device->device_name ?? '-' }}</td>
                   </tr>
                   <tr>

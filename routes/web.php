@@ -34,6 +34,9 @@ use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AccountTypeController;
 use App\Http\Controllers\Admin\DocumentController;
 use App\Http\Controllers\Admin\DeviceController;
+use App\Http\Controllers\Admin\DailyTaskTypeController;
+use App\Http\Controllers\Admin\DailyTaskPriorityController;
+use App\Http\Controllers\Admin\DailyTaskStatusController;
 use App\Http\Controllers\Admin\CareerController as AdminCareerController;
 use App\Http\Controllers\Admin\CareerCandidateController as AdminCareerCandidateController;
 use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
@@ -55,6 +58,44 @@ Route::get('/lang/{locale}', function ($locale) {
 
 // Main Pages
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Sitemap (basic). Add/adjust URLs as needed.
+Route::get('/sitemap.xml', function () {
+    $urls = [
+        route('home'),
+        route('aboutus'),
+        route('ceo'),
+        route('philosophy'),
+        route('technology'),
+        route('technology.certification-status'),
+        route('products'),
+        route('products.colorants'),
+        route('products.surface-coating-agents'),
+        route('products.additive-coating'),
+        route('products.pu-resin'),
+        route('career'),
+        route('contact'),
+        route('privacy-policy'),
+    ];
+
+    $lastmod = now()->toAtomString();
+
+    $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    $xml .= "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
+    foreach ($urls as $url) {
+        $loc = htmlspecialchars($url, ENT_QUOTES | ENT_XML1, 'UTF-8');
+        $xml .= "  <url>\n";
+        $xml .= "    <loc>{$loc}</loc>\n";
+        $xml .= "    <lastmod>{$lastmod}</lastmod>\n";
+        $xml .= "    <changefreq>weekly</changefreq>\n";
+        $xml .= "    <priority>0.7</priority>\n";
+        $xml .= "  </url>\n";
+    }
+    $xml .= "</urlset>\n";
+
+    return response($xml)
+        ->header('Content-Type', 'application/xml; charset=UTF-8');
+})->name('sitemap');
 
 // Optimized image variants (resize/compress + cache)
 Route::get('/img/{path}', [ImageController::class, 'show'])
@@ -197,6 +238,23 @@ Route::prefix('admin')->middleware([
     Route::put('/uniform-uoms/{uom}', [UniformUomController::class, 'update'])->middleware('menu:uniform_uoms')->name('admin.uniform_uoms.update');
     Route::post('/uniform-uoms/{uom}/toggle', [UniformUomController::class, 'toggle'])->middleware('menu:uniform_uoms,update')->name('admin.uniform_uoms.toggle');
 
+    // Master Data: Daily Task Types
+    Route::get('/daily-task-types', [DailyTaskTypeController::class, 'index'])->middleware('menu:daily_task_types')->name('admin.daily_task_types.index');
+    Route::post('/daily-task-types', [DailyTaskTypeController::class, 'store'])->middleware('menu:daily_task_types')->name('admin.daily_task_types.store');
+    Route::put('/daily-task-types/{type}', [DailyTaskTypeController::class, 'update'])->middleware('menu:daily_task_types')->name('admin.daily_task_types.update');
+    Route::post('/daily-task-types/{type}/toggle', [DailyTaskTypeController::class, 'toggle'])->middleware('menu:daily_task_types,update')->name('admin.daily_task_types.toggle');
+
+    // Master Data: Daily Task Priorities
+    Route::get('/daily-task-priorities', [DailyTaskPriorityController::class, 'index'])->middleware('menu:daily_task_priorities')->name('admin.daily_task_priorities.index');
+    Route::post('/daily-task-priorities', [DailyTaskPriorityController::class, 'store'])->middleware('menu:daily_task_priorities')->name('admin.daily_task_priorities.store');
+    Route::put('/daily-task-priorities/{priority}', [DailyTaskPriorityController::class, 'update'])->middleware('menu:daily_task_priorities')->name('admin.daily_task_priorities.update');
+    Route::post('/daily-task-priorities/{priority}/toggle', [DailyTaskPriorityController::class, 'toggle'])->middleware('menu:daily_task_priorities,update')->name('admin.daily_task_priorities.toggle');
+
+    // Master Data: Daily Task Statuses
+    Route::get('/daily-task-statuses', [DailyTaskStatusController::class, 'index'])->middleware('menu:daily_task_statuses')->name('admin.daily_task_statuses.index');
+    Route::put('/daily-task-statuses/{status}', [DailyTaskStatusController::class, 'update'])->middleware('menu:daily_task_statuses')->name('admin.daily_task_statuses.update');
+    Route::post('/daily-task-statuses/{status}/toggle', [DailyTaskStatusController::class, 'toggle'])->middleware('menu:daily_task_statuses,update')->name('admin.daily_task_statuses.toggle');
+
     // Career Management
     Route::get('/careers', [AdminCareerController::class, 'index'])->middleware('menu:career')->name('admin.careers.index');
     Route::put('/careers/company', [AdminCareerController::class, 'updateCompany'])->middleware('menu:career')->name('admin.careers.company.update');
@@ -240,6 +298,12 @@ Route::prefix('admin')->middleware([
     Route::get('/uniforms/distribution', [UniformController::class, 'distribution'])->middleware('menu:uniforms_distribution')->name('admin.uniforms.distribution');
     Route::get('/uniforms/history', [UniformController::class, 'history'])->middleware('menu:uniforms_history')->name('admin.uniforms.history');
 
+    // Daily Tasks (read-only)
+    Route::get('/daily-tasks', [\App\Http\Controllers\Admin\DailyTaskController::class, 'index'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.index');
+    Route::get('/daily-tasks/datatables', [\App\Http\Controllers\Admin\DailyTaskController::class, 'datatable'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.datatable');
+    Route::get('/daily-tasks/{task}/json', [\App\Http\Controllers\Admin\DailyTaskController::class, 'json'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.json');
+    Route::get('/daily-tasks/export/pdf', [\App\Http\Controllers\Admin\DailyTaskController::class, 'exportPdf'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.export.pdf');
+
     // Accounts (read-only)
     Route::get('/accounts', [AccountController::class, 'index'])->middleware('menu:accounts_data')->name('admin.accounts.index');
     Route::get('/accounts/{id}', [AccountController::class, 'show'])->middleware('menu:accounts_data')->name('admin.accounts.show');
@@ -269,6 +333,24 @@ Route::prefix('admin')->middleware([
 
     // Approvals (requester)
     Route::post('/accounts/secrets/{secretId}/approval', [AccountController::class, 'requestRevealApproval'])->middleware('menu:accounts_secrets,read')->name('admin.accounts.approvals.request');
+});
+
+// Daily Tasks (write actions)
+Route::prefix('admin')->middleware([
+    EnsureAuthenticated::class,
+    'role:Super Admin,Admin,Users',
+])->group(function () {
+    Route::post('/daily-tasks', [\App\Http\Controllers\Admin\DailyTaskController::class, 'store'])->middleware('menu:daily_tasks,create')->name('admin.daily_tasks.store');
+    Route::put('/daily-tasks/{task}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'update'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.update');
+    Route::delete('/daily-tasks/{task}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'destroy'])->middleware('menu:daily_tasks,delete')->name('admin.daily_tasks.destroy');
+
+    Route::post('/daily-tasks/{task}/attachments', [\App\Http\Controllers\Admin\DailyTaskController::class, 'uploadAttachment'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.attachments.upload');
+    Route::delete('/daily-tasks/attachments/{attachment}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'deleteAttachment'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.attachments.delete');
+
+    Route::post('/daily-tasks/{task}/checklists', [\App\Http\Controllers\Admin\DailyTaskController::class, 'addChecklist'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.checklists.add');
+    // Allow assignees/creators to tick checklist even if their menu access is read-only.
+    Route::patch('/daily-tasks/checklists/{item}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'toggleChecklist'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.checklists.toggle');
+    Route::delete('/daily-tasks/checklists/{item}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'deleteChecklist'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.checklists.delete');
 });
 
 // Archived Berkas (write actions)

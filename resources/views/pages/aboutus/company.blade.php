@@ -1,6 +1,8 @@
 @extends('about')
 @section('title', __('website.titles.company_overview'))
 @section('breadcrumb_title', __('website.about.company_overview.title'))
+@section('meta_description', 'Learn about PT ILSAM GLOBAL INDONESIA: our company overview, values, and journey. Explore our profile and milestones.')
+@section('meta_image', asset('assets/img/img8.jpeg'))
 @section('aboutus')
   <div class="service-details__content-media company-overview__media wow fadeInUp" data-wow-delay=".1s">
     <img

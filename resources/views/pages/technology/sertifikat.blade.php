@@ -3,6 +3,8 @@
 @section('page_title', __('website.titles.certification_status'))
 @section('breadcrumb_title', __('website.nav.menu.certification_status'))
 
+@section('meta_description', 'Certification status list for PT ILSAM GLOBAL INDONESIA: view active, expiring, and expired certifications for supplied chemicals and materials.')
+@section('meta_image', asset('assets/img/img15.jpg'))
 @section('rnd_content')
   @php
     $statusCounts = [

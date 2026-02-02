@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', __('website.titles.career'))
 
+@section('meta_description', 'Explore career opportunities at PT ILSAM GLOBAL INDONESIA. Browse open positions, filter by department and location, and apply online.')
+@section('meta_image', asset('assets/img/img9.jpg'))
 @section('main')
   @php
     $openings = collect($openings ?? []);

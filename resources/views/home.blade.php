@@ -2,6 +2,9 @@
 
 @section('title', 'Ilsam')
 
+@section('meta_description', 'PT ILSAM GLOBAL INDONESIA (Ilsam) supplies chemical colorants and coating solutions for PU/PVC synthetic leather and footwear manufacturing. Based in Karawang, West Java—serving Cikarang, Bekasi, Karawang, Jakarta, and customers across Java & Indonesia.')
+@section('meta_image', asset('assets/img/img1.jpg'))
+
 @section('main')
   <!-- Banner area start -->
   <section class="banner overflow-hidden">

@@ -9,12 +9,12 @@ return [
         'add_modal_title' => 'Tambah Kategori Aset',
         'edit_modal_title' => 'Edit Kategori Aset',
         'fields' => [
-            'asset_code_prefix' => 'Prefix Asset Code',
+            'asset_code_prefix' => 'Prefix Kode Aset',
         ],
         'table' => [
-            'asset_code_prefix' => 'Prefix Asset Code',
+            'asset_code_prefix' => 'Prefix Kode Aset',
         ],
-        'hint_prefix' => 'Digunakan untuk format asset code: IGI-{PREFIX}-...',
+        'hint_prefix' => 'Digunakan untuk format kode aset: IGI-{PREFIX}-...',
         'placeholders' => [
             'code' => 'mis: IT',
             'name' => 'mis: Information Technology',
@@ -31,12 +31,12 @@ return [
         'edit_modal_title' => 'Edit Lokasi Aset',
         'fields' => [
             'location_name' => 'Nama Lokasi',
-            'asset_code_prefix' => 'Kode Lokasi (Asset Code)',
+            'asset_code_prefix' => 'Kode Lokasi (Kode Aset)',
         ],
         'table' => [
-            'asset_code_prefix' => 'Kode Lokasi (Asset Code)',
+            'asset_code_prefix' => 'Kode Lokasi (Kode Aset)',
         ],
-        'hint_prefix' => 'Digunakan untuk format asset code: IGI-..-{KODE}-...',
+        'hint_prefix' => 'Digunakan untuk format kode aset: IGI-..-{KODE}-...',
         'placeholders' => [
             'name' => 'mis: Jababeka',
             'prefix' => 'mis: 01',

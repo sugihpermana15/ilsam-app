@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /signin
+Disallow: /signup
+Disallow: /forgot-password
+
+Allow: /
+
+# Production sitemap
+Sitemap: https://ilsam.co.id/sitemap.xml

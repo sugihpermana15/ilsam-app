@@ -1,6 +1,8 @@
 @extends('about')
 @section('title', __('website.titles.business_philosophy'))
 @section('breadcrumb_title', __('website.about.business_philosophy.title'))
+@section('meta_description', 'Discover the philosophy of PT ILSAM GLOBAL INDONESIA: our principles, quality focus, and long-term commitment to customers and partners.')
+@section('meta_image', asset('assets/img/img3.jpg'))
 @section('aboutus')
 
     <!-- Working Process area start -->

@@ -75,6 +75,11 @@
                 'Audit Log' => __('menu.employees.audit_log'),
 
                 'Master Data' => __('menu.master_data'),
+                'Master HR' => __('menu.master_groups.hr'),
+                'Master Assets' => __('menu.master_groups.assets'),
+                'Master Accounts' => __('menu.master_groups.accounts'),
+                'Master Uniform' => __('menu.master_groups.uniform'),
+                'Master Daily Task' => __('menu.master_groups.daily_task'),
                 'Departments' => __('menu.master.departments'),
                 'Positions' => __('menu.master.positions'),
                 'Kategori Asset' => __('menu.master.asset_categories'),
@@ -88,6 +93,18 @@
                 'Kategori Seragam' => __('menu.master.uniform_categories'),
                 'Warna Seragam' => __('menu.master.uniform_colors'),
                 'UOM Seragam' => __('menu.master.uniform_uoms'),
+
+                'Task Types' => __('menu.master.daily_task_types'),
+                'Task Priorities' => __('menu.master.daily_task_priorities'),
+                'Task Statuses' => __('menu.master.daily_task_statuses'),
+
+                'Daily Tasks' => __('menu.daily_tasks'),
+
+                // Settings & UI (legacy English labels)
+                'Settings and Log' => 'Pengaturan & Log',
+                'Users' => 'Pengguna',
+                'History Delete User' => 'Riwayat Hapus Pengguna',
+                'History Delete Asset' => 'Riwayat Hapus Aset',
             ];
 
             return $map[$text] ?? (string) $text;
@@ -154,6 +171,25 @@
                             ],
                         ],
                         [
+                            'title' => 'Daily Tasks',
+                            'icon' => 'fas fa-clipboard-check',
+                            'route' => 'admin.daily_tasks.index',
+                            'permission_key' => 'daily_tasks',
+                            'active_routes' => [
+                                'admin.daily_tasks.index',
+                                'admin.daily_tasks.datatable',
+                                'admin.daily_tasks.json',
+                                'admin.daily_tasks.store',
+                                'admin.daily_tasks.update',
+                                'admin.daily_tasks.destroy',
+                                'admin.daily_tasks.attachments.upload',
+                                'admin.daily_tasks.attachments.delete',
+                                'admin.daily_tasks.checklists.add',
+                                'admin.daily_tasks.checklists.toggle',
+                                'admin.daily_tasks.checklists.delete',
+                            ],
+                        ],
+                        [
                             'title' => 'Stok Seragam',
                             'icon' => 'fas fa-box-open',
                             'permission_key' => 'uniforms',
@@ -194,9 +230,9 @@
                             ],
                         ],
                         [
-                            'title' => 'Master Data',
+                            'title' => 'Master HR',
                             'icon' => 'fas fa-database',
-                            'permission_key' => 'master_data',
+                            'permission_key' => 'master_hr',
                             'active_routes' => [
                                 'admin.departments.index',
                                 'admin.departments.store',
@@ -206,34 +242,21 @@
                                 'admin.positions.store',
                                 'admin.positions.update',
                                 'admin.positions.destroy',
-                                'admin.uniform_item_names.index',
-                                'admin.uniform_item_names.store',
-                                'admin.uniform_item_names.update',
-                                'admin.uniform_item_names.toggle',
-                                'admin.uniform_categories.index',
-                                'admin.uniform_categories.store',
-                                'admin.uniform_categories.update',
-                                'admin.uniform_categories.toggle',
-                                'admin.uniform_colors.index',
-                                'admin.uniform_colors.store',
-                                'admin.uniform_colors.update',
-                                'admin.uniform_colors.toggle',
-                                'admin.uniform_uoms.index',
-                                'admin.uniform_uoms.store',
-                                'admin.uniform_uoms.update',
-                                'admin.uniform_uoms.toggle',
-                                'admin.uniform_sizes.index',
-                                'admin.uniform_sizes.store',
-                                'admin.uniform_sizes.update',
-                                'admin.uniform_sizes.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
+                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Assets',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_assets',
+                            'active_routes' => [
                                 'admin.asset_categories.index',
                                 'admin.asset_categories.store',
                                 'admin.asset_categories.update',
                                 'admin.asset_categories.toggle',
-                                'admin.account_types.index',
-                                'admin.account_types.store',
-                                'admin.account_types.update',
-                                'admin.account_types.toggle',
                                 'admin.asset_locations.index',
                                 'admin.asset_locations.store',
                                 'admin.asset_locations.update',
@@ -252,19 +275,82 @@
                                 'admin.asset_vendors.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
-                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
-                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index', 'permission_key' => 'asset_categories'],
-                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'permission_key' => 'account_types'],
+                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index', 'default' => true, 'permission_key' => 'asset_categories'],
                                 ['title' => 'Lokasi Asset', 'route' => 'admin.asset_locations.index', 'permission_key' => 'asset_locations'],
                                 ['title' => 'Plant/Site', 'route' => 'admin.plant_sites.index', 'permission_key' => 'plant_sites'],
                                 ['title' => 'Satuan Asset', 'route' => 'admin.asset_uoms.index', 'permission_key' => 'asset_uoms'],
                                 ['title' => 'Vendor Asset', 'route' => 'admin.asset_vendors.index', 'permission_key' => 'asset_vendors'],
-                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'permission_key' => 'uniform_sizes'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Accounts',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_accounts',
+                            'active_routes' => [
+                                'admin.account_types.index',
+                                'admin.account_types.store',
+                                'admin.account_types.update',
+                                'admin.account_types.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'default' => true, 'permission_key' => 'account_types'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Uniform',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_uniform',
+                            'active_routes' => [
+                                'admin.uniform_sizes.index',
+                                'admin.uniform_sizes.store',
+                                'admin.uniform_sizes.update',
+                                'admin.uniform_sizes.toggle',
+                                'admin.uniform_item_names.index',
+                                'admin.uniform_item_names.store',
+                                'admin.uniform_item_names.update',
+                                'admin.uniform_item_names.toggle',
+                                'admin.uniform_categories.index',
+                                'admin.uniform_categories.store',
+                                'admin.uniform_categories.update',
+                                'admin.uniform_categories.toggle',
+                                'admin.uniform_colors.index',
+                                'admin.uniform_colors.store',
+                                'admin.uniform_colors.update',
+                                'admin.uniform_colors.toggle',
+                                'admin.uniform_uoms.index',
+                                'admin.uniform_uoms.store',
+                                'admin.uniform_uoms.update',
+                                'admin.uniform_uoms.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'default' => true, 'permission_key' => 'uniform_sizes'],
                                 ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index', 'permission_key' => 'uniform_item_names'],
                                 ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index', 'permission_key' => 'uniform_categories'],
                                 ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index', 'permission_key' => 'uniform_colors'],
                                 ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index', 'permission_key' => 'uniform_uoms'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Daily Task',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_daily_task',
+                            'active_routes' => [
+                                'admin.daily_task_types.index',
+                                'admin.daily_task_types.store',
+                                'admin.daily_task_types.update',
+                                'admin.daily_task_types.toggle',
+                                'admin.daily_task_priorities.index',
+                                'admin.daily_task_priorities.store',
+                                'admin.daily_task_priorities.update',
+                                'admin.daily_task_priorities.toggle',
+                                'admin.daily_task_statuses.index',
+                                'admin.daily_task_statuses.update',
+                                'admin.daily_task_statuses.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Task Types', 'route' => 'admin.daily_task_types.index', 'default' => true, 'permission_key' => 'daily_task_types'],
+                                ['title' => 'Task Priorities', 'route' => 'admin.daily_task_priorities.index', 'permission_key' => 'daily_task_priorities'],
+                                ['title' => 'Task Statuses', 'route' => 'admin.daily_task_statuses.index', 'permission_key' => 'daily_task_statuses'],
                             ],
                         ],
                     ],
@@ -375,9 +461,9 @@
                             ],
                         ],
                         [
-                            'title' => 'Master Data',
+                            'title' => 'Master HR',
                             'icon' => 'fas fa-database',
-                            'permission_key' => 'master_data',
+                            'permission_key' => 'master_hr',
                             'active_routes' => [
                                 'admin.departments.index',
                                 'admin.departments.store',
@@ -387,6 +473,69 @@
                                 'admin.positions.store',
                                 'admin.positions.update',
                                 'admin.positions.destroy',
+                            ],
+                            'children' => [
+                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
+                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Assets',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_assets',
+                            'active_routes' => [
+                                'admin.asset_categories.index',
+                                'admin.asset_categories.store',
+                                'admin.asset_categories.update',
+                                'admin.asset_categories.toggle',
+                                'admin.asset_locations.index',
+                                'admin.asset_locations.store',
+                                'admin.asset_locations.update',
+                                'admin.asset_locations.toggle',
+                                'admin.plant_sites.index',
+                                'admin.plant_sites.store',
+                                'admin.plant_sites.update',
+                                'admin.plant_sites.toggle',
+                                'admin.asset_uoms.index',
+                                'admin.asset_uoms.store',
+                                'admin.asset_uoms.update',
+                                'admin.asset_uoms.toggle',
+                                'admin.asset_vendors.index',
+                                'admin.asset_vendors.store',
+                                'admin.asset_vendors.update',
+                                'admin.asset_vendors.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index', 'default' => true, 'permission_key' => 'asset_categories'],
+                                ['title' => 'Lokasi Asset', 'route' => 'admin.asset_locations.index', 'permission_key' => 'asset_locations'],
+                                ['title' => 'Plant/Site', 'route' => 'admin.plant_sites.index', 'permission_key' => 'plant_sites'],
+                                ['title' => 'Satuan Asset', 'route' => 'admin.asset_uoms.index', 'permission_key' => 'asset_uoms'],
+                                ['title' => 'Vendor Asset', 'route' => 'admin.asset_vendors.index', 'permission_key' => 'asset_vendors'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Accounts',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_accounts',
+                            'active_routes' => [
+                                'admin.account_types.index',
+                                'admin.account_types.store',
+                                'admin.account_types.update',
+                                'admin.account_types.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'default' => true, 'permission_key' => 'account_types'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Uniform',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_uniform',
+                            'active_routes' => [
+                                'admin.uniform_sizes.index',
+                                'admin.uniform_sizes.store',
+                                'admin.uniform_sizes.update',
+                                'admin.uniform_sizes.toggle',
                                 'admin.uniform_item_names.index',
                                 'admin.uniform_item_names.store',
                                 'admin.uniform_item_names.update',
@@ -403,24 +552,55 @@
                                 'admin.uniform_uoms.store',
                                 'admin.uniform_uoms.update',
                                 'admin.uniform_uoms.toggle',
-                                'admin.uniform_sizes.index',
-                                'admin.uniform_sizes.store',
-                                'admin.uniform_sizes.update',
-                                'admin.uniform_sizes.toggle',
-                                'admin.account_types.index',
-                                'admin.account_types.store',
-                                'admin.account_types.update',
-                                'admin.account_types.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
-                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
-                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'permission_key' => 'account_types'],
-                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'permission_key' => 'uniform_sizes'],
+                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'default' => true, 'permission_key' => 'uniform_sizes'],
                                 ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index', 'permission_key' => 'uniform_item_names'],
                                 ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index', 'permission_key' => 'uniform_categories'],
                                 ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index', 'permission_key' => 'uniform_colors'],
                                 ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index', 'permission_key' => 'uniform_uoms'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Master Daily Task',
+                            'icon' => 'fas fa-database',
+                            'permission_key' => 'master_daily_task',
+                            'active_routes' => [
+                                'admin.daily_task_types.index',
+                                'admin.daily_task_types.store',
+                                'admin.daily_task_types.update',
+                                'admin.daily_task_types.toggle',
+                                'admin.daily_task_priorities.index',
+                                'admin.daily_task_priorities.store',
+                                'admin.daily_task_priorities.update',
+                                'admin.daily_task_priorities.toggle',
+                                'admin.daily_task_statuses.index',
+                                'admin.daily_task_statuses.update',
+                                'admin.daily_task_statuses.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Task Types', 'route' => 'admin.daily_task_types.index', 'default' => true, 'permission_key' => 'daily_task_types'],
+                                ['title' => 'Task Priorities', 'route' => 'admin.daily_task_priorities.index', 'permission_key' => 'daily_task_priorities'],
+                                ['title' => 'Task Statuses', 'route' => 'admin.daily_task_statuses.index', 'permission_key' => 'daily_task_statuses'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Daily Tasks',
+                            'icon' => 'fas fa-clipboard-check',
+                            'route' => 'admin.daily_tasks.index',
+                            'permission_key' => 'daily_tasks',
+                            'active_routes' => [
+                                'admin.daily_tasks.index',
+                                'admin.daily_tasks.datatable',
+                                'admin.daily_tasks.json',
+                                'admin.daily_tasks.store',
+                                'admin.daily_tasks.update',
+                                'admin.daily_tasks.destroy',
+                                'admin.daily_tasks.attachments.upload',
+                                'admin.daily_tasks.attachments.delete',
+                                'admin.daily_tasks.checklists.add',
+                                'admin.daily_tasks.checklists.toggle',
+                                'admin.daily_tasks.checklists.delete',
                             ],
                         ],
                     ],
@@ -509,6 +689,25 @@
                             'active_routes' => [
                                 'admin.devices.index',
                                 'admin.devices.show',
+                            ],
+                        ],
+                        [
+                            'title' => 'Daily Tasks',
+                            'icon' => 'fas fa-clipboard-check',
+                            'route' => 'admin.daily_tasks.index',
+                            'permission_key' => 'daily_tasks',
+                            'active_routes' => [
+                                'admin.daily_tasks.index',
+                                'admin.daily_tasks.datatable',
+                                'admin.daily_tasks.json',
+                                'admin.daily_tasks.store',
+                                'admin.daily_tasks.update',
+                                'admin.daily_tasks.destroy',
+                                'admin.daily_tasks.attachments.upload',
+                                'admin.daily_tasks.attachments.delete',
+                                'admin.daily_tasks.checklists.add',
+                                'admin.daily_tasks.checklists.toggle',
+                                'admin.daily_tasks.checklists.delete',
                             ],
                         ],
                     ],
@@ -857,6 +1056,18 @@
                 if (preg_match('/^admin\.(uniform_uoms)\./', $routeName) === 1) {
                     return 'uniform_uoms';
                 }
+                if (str_starts_with($routeName, 'admin.daily_tasks.')) {
+                    return 'daily_tasks';
+                }
+                if (preg_match('/^admin\.(daily_task_types)\./', $routeName) === 1) {
+                    return 'daily_task_types';
+                }
+                if (preg_match('/^admin\.(daily_task_priorities)\./', $routeName) === 1) {
+                    return 'daily_task_priorities';
+                }
+                if (preg_match('/^admin\.(daily_task_statuses)\./', $routeName) === 1) {
+                    return 'daily_task_statuses';
+                }
                 if (preg_match('/^admin\.(asset_categories)\./', $routeName) === 1) {
                     return 'asset_categories';
                 }
@@ -903,6 +1114,10 @@
                     @php
                         $filteredItems = array_values(array_filter($group['items'], function ($item) use ($isMenuAllowed, $resolvePermissionKey) {
                             if (isset($item['children']) && is_array($item['children'])) {
+                                // If a parent menu explicitly declares a permission key (group access), enforce it.
+                                if (!empty($item['permission_key']) && !$isMenuAllowed($resolvePermissionKey($item))) {
+                                    return false;
+                                }
                                 foreach ($item['children'] as $child) {
                                     if ($isMenuAllowed($resolvePermissionKey($child))) {
                                         return true;

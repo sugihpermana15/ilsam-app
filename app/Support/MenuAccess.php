@@ -79,6 +79,11 @@ final class MenuAccess
         return ['read' => true, 'create' => true, 'update' => true, 'delete' => true];
     }
 
+    public static function readCreateUpdate(): array
+    {
+        return ['read' => true, 'create' => true, 'update' => true, 'delete' => false];
+    }
+
     public static function defaultsForRole(?string $roleName, ?int $roleId): array
     {
         $resolved = $roleName;
@@ -103,6 +108,14 @@ final class MenuAccess
             return [
                 'user_dashboard' => self::readOnly(),
                 'admin_dashboard' => self::none(),
+
+                // Daily Tasks
+                'daily_tasks' => self::readCreateUpdate(),
+
+                // Daily Tasks Masters
+                'daily_task_types' => self::none(),
+                'daily_task_priorities' => self::none(),
+                'daily_task_statuses' => self::none(),
 
                 // Groups
                 'assets' => self::none(),
@@ -136,6 +149,14 @@ final class MenuAccess
                 'employees_index' => self::none(),
                 'employees_deleted' => self::none(),
                 'employees_audit' => self::none(),
+
+                // Master groups (granular)
+                'master_hr' => self::none(),
+                'master_assets' => self::none(),
+                'master_accounts' => self::none(),
+                'master_uniform' => self::none(),
+                'master_daily_task' => self::none(),
+
                 'master_data' => self::none(),
                 'departments' => self::none(),
                 'positions' => self::none(),
@@ -163,6 +184,14 @@ final class MenuAccess
         $all = [
             'user_dashboard' => self::readOnly(),
             'admin_dashboard' => self::readOnly(),
+
+            // Daily Tasks
+            'daily_tasks' => self::all(),
+
+            // Daily Tasks Masters
+            'daily_task_types' => self::all(),
+            'daily_task_priorities' => self::all(),
+            'daily_task_statuses' => self::all(),
 
             // Groups
             'assets' => self::all(),
@@ -196,6 +225,14 @@ final class MenuAccess
             'employees_index' => self::all(),
             'employees_deleted' => self::all(),
             'employees_audit' => self::all(),
+
+            // Master groups (granular)
+            'master_hr' => self::all(),
+            'master_assets' => self::all(),
+            'master_accounts' => self::all(),
+            'master_uniform' => self::all(),
+            'master_daily_task' => self::all(),
+
             'master_data' => self::all(),
             'departments' => self::all(),
             'positions' => self::all(),
@@ -237,6 +274,18 @@ final class MenuAccess
         if (is_array($stored)) {
             foreach ($stored as $k => $v) {
                 $effective[$k] = self::normalize($v);
+            }
+        }
+
+        // Backward compatibility: legacy "master_data" used to gate all master dropdowns.
+        // If a user has overrides for master_data but not the new granular master_* keys,
+        // mirror the legacy permission into the new group keys.
+        if (is_array($stored) && array_key_exists('master_data', $stored)) {
+            $legacy = self::normalize($stored['master_data']);
+            foreach (['master_hr', 'master_assets', 'master_accounts', 'master_uniform', 'master_daily_task'] as $k) {
+                if (!array_key_exists($k, $stored)) {
+                    $effective[$k] = $legacy;
+                }
             }
         }
 

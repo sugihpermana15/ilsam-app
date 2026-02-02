@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('title', __('website.titles.contact'))
 
+@section('meta_description', 'Contact PT ILSAM GLOBAL INDONESIA in Karawang, West Java for chemical colorants and coating solutions (PU/PVC synthetic leather & footwear manufacturing). Serving Cikarang, Bekasi, Karawang, Jakarta, and across Java & Indonesia.')
+@section('meta_image', asset('assets/img/img14.jpg'))
 @section('main')
     <!-- Breadcrumb area start  -->
     <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">

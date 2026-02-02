@@ -3,6 +3,8 @@
 @section('page_title', __('website.titles.technology'))
 @section('breadcrumb_title', __('website.nav.menu.technology'))
 
+@section('meta_description', 'Explore the technology and R&D focus of PT ILSAM GLOBAL INDONESIA, including our domains, standards, and innovation approach.')
+@section('meta_image', asset('assets/img/img15.jpg'))
 @section('rnd_content')
   <section class="ilsam-rnd-hero">
     <div class="ilsam-rnd-hero__bg" data-background="{{ asset('assets/img/img15.jpg') }}"></div>

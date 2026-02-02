@@ -56,7 +56,7 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <div>
         <h5 class="card-title mb-0">Master Device</h5>
-        <div class="text-muted small">Kelola data device/komputer terhubung dengan Asset.</div>
+        <div class="text-muted small">Kelola data device/komputer terhubung dengan Aset.</div>
       </div>
       <a href="{{ route('admin.devices.create') }}" class="btn btn-success" {{ $canCreate ? '' : 'disabled' }}>
         <i class="fas fa-plus"></i> {{ __('common.add') }}
@@ -72,12 +72,12 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>Kode Asset</th>
-              <th>Asset Name</th>
-              <th>Device Name</th>
-              <th>User/PIC</th>
-              <th>Location</th>
-              <th>Last Maintenance</th>
+              <th>Kode Aset</th>
+              <th>Nama Aset</th>
+              <th>Nama Perangkat</th>
+              <th>Pengguna/PIC</th>
+              <th>Lokasi</th>
+              <th>Perawatan Terakhir</th>
               <th>Aksi</th>
             </tr>
           </thead>

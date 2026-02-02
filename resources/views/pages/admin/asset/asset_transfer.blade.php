@@ -151,7 +151,7 @@
   </div><!--End container-fluid-->
   </main><!--End app-wrapper-->
 
-  <!-- Modal Cari Asset -->
+  <!-- Modal Cari Aset -->
   <div class="modal fade" id="modal-cari-asset" tabindex="-1" aria-labelledby="modal-cari-asset-label" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">

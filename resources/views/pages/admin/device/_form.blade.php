@@ -10,16 +10,16 @@
 <div class="row g-3">
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center">
-      <h6 class="mb-0">Asset</h6>
-      <span class="text-muted small">Pilih kode asset untuk auto-fill.</span>
+      <h6 class="mb-0">Aset</h6>
+      <span class="text-muted small">Pilih kode aset untuk auto-fill.</span>
     </div>
     <hr class="mt-2 mb-0">
   </div>
 
   <div class="col-12">
-    <label class="form-label">Kode Asset</label>
+    <label class="form-label">Kode Aset</label>
     <select class="form-select" name="asset_code" id="asset_code" required>
-      <option value="">-- pilih kode asset --</option>
+      <option value="">-- pilih kode aset --</option>
       @foreach($assets as $asset)
         <option value="{{ $asset->asset_code }}" {{ old('asset_code', $device->asset_code ?? '') == $asset->asset_code ? 'selected' : '' }}>
           {{ $asset->asset_code }} — {{ $asset->asset_name }}
@@ -32,27 +32,27 @@
   </div>
 
   <div class="col-md-6">
-    <label class="form-label">Asset Name (auto)</label>
+    <label class="form-label">Nama Aset (otomatis)</label>
     <input type="text" class="form-control" id="asset_name_preview" value="" disabled>
   </div>
   <div class="col-md-6">
-    <label class="form-label">Serial Number (auto)</label>
+    <label class="form-label">Nomor Seri (otomatis)</label>
     <input type="text" class="form-control" id="asset_serial_preview" value="" disabled>
   </div>
   <div class="col-md-4">
-    <label class="form-label">Status Device (auto)</label>
+    <label class="form-label">Status Perangkat (otomatis)</label>
     <input type="text" class="form-control" id="asset_status_preview" value="" disabled>
   </div>
   <div class="col-md-4">
-    <label class="form-label">User/PIC (auto)</label>
+    <label class="form-label">Pengguna/PIC (otomatis)</label>
     <input type="text" class="form-control" id="asset_pic_preview" value="" disabled>
   </div>
   <div class="col-md-4">
-    <label class="form-label">Department/Divisi (auto)</label>
+    <label class="form-label">Departemen/Divisi (otomatis)</label>
     <input type="text" class="form-control" id="asset_department_preview" value="" disabled>
   </div>
   <div class="col-md-6">
-    <label class="form-label">Location/Site (auto)</label>
+    <label class="form-label">Lokasi/Site (otomatis)</label>
     <input type="text" class="form-control" id="asset_location_preview" value="" disabled>
   </div>
 
@@ -75,7 +75,7 @@
   </div>
 
   <div class="col-md-4">
-    <label class="form-label">Device Role</label>
+    <label class="form-label">Peran Perangkat</label>
     <select class="form-select" name="device_role">
       @php $role = old('device_role', $device->device_role ?? ''); @endphp
       <option value="">-- pilih --</option>
@@ -96,7 +96,7 @@
   </div>
 
   <div class="col-md-4">
-    <label class="form-label">Device Name (hostname)</label>
+    <label class="form-label">Nama Perangkat (hostname)</label>
     <input type="text" class="form-control" name="device_name" value="{{ old('device_name', $device->device_name ?? '') }}">
   </div>
   <div class="col-md-4">

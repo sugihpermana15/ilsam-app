@@ -37,6 +37,14 @@ return [
     ],
 
     'master_data' => '마스터 데이터',
+    'daily_tasks' => '일일 작업',
+    'master_groups' => [
+        'hr' => 'HR 마스터',
+        'assets' => '자산 마스터',
+        'accounts' => '계정 마스터',
+        'uniform' => '유니폼 마스터',
+        'daily_task' => '일일 작업 마스터',
+    ],
     'master' => [
         'departments' => '부서',
         'positions' => '직책',
@@ -51,5 +59,9 @@ return [
         'uniform_categories' => '유니폼 카테고리',
         'uniform_colors' => '유니폼 색상',
         'uniform_uoms' => '유니폼 단위',
+
+        'daily_task_types' => '일일 작업 유형',
+        'daily_task_priorities' => '일일 작업 우선순위',
+        'daily_task_statuses' => '일일 작업 상태',
     ],
 ];
