@@ -344,8 +344,8 @@ Route::prefix('admin')->middleware([
     Route::put('/daily-tasks/{task}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'update'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.update');
     Route::delete('/daily-tasks/{task}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'destroy'])->middleware('menu:daily_tasks,delete')->name('admin.daily_tasks.destroy');
 
-    Route::post('/daily-tasks/{task}/attachments', [\App\Http\Controllers\Admin\DailyTaskController::class, 'uploadAttachment'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.attachments.upload');
-    Route::delete('/daily-tasks/attachments/{attachment}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'deleteAttachment'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.attachments.delete');
+    Route::post('/daily-tasks/{task}/attachments', [\App\Http\Controllers\Admin\DailyTaskController::class, 'uploadAttachment'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.attachments.upload');
+    Route::delete('/daily-tasks/attachments/{attachment}', [\App\Http\Controllers\Admin\DailyTaskController::class, 'deleteAttachment'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.attachments.delete');
 
     Route::post('/daily-tasks/{task}/checklists', [\App\Http\Controllers\Admin\DailyTaskController::class, 'addChecklist'])->middleware('menu:daily_tasks,update')->name('admin.daily_tasks.checklists.add');
     // Allow assignees/creators to tick checklist even if their menu access is read-only.

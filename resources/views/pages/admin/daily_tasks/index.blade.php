@@ -760,12 +760,45 @@
         const input = document.getElementById('upload-file');
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
+
+        // Client-side guard: keep UX clear when server rejects large uploads (e.g. 413 / PHP limits)
+        const maxBytes = 10 * 1024 * 1024; // 10MB (matches backend validation max:10240 KB)
+        if (file.size > maxBytes) {
+          Swal.fire({ icon: 'error', title: 'Error', text: 'Ukuran file terlalu besar. Maksimal 10MB.' });
+          return;
+        }
+
         const url = `{{ url('/admin/daily-tasks') }}/${currentTaskId}/attachments`;
         const form = new FormData();
         form.append('file', file);
         const res = await fetch(url, { method: 'POST', headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }, body: form });
         if (!res.ok) {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to upload attachment.' });
+          let msg = 'Gagal mengunggah lampiran.';
+          try {
+            const body = await res.json();
+            if (body) {
+              if (body.message) msg = body.message;
+              // Laravel validation shape
+              if (body.errors && body.errors.file && body.errors.file.length) msg = body.errors.file[0];
+            }
+          } catch (_e) {
+            try {
+              const text = (await res.text()) || '';
+              if (text) msg = `${msg} (HTTP ${res.status})`;
+            } catch (_e2) {
+              msg = `${msg} (HTTP ${res.status})`;
+            }
+          }
+          if (res.status === 413) {
+            msg = 'File terlalu besar untuk server (HTTP 413). Naikkan limit upload (Nginx/Apache) dan/atau PHP post_max_size/upload_max_filesize.';
+          }
+          if (res.status === 403) {
+            msg = 'Tidak punya akses untuk upload lampiran (HTTP 403).';
+          }
+          if (res.status === 419) {
+            msg = 'Sesi/CSRF kadaluarsa (HTTP 419). Silakan refresh halaman dan coba lagi.';
+          }
+          Swal.fire({ icon: 'error', title: 'Error', text: msg });
           return;
         }
         input.value = '';
@@ -778,7 +811,16 @@
         const url = `{{ url('/admin/daily-tasks/attachments') }}/${id}`;
         const res = await fetch(url, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' } });
         if (!res.ok) {
-          Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to delete attachment.' });
+          let msg = 'Gagal menghapus lampiran.';
+          try {
+            const body = await res.json();
+            if (body && body.message) msg = body.message;
+          } catch (_e) {
+            msg = `${msg} (HTTP ${res.status})`;
+          }
+          if (res.status === 403) msg = 'Tidak punya akses untuk menghapus lampiran (HTTP 403).';
+          if (res.status === 419) msg = 'Sesi/CSRF kadaluarsa (HTTP 419). Silakan refresh halaman dan coba lagi.';
+          Swal.fire({ icon: 'error', title: 'Error', text: msg });
           return;
         }
         await refreshDetail();
