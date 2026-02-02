@@ -609,6 +609,34 @@ class DailyTaskController extends Controller
     {
         $this->authorize('manageAttachments', $task);
 
+        // VPS diagnostics: if PHP rejects/partially uploads the file, Laravel validation may only say
+        // "The file failed to upload.". Surface a more actionable message.
+        if ($request->hasFile('file')) {
+            $uploaded = $request->file('file');
+            if ($uploaded && method_exists($uploaded, 'isValid') && !$uploaded->isValid()) {
+                $error = method_exists($uploaded, 'getError') ? (int) $uploaded->getError() : 0;
+                $uploadMax = (string) ini_get('upload_max_filesize');
+                $postMax = (string) ini_get('post_max_size');
+                $tmpDir = (string) ini_get('upload_tmp_dir');
+
+                $hint = match ($error) {
+                    UPLOAD_ERR_INI_SIZE => 'Ukuran file melebihi batas upload PHP (upload_max_filesize=' . $uploadMax . ').',
+                    UPLOAD_ERR_FORM_SIZE => 'Ukuran file melebihi batas form upload (MAX_FILE_SIZE).',
+                    UPLOAD_ERR_PARTIAL => 'File hanya terunggah sebagian (koneksi terputus/timeout).',
+                    UPLOAD_ERR_NO_FILE => 'Tidak ada file yang terkirim.',
+                    UPLOAD_ERR_NO_TMP_DIR => 'Folder temporary upload tidak ditemukan (upload_tmp_dir=' . ($tmpDir !== '' ? $tmpDir : 'default') . ').',
+                    UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk (permission/storage penuh).',
+                    UPLOAD_ERR_EXTENSION => 'Upload dihentikan oleh ekstensi PHP.',
+                    default => 'File gagal diunggah karena error upload PHP (code=' . $error . ').',
+                };
+
+                return response()->json([
+                    'ok' => false,
+                    'message' => $hint . ' Pastikan juga post_max_size=' . $postMax . ' dan limit web server (mis. Nginx client_max_body_size) cukup.',
+                ], 422);
+            }
+        }
+
         $request->validate(
             [
                 'file' => ['required', 'file', 'max:10240'],
