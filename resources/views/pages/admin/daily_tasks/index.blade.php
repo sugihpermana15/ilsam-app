@@ -419,6 +419,12 @@
         return `<span class="badge ${cls}">${$('<div/>').text(val || '-').html()}</span>`;
       };
 
+      // Avoid "Cannot reinitialise DataTable" if the page scripts execute twice (e.g., cached/old init script on VPS).
+      if ($.fn.dataTable && $.fn.dataTable.isDataTable('#alternative-pagination')) {
+        $('#alternative-pagination').DataTable().destroy();
+        $('#alternative-pagination').find('tbody').empty();
+      }
+
       const dt = $('#alternative-pagination').DataTable({
         processing: true,
         serverSide: true,

@@ -671,6 +671,12 @@
       const currentLocation = @json(request('location'));
       const dtUrl = @json(route('admin.assets.datatable'));
 
+      // Avoid "Cannot reinitialise DataTable" if the table gets initialized twice (e.g., cached/old init script on VPS).
+      if ($.fn.dataTable && $.fn.dataTable.isDataTable('#alternative-pagination')) {
+        $('#alternative-pagination').DataTable().destroy();
+        $('#alternative-pagination').find('tbody').empty();
+      }
+
       // Filters (server-side)
       const $filterLocation = $('#filter-asset-location');
       const $filterCategory = $('#filter-asset-category');
