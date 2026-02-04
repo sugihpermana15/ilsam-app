@@ -2,8 +2,17 @@
 @section('title', __('website.titles.privacy_policy'))
 
 @section('main')
+  @php
+    $ws = \App\Support\WebsiteSettings::all();
+    $breadcrumbBgRaw = data_get($ws, 'privacy_policy.page.breadcrumb_bg', 'assets/img/aboutus/img11.jpg');
+    $breadcrumbBgRaw = is_string($breadcrumbBgRaw) && trim($breadcrumbBgRaw) !== '' ? trim($breadcrumbBgRaw) : 'assets/img/aboutus/img11.jpg';
+    $breadcrumbBgUrl = preg_match('~^https?://~i', $breadcrumbBgRaw)
+      ? $breadcrumbBgRaw
+      : route('img', ['path' => ltrim($breadcrumbBgRaw, '/'), 'w' => 1920, 'q' => 65]);
+  @endphp
+
   <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
-    <div class="breadcrumb__background" data-background="{{ asset('assets/img/aboutus/img11.jpg') }}"></div>
+    <div class="breadcrumb__background" data-background="{{ $breadcrumbBgUrl }}"></div>
     <div class="container">
       <div class="row align-items-center justify-content-between">
         <div class="col-12">

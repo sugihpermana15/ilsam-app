@@ -1,8 +1,31 @@
 @extends('about')
 @section('title', __('website.titles.ceo_message'))
 @section('breadcrumb_title', __('website.about.ceo_message.title'))
-@section('meta_description', 'Read the CEO message from PT ILSAM GLOBAL INDONESIA—our commitment, direction, and vision for sustainable growth.')
-@section('meta_image', asset('assets/img/img6.jpg'))
+@php
+  $ws = \App\Support\WebsiteSettings::all();
+  $locale = app()->getLocale();
+
+  $metaDescription = data_get($ws, 'seo.about.ceo.meta_description.' . $locale);
+  if (!is_string($metaDescription) || trim($metaDescription) === '') {
+    $metaDescription = data_get($ws, 'seo.about.ceo.meta_description.en');
+  }
+  if (!is_string($metaDescription)) {
+    $metaDescription = '';
+  }
+
+  $metaImageRaw = data_get($ws, 'seo.about.ceo.meta_image', 'assets/img/img6.jpg');
+  $metaImageRaw = is_string($metaImageRaw) && trim($metaImageRaw) !== '' ? trim($metaImageRaw) : 'assets/img/img6.jpg';
+  $metaImage = preg_match('~^https?://~i', $metaImageRaw) ? $metaImageRaw : asset(ltrim($metaImageRaw, '/'));
+
+  $portraitRaw = data_get($ws, 'about.ceo.portrait_image', 'assets/img/aboutus/ceo.jpg');
+  $portraitRaw = is_string($portraitRaw) && trim($portraitRaw) !== '' ? trim($portraitRaw) : 'assets/img/aboutus/ceo.jpg';
+  $portraitUrl = preg_match('~^https?://~i', $portraitRaw)
+    ? $portraitRaw
+    : route('img', ['path' => ltrim($portraitRaw, '/'), 'w' => 700, 'q' => 75]);
+@endphp
+
+@section('meta_description', $metaDescription)
+@section('meta_image', $metaImage)
 @section('aboutus')
   <div class="row g-40 align-items-start">
     <div class="col-12 col-lg-7 order-2 order-lg-1">
@@ -40,7 +63,7 @@
 
         <div class="service-details__content-media">
           <div class="ceo-portrait">
-            <img src="{{ asset('assets/img/aboutus/ceo.jpg') }}" width="300" height="400" loading="lazy" decoding="async"
+            <img src="{{ $portraitUrl }}" width="300" height="400" loading="lazy" decoding="async"
               alt="{{ __('website.about.ceo_message.portrait_alt') }}">
           </div>
         </div>

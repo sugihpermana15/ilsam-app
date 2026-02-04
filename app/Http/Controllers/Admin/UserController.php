@@ -157,6 +157,10 @@ class UserController extends Controller
 
       'career' => $permFor('career'),
       'certificate' => $permFor('certificate'),
+      'website_products' => $permFor('website_products'),
+      'website_settings' => $permFor('website_settings'),
+      'website_contact_page' => $permFor('website_contact_page'),
+      'website_home_sections' => $permFor('website_home_sections'),
       'settings' => $permFor('settings'),
       'settings_users' => $permFor('settings_users'),
       'settings_history_user' => $permFor('settings_history_user'),

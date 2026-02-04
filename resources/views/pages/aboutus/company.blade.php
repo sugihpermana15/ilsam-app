@@ -1,12 +1,34 @@
 @extends('about')
 @section('title', __('website.titles.company_overview'))
 @section('breadcrumb_title', __('website.about.company_overview.title'))
-@section('meta_description', 'Learn about PT ILSAM GLOBAL INDONESIA: our company overview, values, and journey. Explore our profile and milestones.')
-@section('meta_image', asset('assets/img/img8.jpeg'))
+@php
+  $ws = \App\Support\WebsiteSettings::all();
+  $locale = app()->getLocale();
+  $fallbackLocale = config('app.fallback_locale', 'en');
+
+  $metaDescription = data_get($ws, 'seo.about.company.meta_description.' . $locale);
+  if (!is_string($metaDescription) || trim($metaDescription) === '') {
+    $metaDescription = data_get($ws, 'seo.about.company.meta_description.' . $fallbackLocale);
+  }
+  if (!is_string($metaDescription) || trim($metaDescription) === '') {
+    $metaDescription = 'Learn about PT ILSAM GLOBAL INDONESIA: our company overview, values, and journey. Explore our profile and milestones.';
+  }
+
+  $metaImageRaw = data_get($ws, 'seo.about.company.meta_image', 'assets/img/img8.jpeg');
+  $metaImageRaw = is_string($metaImageRaw) && trim($metaImageRaw) !== '' ? trim($metaImageRaw) : 'assets/img/img8.jpeg';
+  $metaImage = preg_match('~^https?://~i', $metaImageRaw) ? $metaImageRaw : asset(ltrim($metaImageRaw, '/'));
+
+  $mainImageRaw = data_get($ws, 'about.company.image', 'assets/img/img8.jpeg');
+  $mainImageRaw = is_string($mainImageRaw) && trim($mainImageRaw) !== '' ? trim($mainImageRaw) : 'assets/img/img8.jpeg';
+  $mainImageUrl = preg_match('~^https?://~i', $mainImageRaw) ? $mainImageRaw : asset(ltrim($mainImageRaw, '/'));
+@endphp
+
+@section('meta_description', $metaDescription)
+@section('meta_image', $metaImage)
 @section('aboutus')
   <div class="service-details__content-media company-overview__media wow fadeInUp" data-wow-delay=".1s">
     <img
-      src="{{ asset('assets/img/img8.jpeg') }}"
+      src="{{ $mainImageUrl }}"
       loading="lazy"
       decoding="async"
       alt="{{ __('website.about.company_overview.image_alt') }}"

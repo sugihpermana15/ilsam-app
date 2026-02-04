@@ -1,6 +1,56 @@
 <footer>
+  @php
+    $ws = \App\Support\WebsiteSettings::all();
+    $phoneDisplay = data_get($ws, 'contact.phone_display', '+62 (021) 89830313 / 0314');
+    $phoneTel = data_get($ws, 'contact.phone_tel', '02189830313');
+    $email = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+    $mapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
+    $addressText = data_get($ws, 'contact.address_text', '');
+
+    $toAssetUrl = function ($raw, $fallback) {
+      $value = is_string($raw) ? trim($raw) : '';
+      if ($value === '') {
+        $value = $fallback;
+      }
+
+      if (preg_match('~^https?://~i', $value)) {
+        $path = (string) parse_url($value, PHP_URL_PATH);
+        $query = (string) parse_url($value, PHP_URL_QUERY);
+        if ($path !== '' && (str_starts_with($path, '/assets/') || str_starts_with($path, '/storage/'))) {
+          $local = asset(ltrim($path, '/'));
+          return $query !== '' ? ($local . '?' . $query) : $local;
+        }
+        return $value;
+      }
+
+      return asset(ltrim($value, '/'));
+    };
+
+    $toBgUrl = function ($raw, $fallback) {
+      $value = is_string($raw) ? trim($raw) : '';
+      if ($value === '') {
+        $value = $fallback;
+      }
+
+      if (preg_match('~^https?://~i', $value)) {
+        $path = (string) parse_url($value, PHP_URL_PATH);
+        $query = (string) parse_url($value, PHP_URL_QUERY);
+        if ($path !== '' && (str_starts_with($path, '/assets/') || str_starts_with($path, '/storage/'))) {
+          $local = route('img', ['path' => ltrim($path, '/'), 'w' => 1920, 'q' => 65]);
+          return $query !== '' ? ($local . '&' . $query) : $local;
+        }
+        return $value;
+      }
+
+      return route('img', ['path' => ltrim($value, '/'), 'w' => 1920, 'q' => 65]);
+    };
+
+    $footerBgUrl = $toBgUrl(data_get($ws, 'footer.bg_image'), 'assets/img/footer/main_footer_bg.jpg');
+    $footerLogoUrl = $toAssetUrl(data_get($ws, 'footer.logo'), 'assets/img/logo_wh.svg');
+  @endphp
+
   <section class="footer__area-common theme-bg-heading-primary overflow-hidden">
-    <div class="footer__bg" data-background="{{ asset('assets/img/footer/main_footer_bg.jpg') }}"></div>
+    <div class="footer__bg" data-background="{{ $footerBgUrl }}"></div>
     <div class="footer__main-wrapper footer__bottom-border">
       <div class="container">
         <div class="row mb-minus-50">
@@ -8,7 +58,7 @@
             <div class="footer__widget footer__widget-item-1">
               <div class="footer__logo mb-35 mb-xs-30">
                 <a href="{{ route('home') }}">
-                  <img class="img-fluid" src="{{ asset('assets/img/logo_wh.svg') }}" width="200px" height="200px"
+                  <img class="img-fluid" src="{{ $footerLogoUrl }}" width="200px" height="200px"
                     alt="{{ __('website.footer.logo_alt') }}">
                 </a>
               </div>
@@ -67,7 +117,7 @@
                     </span>
                     <span class="text">
                       <span>{{ __('website.footer.contact.call_support') }}</span>
-                      <a href="tel:02189830313">+62 (021) 89830313 / 0314</a>
+                      <a href="tel:{{ $phoneTel }}">{{ $phoneDisplay }}</a>
                     </span>
                   </li>
                   <li>
@@ -76,7 +126,7 @@
                     </span>
                     <span class="text">
                       <span>{{ __('website.footer.contact.email_query') }}</span>
-                      <a href="mailto:market.ilsamindonesia@yahoo.com">market.ilsamindonesia@yahoo.com</a>
+                      <a href="mailto:{{ $email }}">{{ $email }}</a>
                     </span>
                   </li>
                   <li class="address">
@@ -84,9 +134,7 @@
                       <img src="{{ asset('assets/img/style2/icon/map.svg') }}" alt="">
                     </span>
                     <span class="text">
-                      <a target="_blank" href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6">Jl. Trans Heksa Artha
-                        Industrial Hill Area Block E No.13 Wanajaya Village,<br> District Telukjambe Barat, Karawang
-                        Regency, West Java, 41361</a>
+                      <a target="_blank" href="{{ $mapUrl }}">{!! nl2br(e($addressText)) !!}</a>
                     </span>
                   </li>
                 </ul>

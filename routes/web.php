@@ -40,6 +40,10 @@ use App\Http\Controllers\Admin\DailyTaskStatusController;
 use App\Http\Controllers\Admin\CareerController as AdminCareerController;
 use App\Http\Controllers\Admin\CareerCandidateController as AdminCareerCandidateController;
 use App\Http\Controllers\Admin\CertificateController as AdminCertificateController;
+use App\Http\Controllers\Admin\WebsiteProductController;
+use App\Http\Controllers\Admin\WebsiteSettingsController;
+use App\Http\Controllers\Admin\WebsiteContactPageController;
+use App\Http\Controllers\Admin\WebsiteHomeSectionsController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Middleware\EnsureAuthenticated;
 use App\Http\Middleware\EnsureGuest;
@@ -258,6 +262,26 @@ Route::prefix('admin')->middleware([
     // Career Management
     Route::get('/careers', [AdminCareerController::class, 'index'])->middleware('menu:career')->name('admin.careers.index');
     Route::put('/careers/company', [AdminCareerController::class, 'updateCompany'])->middleware('menu:career')->name('admin.careers.company.update');
+
+    // Website: Products content
+    Route::get('/website/products', [WebsiteProductController::class, 'index'])->middleware('menu:website_products')->name('admin.website_products.index');
+    Route::get('/website/products/create', [WebsiteProductController::class, 'create'])->middleware('menu:website_products,create')->name('admin.website_products.create');
+    Route::post('/website/products', [WebsiteProductController::class, 'store'])->middleware('menu:website_products,create')->name('admin.website_products.store');
+    Route::get('/website/products/{id}/edit', [WebsiteProductController::class, 'edit'])->middleware('menu:website_products,update')->name('admin.website_products.edit');
+    Route::put('/website/products/{id}', [WebsiteProductController::class, 'update'])->middleware('menu:website_products,update')->name('admin.website_products.update');
+    Route::delete('/website/products/{id}', [WebsiteProductController::class, 'destroy'])->middleware('menu:website_products,delete')->name('admin.website_products.destroy');
+
+    // Website: Global settings (navbar/footer/home SEO + hero slides)
+    Route::get('/website/settings', [WebsiteSettingsController::class, 'edit'])->middleware('menu:website_settings')->name('admin.website_settings.edit');
+    Route::put('/website/settings', [WebsiteSettingsController::class, 'update'])->middleware('menu:website_settings,update')->name('admin.website_settings.update');
+
+    // Website: Contact page
+    Route::get('/website/contact-page', [WebsiteContactPageController::class, 'edit'])->middleware('menu:website_contact_page')->name('admin.website_contact_page.edit');
+    Route::put('/website/contact-page', [WebsiteContactPageController::class, 'update'])->middleware('menu:website_contact_page,update')->name('admin.website_contact_page.update');
+
+    // Website: Home sections (text slider, etc)
+    Route::get('/website/home-sections', [WebsiteHomeSectionsController::class, 'edit'])->middleware('menu:website_home_sections')->name('admin.website_home_sections.edit');
+    Route::put('/website/home-sections', [WebsiteHomeSectionsController::class, 'update'])->middleware('menu:website_home_sections,update')->name('admin.website_home_sections.update');
     Route::post('/careers', [AdminCareerController::class, 'store'])->middleware('menu:career')->name('admin.careers.store');
     Route::put('/careers/{id}', [AdminCareerController::class, 'update'])->middleware('menu:career')->name('admin.careers.update');
     Route::delete('/careers/{id}', [AdminCareerController::class, 'destroy'])->middleware('menu:career')->name('admin.careers.destroy');

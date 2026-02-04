@@ -1,4 +1,9 @@
 <section class="pb-0">
+  @php
+    $heroImageRaw = (string) data_get($product ?? [], 'heroImage', '');
+    $heroImageRaw = trim($heroImageRaw) !== '' ? trim($heroImageRaw) : 'assets/img/img9.jpg';
+    $heroImageUrl = preg_match('~^https?://~i', $heroImageRaw) ? $heroImageRaw : asset(ltrim($heroImageRaw, '/'));
+  @endphp
   <div class="row g-30 align-items-center">
     <div class="col-lg-7">
       <div class="section__title-wrapper text-center text-lg-start mb-20">
@@ -43,8 +48,7 @@
 
     <div class="col-lg-5">
       <div class="ilsam-hero-media">
-        <div class="ilsam-hero-media__bg" data-background="{{ $product['heroImage'] ?? asset('assets/img/img9.jpg') }}">
-        </div>
+        <div class="ilsam-hero-media__bg" data-background="{{ $heroImageUrl }}"></div>
       </div>
     </div>
   </div>

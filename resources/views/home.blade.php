@@ -2,146 +2,145 @@
 
 @section('title', 'Ilsam')
 
-@section('meta_description', 'PT ILSAM GLOBAL INDONESIA (Ilsam) supplies chemical colorants and coating solutions for PU/PVC synthetic leather and footwear manufacturing. Based in Karawang, West Java—serving Cikarang, Bekasi, Karawang, Jakarta, and customers across Java & Indonesia.')
-@section('meta_image', asset('assets/img/img1.jpg'))
+@php
+  $ws = \App\Support\WebsiteSettings::all();
+  $locale = app()->getLocale();
+
+  $imgUrl = function ($raw, $w, $q) {
+    $value = is_string($raw) ? trim($raw) : '';
+    if ($value === '') {
+      return '';
+    }
+    return preg_match('~^https?://~i', $value)
+      ? $value
+      : route('img', ['path' => ltrim($value, '/'), 'w' => $w, 'q' => $q]);
+  };
+
+  $metaDescription = data_get($ws, 'seo.home.meta_description.' . $locale);
+  if (!is_string($metaDescription) || trim($metaDescription) === '') {
+    $metaDescription = data_get($ws, 'seo.home.meta_description.en');
+  }
+  if (!is_string($metaDescription)) {
+    $metaDescription = '';
+  }
+
+  $metaImageRaw = data_get($ws, 'seo.home.meta_image', 'assets/img/img1.jpg');
+  $metaImageRaw = is_string($metaImageRaw) && trim($metaImageRaw) !== '' ? trim($metaImageRaw) : 'assets/img/img1.jpg';
+  $metaImage = preg_match('~^https?://~i', $metaImageRaw) ? $metaImageRaw : asset(ltrim($metaImageRaw, '/'));
+
+  $heroSlides = data_get($ws, 'home.hero_slides', []);
+  if (!is_array($heroSlides) || count($heroSlides) === 0) {
+    $heroSlides = [
+      'assets/img/img1.jpg',
+      'assets/img/img4.jpg',
+      'assets/img/img3.jpg',
+      'assets/img/img10.jpg',
+      'assets/img/img9.jpg',
+    ];
+  }
+
+  $companies = data_get($ws, 'home.text_slider_companies', []);
+  if (!is_array($companies)) {
+    $companies = [];
+  }
+
+  $letsTalkBgRaw = data_get($ws, 'contact.page.lets_talk_bg', 'assets/img/img8.jpeg');
+  $letsTalkBgRaw = is_string($letsTalkBgRaw) && trim($letsTalkBgRaw) !== '' ? trim($letsTalkBgRaw) : 'assets/img/img8.jpeg';
+  $letsTalkBgUrl = preg_match('~^https?://~i', $letsTalkBgRaw)
+    ? $letsTalkBgRaw
+    : route('img', ['path' => ltrim($letsTalkBgRaw, '/'), 'w' => 1600, 'q' => 70]);
+
+  $contactEmail = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+  $contactPhoneDisplay = data_get($ws, 'contact.phone_display', '+62 (021) 89830313 / 0314');
+  $contactPhoneTel = data_get($ws, 'contact.phone_tel', '02189830313');
+  $contactMapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
+  $contactAddressText = (string) data_get($ws, 'contact.address_text', '');
+  $contactAddressShort = trim(strtok(str_replace("\r", "", $contactAddressText), "\n")) ?: __('website.nav.top.address');
+
+  $openingHours = data_get($ws, 'contact.opening_hours', __('website.home.contact.opening_hours_value'));
+  if (!is_string($openingHours) || trim($openingHours) === '') {
+    $openingHours = __('website.home.contact.opening_hours_value');
+  }
+
+  $homeAboutImageRaw = data_get($ws, 'home.sections.about_image', 'assets/img/main_who_triangle.png');
+  $homeAboutImageRaw = is_string($homeAboutImageRaw) && trim($homeAboutImageRaw) !== '' ? trim($homeAboutImageRaw) : 'assets/img/main_who_triangle.png';
+  $homeAboutImageUrl = $imgUrl($homeAboutImageRaw, 900, 80);
+
+  $assetUrl = function ($raw, $fallback) {
+    $value = is_string($raw) ? trim($raw) : '';
+    if ($value === '') {
+      $value = $fallback;
+    }
+    return preg_match('~^https?://~i', $value) ? $value : asset(ltrim($value, '/'));
+  };
+
+  $bannerShape2Url = $assetUrl(data_get($ws, 'home.decorations.banner_shape_2'), 'assets/img/style2/banner/shape-2.png');
+  $bannerShape3Url = $assetUrl(data_get($ws, 'home.decorations.banner_shape_3'), 'assets/img/style2/banner/shape-3.png');
+  $productsShape2Url = $assetUrl(data_get($ws, 'home.decorations.products_shape_2'), 'assets/img/style2/what-we-do-2/shape-2.png');
+  $productsShape3Url = $assetUrl(data_get($ws, 'home.decorations.products_shape_3'), 'assets/img/style2/what-we-do-2/shape-3.png');
+  $productsShape4Url = $assetUrl(data_get($ws, 'home.decorations.products_shape_4'), 'assets/img/style2/what-we-do-2/shape-4.png');
+
+  $experienceBgRaw = data_get($ws, 'home.sections.experience_bg', 'assets/img/img6.jpg');
+  $experienceBgRaw = is_string($experienceBgRaw) && trim($experienceBgRaw) !== '' ? trim($experienceBgRaw) : 'assets/img/img6.jpg';
+  $experienceBgUrl = $imgUrl($experienceBgRaw, 1600, 65);
+
+  $cardColorantsRaw = data_get($ws, 'home.sections.products_cards.colorants_bg', 'assets/img/img4.jpg');
+  $cardSurfaceRaw = data_get($ws, 'home.sections.products_cards.surface_coating_agents_bg', 'assets/img/img6.jpg');
+  $cardAdditiveRaw = data_get($ws, 'home.sections.products_cards.additive_coating_bg', 'assets/img/img3.jpg');
+  $cardPuResinRaw = data_get($ws, 'home.sections.products_cards.pu_resin_bg', 'assets/img/img1.jpg');
+
+  $cardColorantsUrl = $imgUrl($cardColorantsRaw, 1200, 65);
+  $cardSurfaceUrl = $imgUrl($cardSurfaceRaw, 1200, 65);
+  $cardAdditiveUrl = $imgUrl($cardAdditiveRaw, 1200, 65);
+  $cardPuResinUrl = $imgUrl($cardPuResinRaw, 1200, 65);
+@endphp
+
+@section('meta_description', $metaDescription)
+@section('meta_image', $metaImage)
 
 @section('main')
   <!-- Banner area start -->
   <section class="banner overflow-hidden">
     <div class="swiper banner__slider">
       <div class="swiper-wrapper">
-        <div class="swiper-slide">
-          <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img1.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
-            <div class="container rr-shape-p-c_1">
-              <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
-              </div>
-              <div class="banner__item-shape-3 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-3.png') }}" alt="">
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="banner__item-content">
-                    <h4 class="banner__item-sub-title color-white rr-fw-medium text-decoration-underline mb-25">
-                      PT ILSAM GLOBAL INDONESIA
-                    </h4>
-                    <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-md">
-                      {{ __('website.home.hero.title_line1') }}<br>
-                      {{ __('website.home.hero.title_line2') }}
-                    </h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        @foreach($heroSlides as $idx => $slidePath)
+          @php
+            $slidePath = is_string($slidePath) ? trim($slidePath) : '';
+            if ($slidePath === '') {
+              continue;
+            }
 
-        <div class="swiper-slide">
-          <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img4.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
-            <div class="container rr-shape-p-c_1">
-              <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
-              </div>
-              <div class="banner__item-shape-3 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-3.png') }}" alt="">
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="banner__item-content">
-                    <h4 class="banner__item-sub-title color-white rr-fw-sbold text-decoration-underline mb-25">
-                      PT ILSAM GLOBAL INDONESIA
-                    </h4>
-                    <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      {{ __('website.home.hero.title_line1') }}<br>
-                      {{ __('website.home.hero.title_line2') }}
-                    </h1>
+            $isFirst = (int) $idx === 0;
+            $subtitleClass = $isFirst ? 'rr-fw-medium' : 'rr-fw-sbold';
+            $titleBreakClass = $isFirst ? 'rr-br-hidden-md' : 'rr-br-hidden-lg';
+          @endphp
+          <div class="swiper-slide">
+            <div class="banner__item banner__space theme-bg-heading-primary">
+              <div class="banner__item-bg" data-background="{{ route('img', ['path' => ltrim($slidePath, '/'), 'w' => 1600, 'q' => 65]) }}"></div>
+              <div class="container rr-shape-p-c_1">
+                <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
+                    <img src="{{ $bannerShape2Url }}" alt="">
+                </div>
+                <div class="banner__item-shape-3 rr-shape-p-s_1 rr-upDown">
+                    <img src="{{ $bannerShape3Url }}" alt="">
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="banner__item-content">
+                      <h4 class="banner__item-sub-title color-white {{ $subtitleClass }} text-decoration-underline mb-25">
+                        PT ILSAM GLOBAL INDONESIA
+                      </h4>
+                      <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 {{ $titleBreakClass }}">
+                        {{ __('website.home.hero.title_line1') }}<br>
+                        {{ __('website.home.hero.title_line2') }}
+                      </h1>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="swiper-slide">
-          <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img3.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
-            <div class="container rr-shape-p-c_1">
-              <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
-              </div>
-              <div class="banner__item-shape-3 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-3.png') }}" alt="">
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="banner__item-content">
-                    <h4 class="banner__item-sub-title color-white rr-fw-sbold text-decoration-underline mb-25">
-                      PT ILSAM GLOBAL INDONESIA
-                    </h4>
-                    <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      {{ __('website.home.hero.title_line1') }}<br>
-                      {{ __('website.home.hero.title_line2') }}
-                    </h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img10.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
-            <div class="container rr-shape-p-c_1">
-              <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
-              </div>
-              <div class="banner__item-shape-3 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-3.png') }}" alt="">
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="banner__item-content">
-                    <h4 class="banner__item-sub-title color-white rr-fw-sbold text-decoration-underline mb-25">
-                      PT ILSAM GLOBAL INDONESIA
-                    </h4>
-                    <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      {{ __('website.home.hero.title_line1') }}<br>
-                      {{ __('website.home.hero.title_line2') }}
-                    </h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="swiper-slide">
-          <div class="banner__item banner__space theme-bg-heading-primary">
-            <div class="banner__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img9.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
-            <div class="container rr-shape-p-c_1">
-              <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-2.png') }}" alt="">
-              </div>
-              <div class="banner__item-shape-3 rr-shape-p-s_1 rr-upDown">
-                <img src="{{ asset('assets/img/style2/banner/shape-3.png') }}" alt="">
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <div class="banner__item-content">
-                    <h4 class="banner__item-sub-title color-white rr-fw-sbold text-decoration-underline mb-25">
-                      PT ILSAM GLOBAL INDONESIA
-                    </h4>
-                    <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 rr-br-hidden-lg">
-                      {{ __('website.home.hero.title_line1') }}<br>
-                      {{ __('website.home.hero.title_line2') }}
-                    </h1>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        @endforeach
       </div>
 
       <div class="banner__slider__controller-view">
@@ -187,7 +186,7 @@
         <div class="col-xl-6">
           <div class="about-us--ilsam__figure">
             <div class="about-us--ilsam__media wow clip-a-z">
-              <img loading="lazy" decoding="async" src="{{ route('img', ['path' => 'assets/img/main_who_triangle.png', 'w' => 900, 'q' => 80, 'fm' => 'png', 'v' => 3]) }}" alt="{{ __('website.home.about.image_alt') }}">
+              <img loading="lazy" decoding="async" src="{{ $homeAboutImageUrl }}" alt="{{ __('website.home.about.image_alt') }}">
             </div>
           </div>
         </div>
@@ -198,7 +197,7 @@
 
   <!-- Experience -->
   <section class="experience theme-bg-heading-primary section-space-100 position-relative z-1 overflow-hidden">
-    <div class="experience__bg" data-background="{{ route('img', ['path' => 'assets/img/img6.jpg', 'w' => 1600, 'q' => 65]) }}"></div>
+    <div class="experience__bg" data-background="{{ $experienceBgUrl }}"></div>
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -252,13 +251,13 @@
         <div class="what-we-do-2__text rr-shape-p-s_1">{{ __('website.home.products.label') }}</div>
       </div>
       <div class="what-we-do-2__shape-1 rr-shape-p-s_1 rr-upDown"><img
-          loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-2.png') }}" alt="">
+          loading="lazy" decoding="async" src="{{ $productsShape2Url }}" alt="">
       </div>
       <div class="what-we-do-2__shape-2 rr-shape-p-s_1 rr-downUp"><img
-          loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-3.png') }}" alt="">
+          loading="lazy" decoding="async" src="{{ $productsShape3Url }}" alt="">
       </div>
       <div class="what-we-do-2__shape-3 rr-shape-p-s_1 rr-downUp"><img
-          loading="lazy" decoding="async" src="{{ asset('assets/img/style2/what-we-do-2/shape-4.png') }}" alt="">
+          loading="lazy" decoding="async" src="{{ $productsShape4Url }}" alt="">
       </div>
       <div class="row">
         <div class="col-12">
@@ -274,7 +273,7 @@
       <div class="row mb-minus-30">
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img4.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ $cardColorantsUrl }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -293,7 +292,7 @@
         </div>
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img6.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ $cardSurfaceUrl }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -313,7 +312,7 @@
         </div>
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img3.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ $cardAdditiveUrl }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -332,7 +331,7 @@
         </div>
         <div class="col-xl-6 col-md-6">
           <div class="what-we-do-2__item d-flex flex-column mb-30">
-            <div class="what-we-do-2__item-bg" data-background="{{ route('img', ['path' => 'assets/img/img1.jpg', 'w' => 1200, 'q' => 65]) }}"></div>
+            <div class="what-we-do-2__item-bg" data-background="{{ $cardPuResinUrl }}"></div>
             <div class="what-we-do-2__item-shape-1 rr-upDown">
               <svg width="218" height="226" viewBox="0 0 218 226" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M81.7719 23.7964L209.283 113.722L67.6499 179.187L81.7719 23.7964Z" fill="var(--rr-theme-primary)"
@@ -358,87 +357,22 @@
   <section class="text-slider text-slider__section-space position-relative theme-bg-primary overflow-hidden">
     <div class="text-slider__slider carouselTicker carouselTicker-nav">
       <ul class="carouselTicker__list">
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. KINDO MAKMUR JAYA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. SINYOUNG ABADI</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. KONES TAEYA INDUSTRY</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. BINTANG FAMILY INDONESIA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. SINAR CONTINENTAL</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. SUN LEE JAYA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. SEMPURNAINDAH MULTINUSANTARA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. BEN TECH ABADI</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. BAIKSAN INDONESIA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. DAEHWA LEATHER LESTARI</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. CIPTA HARMONI JAYA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. YOUNGIL LEATHER INDONESIA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. JOIL INNI INDONESIA</h3>
-        </li>
-        <li>
-          <h4 class="title bar">//</h4>
-        </li>
-        <li>
-          <h3 data-cursor="-opaque" class="title">PT. DAEWON ECO INDONESIA</h3>
-        </li>
+        @foreach($companies as $company)
+          @php
+            $company = trim((string) $company);
+            if ($company === '') {
+              continue;
+            }
+          @endphp
+          <li>
+            <h3 data-cursor="-opaque" class="title">{{ $company }}</h3>
+          </li>
+          @if(!$loop->last)
+            <li>
+              <h4 class="title bar">//</h4>
+            </li>
+          @endif
+        @endforeach
       </ul>
     </div>
   </section>
@@ -447,7 +381,7 @@
   <!-- lets-talk area start -->
   <section class="lets-talk section-space-115 section-bg-2 overflow-hidden">
     <div class="lets-talk-bg">
-      <div class="overlay"><img loading="lazy" decoding="async" src="{{ route('img', ['path' => 'assets/img/img8.jpeg', 'w' => 1600, 'q' => 70]) }}" alt=""></div>
+      <div class="overlay"><img loading="lazy" decoding="async" src="{{ $letsTalkBgUrl }}" alt=""></div>
     </div>
     <div class="container">
       <div class="row">
@@ -462,7 +396,7 @@
                 </div>
                 <div class="contact-list__item-text">
                   <h4 class="title">{{ __('website.home.contact.email_address') }}</h4>
-                  <a href="mailto:market.ilsamindonesia@yahoo.com">market.ilsamindonesia@yahoo.com</a>
+                  <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
                 </div>
               </div>
             </div>
@@ -474,7 +408,7 @@
                 </div>
                 <div class="contact-list__item-text">
                   <h4 class="title">{{ __('website.home.contact.phone_number') }}</h4>
-                  <a href="tel:+622674868013">+62 (267) 4868013 / 313</a>
+                  <a href="tel:{{ $contactPhoneTel }}">{{ $contactPhoneDisplay }}</a>
                 </div>
               </div>
             </div>
@@ -486,8 +420,7 @@
                 </div>
                 <div class="contact-list__item-text">
                   <h4 class="title">{{ __('website.home.contact.our_location') }}</h4>
-                  <a href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6">Jl. Trans Heksa Artha Industrial Hill Area Block E
-                    No.13.</a>
+                  <a href="{{ $contactMapUrl }}" target="_blank" rel="noopener">{{ $contactAddressShort }}</a>
                 </div>
               </div>
             </div>
@@ -499,7 +432,7 @@
                 </div>
                 <div class="contact-list__item-text">
                   <h4 class="title">{{ __('website.home.contact.opening_hour') }}</h4>
-                  <span>{{ __('website.home.contact.opening_hours_value') }}</span>
+                  <span>{{ $openingHours }}</span>
                 </div>
               </div>
             </div>

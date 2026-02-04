@@ -3,11 +3,26 @@
 @section('page_title', __('website.titles.technology'))
 @section('breadcrumb_title', __('website.nav.menu.technology'))
 
-@section('meta_description', 'Explore the technology and R&D focus of PT ILSAM GLOBAL INDONESIA, including our domains, standards, and innovation approach.')
-@section('meta_image', asset('assets/img/img15.jpg'))
+@php
+  $settings = \App\Support\WebsiteSettings::all();
+  $locale = app()->getLocale();
+  $fallbackLocale = config('app.fallback_locale', 'en');
+  $metaDescription = data_get($settings, "seo.technology.meta_description.$locale")
+    ?: data_get($settings, "seo.technology.meta_description.$fallbackLocale")
+    ?: 'Explore the technology and R&D focus of PT ILSAM GLOBAL INDONESIA, including our domains, standards, and innovation approach.';
+  $metaImage = data_get($settings, 'seo.technology.meta_image') ?: asset('assets/img/img15.jpg');
+
+  $heroBgRaw = data_get($settings, 'technology.page.hero_bg') ?: 'assets/img/img15.jpg';
+  $heroBgUrl = preg_match('~^https?://~i', (string) $heroBgRaw) ? (string) $heroBgRaw : asset(ltrim((string) $heroBgRaw, '/'));
+
+  $workflowBgRaw = data_get($settings, 'technology.page.workflow_bg') ?: 'assets/img/img4.jpg';
+  $workflowBgUrl = preg_match('~^https?://~i', (string) $workflowBgRaw) ? (string) $workflowBgRaw : asset(ltrim((string) $workflowBgRaw, '/'));
+@endphp
+@section('meta_description', $metaDescription)
+@section('meta_image', str_starts_with($metaImage, 'http') ? $metaImage : asset($metaImage))
 @section('rnd_content')
   <section class="ilsam-rnd-hero">
-    <div class="ilsam-rnd-hero__bg" data-background="{{ asset('assets/img/img15.jpg') }}"></div>
+    <div class="ilsam-rnd-hero__bg" data-background="{{ $heroBgUrl }}"></div>
     <div class="ilsam-rnd-hero__overlay" aria-hidden="true"></div>
 
     <div class="row align-items-center g-30">
@@ -128,7 +143,7 @@
 
   <section class="pt-60">
     <div class="working-process-2 ilsam-rnd-stage">
-      <div class="working-process-2__bg" data-background="{{ asset('assets/img/img4.jpg') }}"></div>
+      <div class="working-process-2__bg" data-background="{{ $workflowBgUrl }}"></div>
       <div class="working-process-2__bg-overlay" aria-hidden="true"></div>
 
       <div class="row align-items-center g-30">

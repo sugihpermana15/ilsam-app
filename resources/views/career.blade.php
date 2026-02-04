@@ -1,8 +1,17 @@
 @extends('layouts.app')
 @section('title', __('website.titles.career'))
 
-@section('meta_description', 'Explore career opportunities at PT ILSAM GLOBAL INDONESIA. Browse open positions, filter by department and location, and apply online.')
-@section('meta_image', asset('assets/img/img9.jpg'))
+@php
+  $settings = \App\Support\WebsiteSettings::all();
+  $locale = app()->getLocale();
+  $fallbackLocale = config('app.fallback_locale', 'en');
+  $metaDescription = data_get($settings, "seo.career.meta_description.$locale")
+    ?: data_get($settings, "seo.career.meta_description.$fallbackLocale")
+    ?: 'Explore career opportunities at PT ILSAM GLOBAL INDONESIA. Browse open positions, filter by department and location, and apply online.';
+  $metaImage = data_get($settings, 'seo.career.meta_image') ?: asset('assets/img/img9.jpg');
+@endphp
+@section('meta_description', $metaDescription)
+@section('meta_image', str_starts_with($metaImage, 'http') ? $metaImage : asset($metaImage))
 @section('main')
   @php
     $openings = collect($openings ?? []);

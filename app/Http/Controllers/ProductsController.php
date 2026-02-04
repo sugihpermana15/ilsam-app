@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\WebsiteProducts;
+
 class ProductsController extends Controller
 {
     public function index()
@@ -13,29 +15,39 @@ class ProductsController extends Controller
     public function colorants()
     {
         return view('pages.products.colorants', [
-            'product' => $this->colorantsData(),
+            'product' => $this->productOrFallback('colorants', fn() => $this->colorantsData()),
         ]);
     }
 
     public function surfaceCoatingAgents()
     {
         return view('pages.products.surface-coating-agents', [
-            'product' => $this->surfaceCoatingAgentsData(),
+            'product' => $this->productOrFallback('surface-coating-agents', fn() => $this->surfaceCoatingAgentsData()),
         ]);
     }
 
     public function additiveCoating()
     {
         return view('pages.products.additive-coating', [
-            'product' => $this->additiveCoatingData(),
+            'product' => $this->productOrFallback('additive-coating', fn() => $this->additiveCoatingData()),
         ]);
     }
 
     public function puResin()
     {
         return view('pages.products.pu-resin', [
-            'product' => $this->puResinData(),
+            'product' => $this->productOrFallback('pu-resin', fn() => $this->puResinData()),
         ]);
+    }
+
+    private function productOrFallback(string $slug, \Closure $fallback): array
+    {
+        $row = WebsiteProducts::findBySlug($slug);
+        if (is_array($row) && ($row['is_active'] ?? true)) {
+            return $row;
+        }
+
+        return (array) $fallback();
     }
 
     private function colorantsData(): array

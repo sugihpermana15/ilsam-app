@@ -1,8 +1,31 @@
 @extends('about')
 @section('title', __('website.titles.business_philosophy'))
 @section('breadcrumb_title', __('website.about.business_philosophy.title'))
-@section('meta_description', 'Discover the philosophy of PT ILSAM GLOBAL INDONESIA: our principles, quality focus, and long-term commitment to customers and partners.')
-@section('meta_image', asset('assets/img/img3.jpg'))
+@php
+    $ws = \App\Support\WebsiteSettings::all();
+    $locale = app()->getLocale();
+
+    $metaDescription = data_get($ws, 'seo.about.philosophy.meta_description.' . $locale);
+    if (!is_string($metaDescription) || trim($metaDescription) === '') {
+        $metaDescription = data_get($ws, 'seo.about.philosophy.meta_description.en');
+    }
+    if (!is_string($metaDescription)) {
+        $metaDescription = '';
+    }
+
+    $metaImageRaw = data_get($ws, 'seo.about.philosophy.meta_image', 'assets/img/img3.jpg');
+    $metaImageRaw = is_string($metaImageRaw) && trim($metaImageRaw) !== '' ? trim($metaImageRaw) : 'assets/img/img3.jpg';
+    $metaImage = preg_match('~^https?://~i', $metaImageRaw) ? $metaImageRaw : asset(ltrim($metaImageRaw, '/'));
+
+    $heroRaw = data_get($ws, 'about.philosophy.hero_bg', 'assets/img/aboutus/img12.jpg');
+    $heroRaw = is_string($heroRaw) && trim($heroRaw) !== '' ? trim($heroRaw) : 'assets/img/aboutus/img12.jpg';
+    $heroUrl = preg_match('~^https?://~i', $heroRaw)
+        ? $heroRaw
+        : asset(ltrim($heroRaw, '/'));
+@endphp
+
+@section('meta_description', $metaDescription)
+@section('meta_image', $metaImage)
 @section('aboutus')
 
     <!-- Working Process area start -->
@@ -82,7 +105,7 @@
     <section
     class="about-hero about-hero--bleed wow fadeInUp"
     data-wow-delay=".1s"
-    style="--about-hero-bg: url('{{ asset('assets/img/aboutus/img12.jpg') }}');"
+    style="--about-hero-bg: url('{{ $heroUrl }}');"
         aria-label="{{ __('website.about.business_philosophy.aria') }}">
     <div class="about-hero__inner">
             <h2 class="about-hero__title">{{ __('website.about.business_philosophy.title') }}</h2>

@@ -3,6 +3,27 @@
 
 <head>
     @php
+        $ws = \App\Support\WebsiteSettings::all();
+
+        $toAssetUrl = function ($raw, $fallback) {
+            $value = is_string($raw) ? trim($raw) : '';
+            if ($value === '') {
+                $value = $fallback;
+            }
+
+            if (preg_match('~^https?://~i', $value)) {
+                $path = (string) parse_url($value, PHP_URL_PATH);
+                $query = (string) parse_url($value, PHP_URL_QUERY);
+                if ($path !== '' && (str_starts_with($path, '/assets/') || str_starts_with($path, '/storage/'))) {
+                    $local = asset(ltrim($path, '/'));
+                    return $query !== '' ? ($local . '?' . $query) : $local;
+                }
+                return $value;
+            }
+
+            return asset(ltrim($value, '/'));
+        };
+
         $rawTitle = strip_tags(trim($__env->yieldContent('title')));
         $seoTitle = preg_replace('/\s+/', ' ', $rawTitle);
 
@@ -22,7 +43,10 @@
         $seoUrl = $rawCanonical !== '' ? $rawCanonical : url()->current();
 
         $rawImage = trim($__env->yieldContent('meta_image'));
-        $seoImage = $rawImage !== '' ? $rawImage : asset('assets/img/logo.png');
+        $defaultLogoUrl = $toAssetUrl(data_get($ws, 'brand.logo'), 'assets/img/logo.png');
+        $seoImage = $rawImage !== ''
+            ? $toAssetUrl($rawImage, $defaultLogoUrl)
+            : $defaultLogoUrl;
 
         $rawImageAlt = strip_tags(trim($__env->yieldContent('meta_image_alt')));
         $seoImageAlt = preg_replace('/\s+/', ' ', $rawImageAlt);
@@ -31,14 +55,22 @@
         $rawRobots = trim($__env->yieldContent('meta_robots'));
         $seoRobots = $rawRobots !== '' ? $rawRobots : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
 
-        $companyEmail = 'market.ilsamindonesia@yahoo.com';
-        $companyPhone = '+62 21 89830313';
-        $companyPhoneAlt = '+62 21 89830314';
-        $companyMapUrl = 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6';
-        $hqWebsite = 'https://www.ilsam.com';
+        $faviconUrl = $toAssetUrl(data_get($ws, 'brand.favicon'), 'assets/img/favicon.png');
+
+        $companyEmail = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+        $companyPhone = data_get($ws, 'contact.phone_display', '+62 21 89830313');
+        $companyPhoneAlt = data_get($ws, 'contact.phone_display_alt', data_get($ws, 'contact.phone_display', '+62 21 89830314'));
+        $companyMapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
+        $hqWebsite = data_get($ws, 'top.website_url', 'https://www.ilsam.com');
+
+        $addressText = (string) data_get($ws, 'contact.address_text', '');
+        $addressStreet = trim(strtok(str_replace("\r", "", $addressText), "\n"));
+        if ($addressStreet === '') {
+            $addressStreet = 'Jl. Trans Heksa Artha Industrial Hill Area Block E No.13, Wanajaya Village, District Telukjambe Barat';
+        }
 
         $companyAddress = [
-            'streetAddress' => 'Jl. Trans Heksa Artha Industrial Hill Area Block E No.13, Wanajaya Village, District Telukjambe Barat',
+            'streetAddress' => $addressStreet,
             'addressLocality' => 'Karawang',
             'addressRegion' => 'West Java',
             'postalCode' => '41361',
@@ -61,7 +93,7 @@
     @endphp
 
     <title>{{ $seoTitle }}</title>
-    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.png') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ $faviconUrl }}" type="image/x-icon">
 
     <!-- meta tags -->
     <meta charset="utf-8">
@@ -155,7 +187,7 @@
                     ],
                     'logo' => [
                         '@type' => 'ImageObject',
-                        'url' => asset('assets/img/logo.png'),
+                        'url' => $defaultLogoUrl,
                     ],
                 ],
                 [

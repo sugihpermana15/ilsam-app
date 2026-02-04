@@ -15,25 +15,26 @@
             position: sticky;
             top: 0;
             z-index: 2;
-            background: var(--bs-body-bg);
+            background: rgba(var(--bs-body-bg-rgb, 255, 255, 255), 1);
             padding: .25rem 0;
         }
 
         .menu-access-surface {
-            background: var(--bs-body-bg);
+            background: rgba(var(--bs-body-bg-rgb, 255, 255, 255), 1);
         }
 
         .menu-access-box {
             max-height: 360px;
             overflow: auto;
-            padding: .25rem;
+            padding: .5rem;
+            scrollbar-gutter: stable;
         }
 
         .menu-access-sticky {
             position: sticky;
             top: 0;
             z-index: 3;
-            background: var(--bs-body-bg);
+            background: rgba(var(--bs-body-bg-rgb, 255, 255, 255), 1);
             border: 1px solid var(--bs-border-color);
             border-radius: .5rem;
             padding: .35rem .5rem;
@@ -42,6 +43,7 @@
             align-items: center;
             justify-content: space-between;
             gap: .75rem;
+            flex-wrap: wrap;
             box-shadow: 0 6px 12px rgba(0, 0, 0, .05);
         }
 
@@ -51,6 +53,14 @@
             align-items: center;
             gap: .4rem;
             min-width: 0;
+        }
+
+        .menu-access-sticky .sticky-left {
+            flex: 1 1 auto;
+        }
+
+        .menu-access-sticky .sticky-right {
+            flex: 0 0 auto;
         }
 
         .menu-access-sticky .sticky-right {
@@ -70,6 +80,13 @@
             color: var(--bs-secondary-color);
             font-size: .75rem;
             font-weight: 600;
+            white-space: normal;
+        }
+
+        .menu-access-sticky .sticky-icons {
+            display: inline-flex;
+            align-items: center;
+            gap: .35rem;
             white-space: nowrap;
         }
 
@@ -638,6 +655,34 @@
                                                                             value="1">
                                                                         <label class="form-check-label"
                                                                             for="add_menu_certificate">Sertifikat</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_website_settings" name="menu_website_settings"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_website_settings">Website Settings</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_website_products" name="menu_website_products"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_website_products">Website Products</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_website_home_sections" name="menu_website_home_sections"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_website_home_sections">Website Home Sections</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_website_contact_page" name="menu_website_contact_page"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_website_contact_page">Website Contact Page</label>
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 col-xl-6">
@@ -1250,6 +1295,34 @@
                                                                         <label class="form-check-label"
                                                                             for="edit_menu_certificate">Sertifikat</label>
                                                                     </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_website_settings" name="menu_website_settings"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_website_settings">Website Settings</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_website_products" name="menu_website_products"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_website_products">Website Products</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_website_home_sections" name="menu_website_home_sections"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_website_home_sections">Website Home Sections</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_website_contact_page" name="menu_website_contact_page"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_website_contact_page">Website Contact Page</label>
+                                                                    </div>
                                                                 </div>
                                                                 <div class="col-12 col-xl-6">
                                                                     <div class="form-check">
@@ -1532,6 +1605,10 @@
 
                         career: none,
                         certificate: none,
+                        website_settings: none,
+                        website_products: none,
+                        website_home_sections: none,
+                        website_contact_page: none,
                         settings: none,
                         settings_users: none,
                         settings_history_user: none,
@@ -1604,6 +1681,10 @@
 
                     career: all,
                     certificate: all,
+                    website_settings: all,
+                    website_products: all,
+                    website_home_sections: all,
+                    website_contact_page: all,
                     settings: all,
                     settings_users: all,
                     settings_history_user: readOnly,
@@ -1719,6 +1800,10 @@
                 $('#' + prefix + '_menu_daily_task_statuses').prop('checked', hasRead(permissions.daily_task_statuses));
                 $('#' + prefix + '_menu_career').prop('checked', hasRead(permissions.career));
                 $('#' + prefix + '_menu_certificate').prop('checked', hasRead(permissions.certificate));
+                $('#' + prefix + '_menu_website_settings').prop('checked', hasRead(permissions.website_settings));
+                $('#' + prefix + '_menu_website_products').prop('checked', hasRead(permissions.website_products));
+                $('#' + prefix + '_menu_website_home_sections').prop('checked', hasRead(permissions.website_home_sections));
+                $('#' + prefix + '_menu_website_contact_page').prop('checked', hasRead(permissions.website_contact_page));
                 $('#' + prefix + '_menu_settings').prop('checked', hasRead(permissions.settings));
                 $('#' + prefix + '_menu_settings_users').prop('checked', hasRead(permissions.settings_users));
                 $('#' + prefix + '_menu_settings_history_user').prop('checked', hasRead(permissions.settings_history_user));
@@ -1736,6 +1821,7 @@
                     'uniform_sizes', 'uniform_item_names', 'uniform_categories', 'uniform_colors', 'uniform_uoms',
                     'daily_task_types', 'daily_task_priorities', 'daily_task_statuses',
                     'career', 'certificate',
+                    'website_settings', 'website_products', 'website_home_sections', 'website_contact_page',
                     'settings', 'settings_users', 'settings_history_user', 'settings_history_asset',
                 ];
                 keys.forEach((k) => {

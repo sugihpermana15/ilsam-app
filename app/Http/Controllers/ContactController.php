@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\ContactMessage;
+use App\Support\WebsiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -31,6 +32,10 @@ class ContactController extends Controller
             'textarea.required' => 'Project details is required.',
         ];
 
+        $recipient = WebsiteSettings::get('contact.form_recipient_email')
+            ?: WebsiteSettings::get('contact.email')
+            ?: 'market.ilsamindonesia@yahoo.com';
+
         // The template ships with vendor/ajax-form.js which posts via AJAX and
         // expects a plain-text response (not JSON and not a redirect).
         if ($request->ajax()) {
@@ -48,7 +53,7 @@ class ContactController extends Controller
 
             $data = $validator->validated();
 
-            Mail::to('market.ilsamindonesia@yahoo.com')->send(
+            Mail::to($recipient)->send(
                 new ContactMessage(
                     $data,
                     $request->ip(),
@@ -61,7 +66,7 @@ class ContactController extends Controller
 
         $data = $request->validate($rules, $messages);
 
-        Mail::to('market.ilsamindonesia@yahoo.com')->send(
+        Mail::to($recipient)->send(
             new ContactMessage(
                 $data,
                 $request->ip(),

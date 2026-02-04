@@ -3,8 +3,17 @@
 @section('page_title', __('website.titles.certification_status'))
 @section('breadcrumb_title', __('website.nav.menu.certification_status'))
 
-@section('meta_description', 'Certification status list for PT ILSAM GLOBAL INDONESIA: view active, expiring, and expired certifications for supplied chemicals and materials.')
-@section('meta_image', asset('assets/img/img15.jpg'))
+@php
+  $settings = \App\Support\WebsiteSettings::all();
+  $locale = app()->getLocale();
+  $fallbackLocale = config('app.fallback_locale', 'en');
+  $metaDescription = data_get($settings, "seo.technology_certification_status.meta_description.$locale")
+    ?: data_get($settings, "seo.technology_certification_status.meta_description.$fallbackLocale")
+    ?: 'Certification status list for PT ILSAM GLOBAL INDONESIA: view active, expiring, and expired certifications for supplied chemicals and materials.';
+  $metaImage = data_get($settings, 'seo.technology_certification_status.meta_image') ?: asset('assets/img/img15.jpg');
+@endphp
+@section('meta_description', $metaDescription)
+@section('meta_image', str_starts_with($metaImage, 'http') ? $metaImage : asset($metaImage))
 @section('rnd_content')
   @php
     $statusCounts = [

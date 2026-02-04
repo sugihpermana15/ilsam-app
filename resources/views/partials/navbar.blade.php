@@ -1,4 +1,41 @@
 <!-- Offcanvas area start -->
+@php
+  $ws = \App\Support\WebsiteSettings::all();
+  $offcanvasWebsite = data_get($ws, 'offcanvas.website_url', 'https://www.ilsam.com/');
+  $offcanvasEmail = data_get($ws, 'offcanvas.email', 'market.ilsamindonesia@yahoo.com');
+  $offcanvasLocation = data_get($ws, 'offcanvas.location_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
+
+  $topWebsiteUrl = data_get($ws, 'top.website_url', 'https://www.ilsam.com/');
+  $topWebsiteLabel = data_get($ws, 'top.website_label', 'www.ilsam.com');
+
+  $contactEmail = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+  $mapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
+
+  $companyProfileUrl = data_get($ws, 'downloads.company_profile_url', 'https://drive.google.com/uc?export=download&id=1G4sEtK56mxtXtg71gsx7zyvDG2CSVqVX');
+
+  $toAssetUrl = function ($raw, $fallback) {
+    $value = is_string($raw) ? trim($raw) : '';
+    if ($value === '') {
+      $value = $fallback;
+    }
+
+    if (preg_match('~^https?://~i', $value)) {
+      $path = (string) parse_url($value, PHP_URL_PATH);
+      $query = (string) parse_url($value, PHP_URL_QUERY);
+      if ($path !== '' && (str_starts_with($path, '/assets/') || str_starts_with($path, '/storage/'))) {
+        $local = asset(ltrim($path, '/'));
+        return $query !== '' ? ($local . '?' . $query) : $local;
+      }
+      return $value;
+    }
+
+    return asset(ltrim($value, '/'));
+  };
+
+  $offcanvasLogoUrl = $toAssetUrl(data_get($ws, 'brand.logo_white'), 'assets/img/logo_wh.svg');
+  $navbarLogoUrl = $toAssetUrl(data_get($ws, 'brand.logo'), 'assets/img/logo.png');
+@endphp
+
 <div class="fix">
   <div class="offcanvas__area">
     <div class="offcanvas__wrapper">
@@ -6,7 +43,7 @@
         <div class="offcanvas__top d-flex justify-content-between align-items-center">
           <div class="offcanvas__logo">
             <a href="{{ route('home') }}">
-              <img src="{{ asset('assets/img/logo_wh.svg') }}" alt="{{ __('website.nav.logo_alt') }}">
+              <img src="{{ $offcanvasLogoUrl }}" alt="{{ __('website.nav.logo_alt') }}">
             </a>
           </div>
           <div class="offcanvas__close">
@@ -27,17 +64,17 @@
           <p class="mb-30">{{ __('website.nav.offcanvas.quick_links_desc') }}</p>
           <ul class="header-top-socail-menu d-flex">
             <li>
-              <a href="https://www.ilsam.com/" target="_blank" rel="noopener" aria-label="{{ __('website.nav.offcanvas.aria.website') }}">
+              <a href="{{ $offcanvasWebsite }}" target="_blank" rel="noopener" aria-label="{{ __('website.nav.offcanvas.aria.website') }}">
                 <i class="fa-solid fa-globe"></i>
               </a>
             </li>
             <li>
-              <a href="mailto:market.ilsamindonesia@yahoo.com" aria-label="{{ __('website.nav.offcanvas.aria.email') }}">
+              <a href="mailto:{{ $offcanvasEmail }}" aria-label="{{ __('website.nav.offcanvas.aria.email') }}">
                 <i class="fa-solid fa-envelope"></i>
               </a>
             </li>
             <li>
-              <a href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6" target="_blank" rel="noopener" aria-label="{{ __('website.nav.offcanvas.aria.location') }}">
+              <a href="{{ $offcanvasLocation }}" target="_blank" rel="noopener" aria-label="{{ __('website.nav.offcanvas.aria.location') }}">
                 <i class="fa-solid fa-location-dot"></i>
               </a>
             </li>
@@ -70,7 +107,7 @@
           <div class="col-xl-5">
             <ul class="header__top-menu d-flex ">
               <li>
-                <a href="https://maps.app.goo.gl/reUj3juAoQ8NrGLE6">
+                <a href="{{ $mapUrl }}">
                   <span>
                     <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path
@@ -90,7 +127,7 @@
             <div class="header__top-wrapper d-flex justify-content-end">
 
               <div class="header__top-email">
-                <a href="mailto:market.ilsamindonesia@yahoo.com">
+                <a href="mailto:{{ $contactEmail }}">
                   <svg width="19" height="16" viewBox="0 0 19 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       d="M2.7 1H16.3C17.235 1 18 1.7875 18 2.75V13.25C18 14.2125 17.235 15 16.3 15H2.7C1.765 15 1 14.2125 1 13.25V2.75C1 1.7875 1.765 1 2.7 1Z"
@@ -98,12 +135,12 @@
                     <path d="M18 2.75L9.5 8.875L1 2.75" stroke="#007aff" stroke-width="1.5" stroke-linecap="round"
                       stroke-linejoin="round" />
                   </svg>
-                  market.ilsamindonesia@yahoo.com
+                  {{ $contactEmail }}
                 </a>
               </div>
               <ul class="header__top-socail d-flex ">
                 <li class="title">{{ __('website.nav.top.visit_us') }}</li>
-                <li><a href="https://www.ilsam.com/">www.ilsam.com</a></li>
+                <li><a href="{{ $topWebsiteUrl }}">{{ $topWebsiteLabel }}</a></li>
                 {{-- <li><a href="https://twitter.com/"><i class="fab fa-twitter"></i></a></li>
                 <li><a href="#"><i class="fab fa-instagram"></i></a></li>
                 <li><a href="#"><i class="fa-brands fa-linkedin"></i></a></li> --}}
@@ -120,7 +157,7 @@
           <div class="header__logo">
             <a href="{{ route('home') }}">
               <div class="logo">
-                <img class="img-fluid" src="{{ asset('assets/img/logo.png') }}" alt="{{ __('website.nav.logo_alt') }}">
+                <img class="img-fluid" src="{{ $navbarLogoUrl }}" alt="{{ __('website.nav.logo_alt') }}">
               </div>
             </a>
           </div>
@@ -171,7 +208,7 @@
               </div>
               <div class="header__btn-wrap align-items-center d-inline-flex">
                 <div class="rr-header-contact-btn d-flex align-items-center d-none d-md-flex">
-                  <a href="https://drive.google.com/uc?export=download&id=1G4sEtK56mxtXtg71gsx7zyvDG2CSVqVX"
+                  <a href="{{ $companyProfileUrl }}"
                     class="rr-btn__header" target="_blank" rel="noopener" download>
                     <span class="btn-wrap">
                       <span class="text-one">{{ __('website.nav.cta.company_profile') }}</span>

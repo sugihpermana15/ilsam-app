@@ -408,6 +408,50 @@
                                 'admin.certificates.destroy',
                             ],
                         ],
+                        [
+                            'title' => 'Website Products',
+                            'icon' => 'fas fa-box',
+                            'route' => 'admin.website_products.index',
+                            'permission_key' => 'website_products',
+                            'active_routes' => [
+                                'admin.website_products.index',
+                                'admin.website_products.create',
+                                'admin.website_products.store',
+                                'admin.website_products.edit',
+                                'admin.website_products.update',
+                                'admin.website_products.destroy',
+                            ],
+                        ],
+                        [
+                            'title' => 'Website Settings',
+                            'icon' => 'fas fa-sliders',
+                            'route' => 'admin.website_settings.edit',
+                            'permission_key' => 'website_settings',
+                            'active_routes' => [
+                                'admin.website_settings.edit',
+                                'admin.website_settings.update',
+                            ],
+                        ],
+                        [
+                            'title' => 'Website Contact Page',
+                            'icon' => 'fas fa-address-book',
+                            'route' => 'admin.website_contact_page.edit',
+                            'permission_key' => 'website_contact_page',
+                            'active_routes' => [
+                                'admin.website_contact_page.edit',
+                                'admin.website_contact_page.update',
+                            ],
+                        ],
+                        [
+                            'title' => 'Website Home Sections',
+                            'icon' => 'fas fa-house-chimney',
+                            'route' => 'admin.website_home_sections.edit',
+                            'permission_key' => 'website_home_sections',
+                            'active_routes' => [
+                                'admin.website_home_sections.edit',
+                                'admin.website_home_sections.update',
+                            ],
+                        ],
                     ],
                 ],
                 [
@@ -1088,6 +1132,18 @@
                 }
                 if (str_starts_with($routeName, 'admin.certificates.')) {
                     return 'certificate';
+                }
+                if (str_starts_with($routeName, 'admin.website_products.')) {
+                    return 'website_products';
+                }
+                if (str_starts_with($routeName, 'admin.website_settings.')) {
+                    return 'website_settings';
+                }
+                if (str_starts_with($routeName, 'admin.website_contact_page.')) {
+                    return 'website_contact_page';
+                }
+                if (str_starts_with($routeName, 'admin.website_home_sections.')) {
+                    return 'website_home_sections';
                 }
                 if (preg_match('/^admin\.users\./', $routeName) === 1 || $routeName === 'admin.users') {
                     return 'settings_users';

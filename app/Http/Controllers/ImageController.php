@@ -18,16 +18,33 @@ class ImageController extends Controller
             abort(404);
         }
 
-        // Restrict to public/assets/img only.
-        $baseDir = public_path('assets/img');
-        $realBase = realpath($baseDir);
-        if ($realBase === false) {
+        // Restrict to specific public directories only (assets + public storage).
+        $allowedBases = [];
+        foreach ([public_path('assets/img'), public_path('storage')] as $baseDir) {
+            $realBase = realpath($baseDir);
+            if ($realBase !== false) {
+                $allowedBases[] = rtrim($realBase, DIRECTORY_SEPARATOR);
+            }
+        }
+
+        if (count($allowedBases) === 0) {
             abort(404);
         }
 
         $requestedFile = public_path($path);
         $realFile = realpath($requestedFile);
-        if ($realFile === false || !str_starts_with($realFile, $realBase . DIRECTORY_SEPARATOR)) {
+        if ($realFile === false) {
+            abort(404);
+        }
+
+        $isAllowed = false;
+        foreach ($allowedBases as $base) {
+            if ($realFile === $base || str_starts_with($realFile, $base . DIRECTORY_SEPARATOR)) {
+                $isAllowed = true;
+                break;
+            }
+        }
+        if (!$isAllowed) {
             abort(404);
         }
 

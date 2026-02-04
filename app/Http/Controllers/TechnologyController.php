@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Certificate;
+use App\Support\WebsiteProducts;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -87,67 +88,40 @@ class TechnologyController extends Controller
 
     private function portfolioData(): array
     {
-        return [
-            [
-                'title' => 'Chemical Colorants',
-                'subtitle' => 'Colorants for PU/PVC synthetic leather, printing, and water-based systems.',
-                'route' => route('products.colorants'),
-                'lines' => [
-                    [
-                        'title' => 'Colorants for Leather and Synthetic Leather PU',
-                        'codes' => ['SW', 'SU', 'SF'],
-                    ],
-                    [
-                        'title' => 'Colorants for Synthetic Leather PVC',
-                        'codes' => ['SV', 'SFV'],
-                    ],
-                    [
-                        'title' => 'Colorants for Printing',
-                        'codes' => ['SP', 'SG'],
-                    ],
-                    [
-                        'title' => 'Colorants for Water-based',
-                        'codes' => ['SUW'],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Surface Coating Agents',
-                'subtitle' => 'Solution-type surface coating agent for leather and synthetic leather PU/PVC.',
-                'route' => route('products.surface-coating-agents'),
-                'lines' => [
-                    [
-                        'title' => 'Solution-type Surface Coating Agent (PU & PVC)',
-                        'codes' => ['SUS'],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'Additive Coating',
-                'subtitle' => 'Supplementary agent for promoting quality and curing PU and PVC.',
-                'route' => route('products.additive-coating'),
-                'lines' => [
-                    [
-                        'title' => 'Supplementary agent for PU & PVC curing',
-                        'codes' => ['SC', 'SS', 'SI'],
-                    ],
-                ],
-            ],
-            [
-                'title' => 'PU Resin',
-                'subtitle' => 'Resin and adhesive systems for PU applications and resin production lines.',
-                'route' => route('products.pu-resin'),
-                'lines' => [
-                    [
-                        'title' => 'Skin and Adhesive for Leather and Synthetic Leather PU',
-                        'codes' => ['ISU', 'ISA', 'ISN', 'IWD', 'IWA', 'IWS', 'IEU', 'IEA', 'IEW'],
-                    ],
-                    [
-                        'title' => 'Polyester for production Resin PU',
-                        'codes' => ['EB', 'B', 'DEB'],
-                    ],
-                ],
-            ],
+        $slugToRoute = [
+            'colorants' => 'products.colorants',
+            'surface-coating-agents' => 'products.surface-coating-agents',
+            'additive-coating' => 'products.additive-coating',
+            'pu-resin' => 'products.pu-resin',
         ];
+
+        $products = collect(WebsiteProducts::all())
+            ->filter(fn($p) => (bool) ($p['is_active'] ?? true))
+            ->values();
+
+        return $products
+            ->map(function ($p) use ($slugToRoute) {
+                $slug = (string) ($p['slug'] ?? '');
+                $routeName = $slugToRoute[$slug] ?? null;
+
+                $lines = collect($p['lines'] ?? [])
+                    ->filter(fn($row) => is_array($row))
+                    ->map(function ($row) {
+                        return [
+                            'title' => $row['title'] ?? '',
+                            'codes' => is_array($row['codes'] ?? null) ? array_values($row['codes']) : [],
+                        ];
+                    })
+                    ->values()
+                    ->all();
+
+                return [
+                    'title' => $p['title'] ?? '',
+                    'subtitle' => $p['tagline'] ?? '',
+                    'route' => $routeName ? route($routeName) : route('products'),
+                    'lines' => $lines,
+                ];
+            })
+            ->all();
     }
 }
