@@ -20,7 +20,7 @@ class WebsiteSettingsController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
+        $rules = [
             'brand.favicon' => ['nullable', 'string', 'max:500'],
             'brand.favicon_file' => ['nullable', 'file', 'max:5120', 'mimes:png,ico,svg,jpg,jpeg,webp,gif'],
             'brand.logo' => ['nullable', 'string', 'max:500'],
@@ -147,7 +147,50 @@ class WebsiteSettingsController extends Controller
             'home.sections.products_cards.additive_coating_bg_file' => ['nullable', 'file', 'max:5120', 'mimes:png,svg,jpg,jpeg,webp,gif'],
             'home.sections.products_cards.pu_resin_bg' => ['nullable', 'string', 'max:500'],
             'home.sections.products_cards.pu_resin_bg_file' => ['nullable', 'file', 'max:5120', 'mimes:png,svg,jpg,jpeg,webp,gif'],
-        ]);
+        ];
+
+        $locales = array_keys(config('app.locales', ['en' => 'English']));
+
+        // Footer text (localized)
+        foreach ($locales as $code) {
+            $rules["footer.about_text.$code"] = ['nullable', 'string', 'max:2000'];
+        }
+
+        // Home text (localized)
+        foreach ($locales as $code) {
+            // Hero
+            $rules["home.text.hero.subtitle.$code"] = ['nullable', 'string', 'max:200'];
+            $rules["home.text.hero.title_line1.$code"] = ['nullable', 'string', 'max:200'];
+            $rules["home.text.hero.title_line2.$code"] = ['nullable', 'string', 'max:200'];
+
+            // About
+            $rules["home.text.about.subtitle.$code"] = ['nullable', 'string', 'max:200'];
+            $rules["home.text.about.title_line1.$code"] = ['nullable', 'string', 'max:200'];
+            $rules["home.text.about.title_line2.$code"] = ['nullable', 'string', 'max:200'];
+
+            // Experience labels
+            $rules["home.text.experience.established_label.$code"] = ['nullable', 'string', 'max:200'];
+            $rules["home.text.experience.clients_label.$code"] = ['nullable', 'string', 'max:200'];
+            $rules["home.text.experience.years_experience_label.$code"] = ['nullable', 'string', 'max:200'];
+
+            // Products
+            $rules["home.text.products.label.$code"] = ['nullable', 'string', 'max:120'];
+            $rules["home.text.products.title.$code"] = ['nullable', 'string', 'max:250'];
+            $rules["home.text.products.teaser_line1.$code"] = ['nullable', 'string', 'max:250'];
+            $rules["home.text.products.teaser_line2.$code"] = ['nullable', 'string', 'max:250'];
+
+            $rules["home.text.products.items.colorants.$code"] = ['nullable', 'string', 'max:120'];
+            $rules["home.text.products.items.surface_coating_agents.$code"] = ['nullable', 'string', 'max:120'];
+            $rules["home.text.products.items.additive_coating.$code"] = ['nullable', 'string', 'max:120'];
+            $rules["home.text.products.items.pu_resin.$code"] = ['nullable', 'string', 'max:120'];
+        }
+
+        // Home experience numbers
+        $rules['home.text.experience.established_value'] = ['nullable', 'integer', 'min:0', 'max:3000'];
+        $rules['home.text.experience.clients_value'] = ['nullable', 'integer', 'min:0', 'max:1000000'];
+        $rules['home.text.experience.years_experience_value'] = ['nullable', 'integer', 'min:0', 'max:3000'];
+
+        $validated = $request->validate($rules);
 
         $settings = WebsiteSettings::all();
 

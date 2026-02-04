@@ -9,6 +9,14 @@
     $settings = $settings ?? [];
     $locales = $locales ?? ['en' => 'English'];
 
+    $localeFallback = function ($key, $fallback = '') use ($settings) {
+      $val = data_get($settings, $key);
+      if (is_string($val) && trim($val) !== '') {
+        return $val;
+      }
+      return $fallback;
+    };
+
     $slides = data_get($settings, 'home.hero_slides', []);
     if (!is_array($slides)) {
       $slides = [];
@@ -207,6 +215,184 @@
                 <input class="form-control" type="file" name="home[hero_slides_files][]" accept="image/*" multiple>
                 <div class="form-text">Gambar yang diupload akan ditambahkan ke daftar slides (append).</div>
               </div>
+
+              <hr class="my-2" />
+
+              <div class="col-12">
+                <h6 class="mb-1">Home - Text (per language)</h6>
+                <div class="text-muted small">Jika kosong, halaman akan fallback ke text dari file translation.</div>
+              </div>
+
+              @foreach($locales as $code => $label)
+                @php
+                  $heroSubtitleFallback = 'PT ILSAM GLOBAL INDONESIA';
+                  $heroTitle1Fallback = __('website.home.hero.title_line1');
+                  $heroTitle2Fallback = __('website.home.hero.title_line2');
+
+                  $aboutSubtitleFallback = __('website.home.about.subtitle');
+                  $aboutTitle1Fallback = __('website.home.about.title_line1');
+                  $aboutTitle2Fallback = __('website.home.about.title_line2');
+
+                  $expEstablishedFallback = __('website.home.experience.established');
+                  $expClientsFallback = __('website.home.experience.clients');
+                  $expYearsFallback = __('website.home.experience.years_experience');
+
+                  $productsLabelFallback = __('website.home.products.label');
+                  $productsTitleFallback = __('website.home.products.title');
+                  $productsTeaser1Fallback = __('website.home.products.teaser_line1');
+                  $productsTeaser2Fallback = __('website.home.products.teaser_line2');
+
+                  $prodColorantsFallback = __('website.home.products.items.colorants');
+                  $prodSurfaceFallback = __('website.home.products.items.surface_coating_agents');
+                  $prodAdditiveFallback = __('website.home.products.items.additive_coating');
+                  $prodPuFallback = __('website.home.products.items.pu_resin');
+                @endphp
+
+                <div class="col-12">
+                  <div class="border rounded p-3">
+                    <div class="fw-bold mb-2">Language: {{ $label }} ({{ $code }})</div>
+
+                    <div class="row g-3">
+                      <div class="col-12">
+                        <div class="fw-semibold">Hero</div>
+                      </div>
+
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Hero Subtitle</label>
+                        <input class="form-control" name="home[text][hero][subtitle][{{ $code }}]" value="{{ old('home.text.hero.subtitle.' . $code, $localeFallback('home.text.hero.subtitle.' . $code, $heroSubtitleFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6"></div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Hero Title Line 1</label>
+                        <input class="form-control" name="home[text][hero][title_line1][{{ $code }}]" value="{{ old('home.text.hero.title_line1.' . $code, $localeFallback('home.text.hero.title_line1.' . $code, $heroTitle1Fallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Hero Title Line 2</label>
+                        <input class="form-control" name="home[text][hero][title_line2][{{ $code }}]" value="{{ old('home.text.hero.title_line2.' . $code, $localeFallback('home.text.hero.title_line2.' . $code, $heroTitle2Fallback)) }}">
+                      </div>
+
+                      <div class="col-12">
+                        <hr class="my-2" />
+                      </div>
+
+                      <div class="col-12">
+                        <div class="fw-semibold">About</div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">About Subtitle</label>
+                        <input class="form-control" name="home[text][about][subtitle][{{ $code }}]" value="{{ old('home.text.about.subtitle.' . $code, $localeFallback('home.text.about.subtitle.' . $code, $aboutSubtitleFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6"></div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">About Title Line 1</label>
+                        <input class="form-control" name="home[text][about][title_line1][{{ $code }}]" value="{{ old('home.text.about.title_line1.' . $code, $localeFallback('home.text.about.title_line1.' . $code, $aboutTitle1Fallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">About Title Line 2</label>
+                        <input class="form-control" name="home[text][about][title_line2][{{ $code }}]" value="{{ old('home.text.about.title_line2.' . $code, $localeFallback('home.text.about.title_line2.' . $code, $aboutTitle2Fallback)) }}">
+                      </div>
+
+                      <div class="col-12">
+                        <hr class="my-2" />
+                      </div>
+
+                      <div class="col-12">
+                        <div class="fw-semibold">Experience Labels</div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Established Label</label>
+                        <input class="form-control" name="home[text][experience][established_label][{{ $code }}]" value="{{ old('home.text.experience.established_label.' . $code, $localeFallback('home.text.experience.established_label.' . $code, $expEstablishedFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Clients Label</label>
+                        <input class="form-control" name="home[text][experience][clients_label][{{ $code }}]" value="{{ old('home.text.experience.clients_label.' . $code, $localeFallback('home.text.experience.clients_label.' . $code, $expClientsFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Years Experience Label</label>
+                        <input class="form-control" name="home[text][experience][years_experience_label][{{ $code }}]" value="{{ old('home.text.experience.years_experience_label.' . $code, $localeFallback('home.text.experience.years_experience_label.' . $code, $expYearsFallback)) }}">
+                      </div>
+
+                      <div class="col-12">
+                        <hr class="my-2" />
+                      </div>
+
+                      <div class="col-12">
+                        <div class="fw-semibold">Products</div>
+                      </div>
+                      <div class="col-12 col-md-4">
+                        <label class="form-label">Products Label</label>
+                        <input class="form-control" name="home[text][products][label][{{ $code }}]" value="{{ old('home.text.products.label.' . $code, $localeFallback('home.text.products.label.' . $code, $productsLabelFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-8">
+                        <label class="form-label">Products Title</label>
+                        <input class="form-control" name="home[text][products][title][{{ $code }}]" value="{{ old('home.text.products.title.' . $code, $localeFallback('home.text.products.title.' . $code, $productsTitleFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Products Teaser Line 1</label>
+                        <input class="form-control" name="home[text][products][teaser_line1][{{ $code }}]" value="{{ old('home.text.products.teaser_line1.' . $code, $localeFallback('home.text.products.teaser_line1.' . $code, $productsTeaser1Fallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Products Teaser Line 2</label>
+                        <input class="form-control" name="home[text][products][teaser_line2][{{ $code }}]" value="{{ old('home.text.products.teaser_line2.' . $code, $localeFallback('home.text.products.teaser_line2.' . $code, $productsTeaser2Fallback)) }}">
+                      </div>
+
+                      <div class="col-12">
+                        <div class="fw-semibold">Products Items</div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Colorants</label>
+                        <input class="form-control" name="home[text][products][items][colorants][{{ $code }}]" value="{{ old('home.text.products.items.colorants.' . $code, $localeFallback('home.text.products.items.colorants.' . $code, $prodColorantsFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Surface Coating Agents</label>
+                        <input class="form-control" name="home[text][products][items][surface_coating_agents][{{ $code }}]" value="{{ old('home.text.products.items.surface_coating_agents.' . $code, $localeFallback('home.text.products.items.surface_coating_agents.' . $code, $prodSurfaceFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">Additive Coating</label>
+                        <input class="form-control" name="home[text][products][items][additive_coating][{{ $code }}]" value="{{ old('home.text.products.items.additive_coating.' . $code, $localeFallback('home.text.products.items.additive_coating.' . $code, $prodAdditiveFallback)) }}">
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <label class="form-label">PU Resin</label>
+                        <input class="form-control" name="home[text][products][items][pu_resin][{{ $code }}]" value="{{ old('home.text.products.items.pu_resin.' . $code, $localeFallback('home.text.products.items.pu_resin.' . $code, $prodPuFallback)) }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              @endforeach
+
+              <div class="col-12">
+                <div class="border rounded p-3">
+                  <div class="fw-bold mb-2">Home - Experience Numbers</div>
+                  <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">Established Year</label>
+                      <input class="form-control" type="number" name="home[text][experience][established_value]" value="{{ old('home.text.experience.established_value', data_get($settings, 'home.text.experience.established_value', 1999)) }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">Clients</label>
+                      <input class="form-control" type="number" name="home[text][experience][clients_value]" value="{{ old('home.text.experience.clients_value', data_get($settings, 'home.text.experience.clients_value', 20)) }}">
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <label class="form-label">Years Experience</label>
+                      <input class="form-control" type="number" name="home[text][experience][years_experience_value]" value="{{ old('home.text.experience.years_experience_value', data_get($settings, 'home.text.experience.years_experience_value', 27)) }}">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="my-2" />
+
+              <div class="col-12">
+                <h6 class="mb-1">Footer - About Text (per language)</h6>
+                <div class="text-muted small">Paragraf di footer bagian kiri. Jika kosong, fallback ke translation.</div>
+              </div>
+
+              @foreach($locales as $code => $label)
+                <div class="col-12">
+                  <label class="form-label">Footer About ({{ $label }})</label>
+                  <textarea class="form-control" name="footer[about_text][{{ $code }}]" rows="2">{{ old('footer.about_text.' . $code, $localeFallback('footer.about_text.' . $code, __('website.footer.about'))) }}</textarea>
+                </div>
+              @endforeach
 
               <hr class="my-2" />
 

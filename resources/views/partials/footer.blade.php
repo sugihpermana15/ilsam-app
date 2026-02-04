@@ -1,11 +1,20 @@
 <footer>
   @php
     $ws = \App\Support\WebsiteSettings::all();
+    $locale = app()->getLocale();
     $phoneDisplay = data_get($ws, 'contact.phone_display', '+62 (021) 89830313 / 0314');
     $phoneTel = data_get($ws, 'contact.phone_tel', '02189830313');
     $email = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
     $mapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
     $addressText = data_get($ws, 'contact.address_text', '');
+
+    $footerAbout = data_get($ws, 'footer.about_text.' . $locale);
+    if (!is_string($footerAbout) || trim($footerAbout) === '') {
+      $footerAbout = data_get($ws, 'footer.about_text.en');
+    }
+    if (!is_string($footerAbout) || trim($footerAbout) === '') {
+      $footerAbout = __('website.footer.about');
+    }
 
     $toAssetUrl = function ($raw, $fallback) {
       $value = is_string($raw) ? trim($raw) : '';
@@ -64,7 +73,7 @@
               </div>
 
               <div class="footer__content mb-30 mb-xs-35">
-                <p class="mb-0">{{ __('website.footer.about') }}</p>
+                <p class="mb-0">{{ $footerAbout }}</p>
               </div>
             </div>
           </div>

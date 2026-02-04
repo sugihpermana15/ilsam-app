@@ -6,6 +6,20 @@
   $ws = \App\Support\WebsiteSettings::all();
   $locale = app()->getLocale();
 
+  $getLocalized = function (string $baseKey, string $fallback = '') use ($ws, $locale) {
+    $value = data_get($ws, $baseKey . '.' . $locale);
+    if (is_string($value) && trim($value) !== '') {
+      return trim($value);
+    }
+
+    $value = data_get($ws, $baseKey . '.en');
+    if (is_string($value) && trim($value) !== '') {
+      return trim($value);
+    }
+
+    return $fallback;
+  };
+
   $imgUrl = function ($raw, $w, $q) {
     $value = is_string($raw) ? trim($raw) : '';
     if ($value === '') {
@@ -93,6 +107,32 @@
   $cardSurfaceUrl = $imgUrl($cardSurfaceRaw, 1200, 65);
   $cardAdditiveUrl = $imgUrl($cardAdditiveRaw, 1200, 65);
   $cardPuResinUrl = $imgUrl($cardPuResinRaw, 1200, 65);
+
+  $heroSubtitle = $getLocalized('home.text.hero.subtitle', 'PT ILSAM GLOBAL INDONESIA');
+  $heroTitleLine1 = $getLocalized('home.text.hero.title_line1', __('website.home.hero.title_line1'));
+  $heroTitleLine2 = $getLocalized('home.text.hero.title_line2', __('website.home.hero.title_line2'));
+
+  $aboutSubtitle = $getLocalized('home.text.about.subtitle', __('website.home.about.subtitle'));
+  $aboutTitleLine1 = $getLocalized('home.text.about.title_line1', __('website.home.about.title_line1'));
+  $aboutTitleLine2 = $getLocalized('home.text.about.title_line2', __('website.home.about.title_line2'));
+
+  $establishedValue = (int) data_get($ws, 'home.text.experience.established_value', 1999);
+  $clientsValue = (int) data_get($ws, 'home.text.experience.clients_value', 20);
+  $yearsExperienceValue = (int) data_get($ws, 'home.text.experience.years_experience_value', 27);
+
+  $establishedLabel = $getLocalized('home.text.experience.established_label', __('website.home.experience.established'));
+  $clientsLabel = $getLocalized('home.text.experience.clients_label', __('website.home.experience.clients'));
+  $yearsExperienceLabel = $getLocalized('home.text.experience.years_experience_label', __('website.home.experience.years_experience'));
+
+  $productsLabel = $getLocalized('home.text.products.label', __('website.home.products.label'));
+  $productsTitle = $getLocalized('home.text.products.title', __('website.home.products.title'));
+  $productsTeaserLine1 = $getLocalized('home.text.products.teaser_line1', __('website.home.products.teaser_line1'));
+  $productsTeaserLine2 = $getLocalized('home.text.products.teaser_line2', __('website.home.products.teaser_line2'));
+
+  $productsItemColorants = $getLocalized('home.text.products.items.colorants', __('website.home.products.items.colorants'));
+  $productsItemSurface = $getLocalized('home.text.products.items.surface_coating_agents', __('website.home.products.items.surface_coating_agents'));
+  $productsItemAdditive = $getLocalized('home.text.products.items.additive_coating', __('website.home.products.items.additive_coating'));
+  $productsItemPu = $getLocalized('home.text.products.items.pu_resin', __('website.home.products.items.pu_resin'));
 @endphp
 
 @section('meta_description', $metaDescription)
@@ -130,11 +170,11 @@
                   <div class="col-12">
                     <div class="banner__item-content">
                       <h4 class="banner__item-sub-title color-white {{ $subtitleClass }} text-decoration-underline mb-25">
-                        PT ILSAM GLOBAL INDONESIA
+                        {{ $heroSubtitle }}
                       </h4>
                       <h1 class="banner__item-title h1-70 rr-fw-bold color-white mb-10 {{ $titleBreakClass }}">
-                        {{ __('website.home.hero.title_line1') }}<br>
-                        {{ __('website.home.hero.title_line2') }}
+                        {{ $heroTitleLine1 }}<br>
+                        {{ $heroTitleLine2 }}
                       </h1>
                     </div>
                   </div>
@@ -180,9 +220,8 @@
         <div class="col-xl-6">
           <div class="section__title-wrapper text-center text-xl-start rr-mb-60-lg">
             <span class="section__subtitle justify-content-start mb-13"><span data-width="40px"
-                class="left-separetor"></span>{{ __('website.home.about.subtitle') }}</span>
-            <h2 class="section__title title-animation mb-15 mb-xs-10 rr-br-hidden-md" data-cursor="-opaque">Perfect
-              {{ __('website.home.about.title_line1') }} <br> {{ __('website.home.about.title_line2') }}</h2>
+                class="left-separetor"></span>{{ $aboutSubtitle }}</span>
+            <h2 class="section__title title-animation mb-15 mb-xs-10 rr-br-hidden-md" data-cursor="-opaque">{{ $aboutTitleLine1 }} <br> {{ $aboutTitleLine2 }}</h2>
           </div>
         </div>
         <div class="col-xl-6">
@@ -210,9 +249,9 @@
               </div>
               <div class="experience__item-text">
                 <h2 class="experience__item-text-title color-white">
-                  <span class="odometer" data-count="1999">0</span>
+                  <span class="odometer" data-count="{{ $establishedValue }}">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">{{ __('website.home.experience.established') }}</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">{{ $establishedLabel }}</h4>
               </div>
             </div>
 
@@ -222,9 +261,9 @@
               </div>
               <div class="experience__item-text">
                 <h2 class="experience__item-text-title color-white">
-                  <span class="odometer" data-count="20">0</span>
+                  <span class="odometer" data-count="{{ $clientsValue }}">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">{{ __('website.home.experience.clients') }}</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">{{ $clientsLabel }}</h4>
               </div>
             </div>
 
@@ -234,9 +273,9 @@
               </div>
               <div class="experience__item-text">
                 <h2 class="experience__item-text-title color-white">
-                  <span class="odometer" data-count="27">0</span>
+                  <span class="odometer" data-count="{{ $yearsExperienceValue }}">0</span>
                 </h2>
-                <h4 class="color-white rr-fw-sbold mb-0">{{ __('website.home.experience.years_experience') }}</h4>
+                <h4 class="color-white rr-fw-sbold mb-0">{{ $yearsExperienceLabel }}</h4>
               </div>
             </div>
           </div>
@@ -250,7 +289,7 @@
   <section class="what-we-do-2 section-space section-bg-2 overflow-hidden">
     <div class="container rr-shape-p-c_1">
       <div class="rr-upDown">
-        <div class="what-we-do-2__text rr-shape-p-s_1">{{ __('website.home.products.label') }}</div>
+        <div class="what-we-do-2__text rr-shape-p-s_1">{{ $productsLabel }}</div>
       </div>
       <div class="what-we-do-2__shape-1 rr-shape-p-s_1 rr-upDown"><img
           loading="lazy" decoding="async" src="{{ $productsShape2Url }}" alt="">
@@ -265,9 +304,8 @@
         <div class="col-12">
           <div class="section__title-wrapper text-center mb-60 mb-sm-40 mb-xs-35">
             <span class="section__subtitle justify-content-center mb-13 ml-0"><span data-width="40px"
-                class="left-separetor"></span>{{ __('website.home.products.label') }}<span data-width="40px" class="right-separetor"></span></span>
-            <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">Powering
-              {{ __('website.home.products.title') }}</h2>
+                class="left-separetor"></span>{{ $productsLabel }}<span data-width="40px" class="right-separetor"></span></span>
+            <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">{{ $productsTitle }}</h2>
           </div>
         </div>
       </div>
@@ -286,9 +324,9 @@
               <i class="bi bi-palette" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.colorants') }}">{{ __('website.home.products.items.colorants') }}</a></h4>
-              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
-                {{ __('website.home.products.teaser_line2') }}</p>
+              <h4 class="title mb-15"><a href="{{ route('products.colorants') }}">{{ $productsItemColorants }}</a></h4>
+              <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
+                {{ $productsTeaserLine2 }}</p>
             </div>
           </div>
         </div>
@@ -305,10 +343,10 @@
               <i class="bi bi-brush" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.surface-coating-agents') }}">{{ __('website.home.products.items.surface_coating_agents') }}</a>
+              <h4 class="title mb-15"><a href="{{ route('products.surface-coating-agents') }}">{{ $productsItemSurface }}</a>
               </h4>
-              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
-                {{ __('website.home.products.teaser_line2') }}</p>
+              <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
+                {{ $productsTeaserLine2 }}</p>
             </div>
           </div>
         </div>
@@ -325,9 +363,9 @@
               <i class="bi bi-layers" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.additive-coating') }}">{{ __('website.home.products.items.additive_coating') }}</a></h4>
-              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
-                {{ __('website.home.products.teaser_line2') }}</p>
+              <h4 class="title mb-15"><a href="{{ route('products.additive-coating') }}">{{ $productsItemAdditive }}</a></h4>
+              <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
+                {{ $productsTeaserLine2 }}</p>
             </div>
           </div>
         </div>
@@ -344,9 +382,9 @@
               <i class="bi bi-droplet" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.pu-resin') }}">{{ __('website.home.products.items.pu_resin') }}</a></h4>
-              <p class="mb-0 rr-p-16">{{ __('website.home.products.teaser_line1') }} <br>
-                {{ __('website.home.products.teaser_line2') }}</p>
+              <h4 class="title mb-15"><a href="{{ route('products.pu-resin') }}">{{ $productsItemPu }}</a></h4>
+              <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
+                {{ $productsTeaserLine2 }}</p>
             </div>
           </div>
         </div>
