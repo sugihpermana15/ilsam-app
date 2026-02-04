@@ -110,13 +110,15 @@
               continue;
             }
 
+            $slideBgUrl = $imgUrl($slidePath, 1600, 65);
+
             $isFirst = (int) $idx === 0;
             $subtitleClass = $isFirst ? 'rr-fw-medium' : 'rr-fw-sbold';
             $titleBreakClass = $isFirst ? 'rr-br-hidden-md' : 'rr-br-hidden-lg';
           @endphp
           <div class="swiper-slide">
             <div class="banner__item banner__space theme-bg-heading-primary">
-              <div class="banner__item-bg" data-background="{{ route('img', ['path' => ltrim($slidePath, '/'), 'w' => 1600, 'q' => 65]) }}"></div>
+              <div class="banner__item-bg" data-background="{{ $slideBgUrl }}"></div>
               <div class="container rr-shape-p-c_1">
                 <div class="banner__item-shape-2 rr-shape-p-s_1 rr-upDown">
                     <img src="{{ $bannerShape2Url }}" alt="">

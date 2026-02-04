@@ -178,7 +178,7 @@
 
               <div class="col-12">
                 <h6 class="mb-1">Home - Hero Slides</h6>
-                <div class="text-muted small">Satu path per baris (contoh: <code>assets/img/img1.jpg</code>). Akan diproses via route <code>/img</code>.</div>
+                <div class="text-muted small">Satu path/URL per baris (contoh: <code>assets/img/img1.jpg</code> atau URL penuh). Untuk path lokal akan diproses via route <code>/img</code>.</div>
               </div>
 
               <div class="col-12">
@@ -206,6 +206,181 @@
                 <label class="form-label">Upload Hero Slides (append)</label>
                 <input class="form-control" type="file" name="home[hero_slides_files][]" accept="image/*" multiple>
                 <div class="form-text">Gambar yang diupload akan ditambahkan ke daftar slides (append).</div>
+              </div>
+
+              <hr class="my-2" />
+
+              <div class="col-12">
+                <h6 class="mb-1">Home - Decorations</h6>
+                <div class="text-muted small">Gambar dekorasi untuk banner & section products.</div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Banner Shape 2 (URL/path)</label>
+                <input class="form-control" name="home[decorations][banner_shape_2]" value="{{ old('home.decorations.banner_shape_2', data_get($settings, 'home.decorations.banner_shape_2')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.decorations.banner_shape_2', data_get($settings, 'home.decorations.banner_shape_2')),
+                  'alt' => 'Banner shape 2',
+                  'maxHeight' => 60,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Banner Shape 2 Upload</label>
+                <input class="form-control" type="file" name="home[decorations][banner_shape_2_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Banner Shape 3 (URL/path)</label>
+                <input class="form-control" name="home[decorations][banner_shape_3]" value="{{ old('home.decorations.banner_shape_3', data_get($settings, 'home.decorations.banner_shape_3')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.decorations.banner_shape_3', data_get($settings, 'home.decorations.banner_shape_3')),
+                  'alt' => 'Banner shape 3',
+                  'maxHeight' => 60,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Banner Shape 3 Upload</label>
+                <input class="form-control" type="file" name="home[decorations][banner_shape_3_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Products Shape 2 (URL/path)</label>
+                <input class="form-control" name="home[decorations][products_shape_2]" value="{{ old('home.decorations.products_shape_2', data_get($settings, 'home.decorations.products_shape_2')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.decorations.products_shape_2', data_get($settings, 'home.decorations.products_shape_2')),
+                  'alt' => 'Products shape 2',
+                  'maxHeight' => 60,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Products Shape 2 Upload</label>
+                <input class="form-control" type="file" name="home[decorations][products_shape_2_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Products Shape 3 (URL/path)</label>
+                <input class="form-control" name="home[decorations][products_shape_3]" value="{{ old('home.decorations.products_shape_3', data_get($settings, 'home.decorations.products_shape_3')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.decorations.products_shape_3', data_get($settings, 'home.decorations.products_shape_3')),
+                  'alt' => 'Products shape 3',
+                  'maxHeight' => 60,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Products Shape 3 Upload</label>
+                <input class="form-control" type="file" name="home[decorations][products_shape_3_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Products Shape 4 (URL/path)</label>
+                <input class="form-control" name="home[decorations][products_shape_4]" value="{{ old('home.decorations.products_shape_4', data_get($settings, 'home.decorations.products_shape_4')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.decorations.products_shape_4', data_get($settings, 'home.decorations.products_shape_4')),
+                  'alt' => 'Products shape 4',
+                  'maxHeight' => 60,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Products Shape 4 Upload</label>
+                <input class="form-control" type="file" name="home[decorations][products_shape_4_file]" accept="image/*">
+              </div>
+
+              <hr class="my-2" />
+
+              <div class="col-12">
+                <h6 class="mb-1">Home - Section Images</h6>
+                <div class="text-muted small">Gambar untuk section About & Experience di Home.</div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">About Image (URL/path)</label>
+                <input class="form-control" name="home[sections][about_image]" value="{{ old('home.sections.about_image', data_get($settings, 'home.sections.about_image')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.sections.about_image', data_get($settings, 'home.sections.about_image')),
+                  'alt' => 'Home about image',
+                  'maxHeight' => 70,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">About Image Upload</label>
+                <input class="form-control" type="file" name="home[sections][about_image_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Experience Background (URL/path)</label>
+                <input class="form-control" name="home[sections][experience_bg]" value="{{ old('home.sections.experience_bg', data_get($settings, 'home.sections.experience_bg')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.sections.experience_bg', data_get($settings, 'home.sections.experience_bg')),
+                  'alt' => 'Experience background',
+                  'maxHeight' => 70,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Experience Background Upload</label>
+                <input class="form-control" type="file" name="home[sections][experience_bg_file]" accept="image/*">
+              </div>
+
+              <hr class="my-2" />
+
+              <div class="col-12">
+                <h6 class="mb-1">Home - Product Cards Backgrounds</h6>
+                <div class="text-muted small">Background image untuk kartu produk di Home.</div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Card: Colorants BG (URL/path)</label>
+                <input class="form-control" name="home[sections][products_cards][colorants_bg]" value="{{ old('home.sections.products_cards.colorants_bg', data_get($settings, 'home.sections.products_cards.colorants_bg')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.sections.products_cards.colorants_bg', data_get($settings, 'home.sections.products_cards.colorants_bg')),
+                  'alt' => 'Products card colorants bg',
+                  'maxHeight' => 70,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Upload: Colorants BG</label>
+                <input class="form-control" type="file" name="home[sections][products_cards][colorants_bg_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Card: Surface Coating Agents BG (URL/path)</label>
+                <input class="form-control" name="home[sections][products_cards][surface_coating_agents_bg]" value="{{ old('home.sections.products_cards.surface_coating_agents_bg', data_get($settings, 'home.sections.products_cards.surface_coating_agents_bg')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.sections.products_cards.surface_coating_agents_bg', data_get($settings, 'home.sections.products_cards.surface_coating_agents_bg')),
+                  'alt' => 'Products card surface coating agents bg',
+                  'maxHeight' => 70,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Upload: Surface Coating Agents BG</label>
+                <input class="form-control" type="file" name="home[sections][products_cards][surface_coating_agents_bg_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Card: Additive Coating BG (URL/path)</label>
+                <input class="form-control" name="home[sections][products_cards][additive_coating_bg]" value="{{ old('home.sections.products_cards.additive_coating_bg', data_get($settings, 'home.sections.products_cards.additive_coating_bg')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.sections.products_cards.additive_coating_bg', data_get($settings, 'home.sections.products_cards.additive_coating_bg')),
+                  'alt' => 'Products card additive coating bg',
+                  'maxHeight' => 70,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Upload: Additive Coating BG</label>
+                <input class="form-control" type="file" name="home[sections][products_cards][additive_coating_bg_file]" accept="image/*">
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Card: PU Resin BG (URL/path)</label>
+                <input class="form-control" name="home[sections][products_cards][pu_resin_bg]" value="{{ old('home.sections.products_cards.pu_resin_bg', data_get($settings, 'home.sections.products_cards.pu_resin_bg')) }}">
+                @include('partials.admin.image-preview', [
+                  'raw' => old('home.sections.products_cards.pu_resin_bg', data_get($settings, 'home.sections.products_cards.pu_resin_bg')),
+                  'alt' => 'Products card pu resin bg',
+                  'maxHeight' => 70,
+                ])
+              </div>
+              <div class="col-12 col-lg-6">
+                <label class="form-label">Upload: PU Resin BG</label>
+                <input class="form-control" type="file" name="home[sections][products_cards][pu_resin_bg_file]" accept="image/*">
               </div>
 
               <hr class="my-2" />
