@@ -165,6 +165,12 @@
     @php
       $canManage = auth()->check() && (int) auth()->user()->role_id === 1;
       $canManageEmployee = auth()->check() && in_array((int) auth()->user()->role_id, [1, 2], true);
+
+      $tabOverrides = auth()->check() && is_array(auth()->user()->dashboard_tabs) ? auth()->user()->dashboard_tabs : null;
+      $tabAllowed = function (string $key) use ($tabOverrides): bool {
+        return $tabOverrides === null || in_array($key, $tabOverrides, true);
+      };
+
       $showEmployee = isset($employee) && !empty($employee['kpi']);
       $showAsset = !empty($permissions['asset']) && (
         !empty($permissions['asset']['kpi']) ||
@@ -177,13 +183,27 @@
         !empty($permissions['uniform']['recent'])
       );
 
+      $showStamps = auth()->check() && (
+        \App\Support\MenuAccess::can(auth()->user(), 'stamps_transactions', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'stamps_master', 'read')
+      );
+
       $showDocuments = !empty($showDocuments);
+
+      // Apply per-user tab access overrides.
+      $showAsset = $tabAllowed('asset') && $showAsset;
+      $showUniform = $tabAllowed('uniform') && $showUniform;
+      $showStamps = $tabAllowed('stamps') && $showStamps;
+      $showDocuments = $tabAllowed('documents') && $showDocuments;
+      $showEmployee = $tabAllowed('employee') && $showEmployee;
 
       $tabs = [];
       if ($showAsset)
         $tabs[] = 'asset';
       if ($showUniform)
         $tabs[] = 'uniform';
+      if ($showStamps)
+        $tabs[] = 'stamps';
       if ($showDocuments)
         $tabs[] = 'documents';
       if ($showEmployee)
@@ -198,22 +218,10 @@
           <div
             class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
             <h5 class="card-title mb-0">Dashboard</h5>
-            <div class="d-flex gap-2 flex-wrap">
-              @if($canManage && $showAsset)
-                <a href="{{ route('admin.assets.index') }}" class="btn btn-outline-primary btn-sm">
-                  <i class="fas fa-box"></i> Asset Management
-                </a>
-              @endif
-              @if($canManage && $showUniform)
-                <a href="{{ route('admin.uniforms.master') }}" class="btn btn-outline-primary btn-sm">
-                  <i class="fas fa-boxes-stacked"></i> Uniform Management
-                </a>
-              @endif
-            </div>
           </div>
 
           <div class="card-body">
-            @if(!$showAsset && !$showUniform && !$showEmployee)
+            @if(!$showAsset && !$showUniform && !$showStamps && !$showEmployee && !$showDocuments)
               <div class="alert alert-warning mb-0">
                 Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
               </div>
@@ -236,6 +244,14 @@
                       </button>
                     </li>
                   @endif
+                  @if($showStamps)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'stamps' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-stamps" type="button" role="tab">
+                        <i class="fas fa-stamp me-1"></i> Materai
+                      </button>
+                    </li>
+                  @endif
                   @if($showEmployee)
                     <li class="nav-item" role="presentation">
                       <button class="nav-link {{ $activeTab === 'employee' ? 'active' : '' }}" data-bs-toggle="tab"
@@ -248,7 +264,7 @@
                     <li class="nav-item" role="presentation">
                       <button class="nav-link {{ $activeTab === 'documents' ? 'active' : '' }}" data-bs-toggle="tab"
                         data-bs-target="#tab-documents" type="button" role="tab">
-                        <i class="fas fa-folder-open me-1"></i> Archived Berkas
+                        <i class="fas fa-folder-open me-1"></i> Arsip Berkas
                       </button>
                     </li>
                   @endif
@@ -564,6 +580,170 @@
                   </div>
                 @endif
 
+                @if($showStamps)
+                  @php
+                    $stKpi = $stamps['kpi'] ?? ['total_qty' => 0, 'total_value' => 0, 'total_out_qty' => 0];
+                    $stTop = $stamps['topStamps'] ?? collect();
+                    $stRecent = $stamps['recentTransactions'] ?? collect();
+
+                    $canReadLedger = \App\Support\MenuAccess::can(auth()->user(), 'stamps_transactions', 'read');
+                    $canReadMaster = \App\Support\MenuAccess::can(auth()->user(), 'stamps_master', 'read');
+                  @endphp
+
+                  <div class="tab-pane fade {{ $activeTab === 'stamps' ? 'show active' : '' }}" id="tab-stamps" role="tabpanel">
+                    <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+                      @if($canReadLedger)
+                        <a href="{{ route('admin.stamps.transactions.index') }}" class="btn btn-outline-primary btn-sm">
+                          <i class="fas fa-book"></i> Ledger
+                        </a>
+                      @endif
+                      @if($canReadMaster)
+                        <a href="{{ route('admin.stamps.master.index') }}" class="btn btn-outline-secondary btn-sm">
+                          <i class="fas fa-list"></i> Master
+                        </a>
+                      @endif
+                    </div>
+
+                    <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3">
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Sisa Stock (Qty)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($stKpi['total_qty'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-primary fs-3"><i class="fas fa-boxes-stacked"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Total Nilai (Rp)</div>
+                                <div class="fs-4 fw-semibold">Rp {{ number_format((int) ($stKpi['total_value'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-success fs-3"><i class="fas fa-sack-dollar"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Total Materai Keluar (Qty)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($stKpi['total_out_qty'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-danger fs-3"><i class="fas fa-arrow-up"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="row g-3">
+                      <div class="col-12 col-xl-5">
+                        <div class="card h-100">
+                          <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Ringkasan Cepat</h6>
+                            @if($canReadLedger)
+                              <a href="{{ route('admin.stamps.transactions.index') }}" class="btn btn-outline-secondary btn-sm">Buka ledger</a>
+                            @endif
+                          </div>
+                          <div class="card-body table-responsive">
+                            <table class="table table-striped table-bordered align-middle">
+                              <thead>
+                                <tr>
+                                  <th>Materai</th>
+                                  <th style="width: 90px;" class="text-end">Saldo</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @forelse($stTop as $stamp)
+                                  <tr>
+                                    <td>
+                                      <div class="fw-semibold">{{ $stamp->name }}</div>
+                                      <div class="text-muted small">{{ $stamp->code }} • Rp {{ number_format((int) $stamp->face_value, 0, ',', '.') }}</div>
+                                    </td>
+                                    <td class="text-end">{{ number_format((int) ($stamp->balance?->on_hand_qty ?? 0), 0, ',', '.') }}</td>
+                                  </tr>
+                                @empty
+                                  <tr>
+                                    <td colspan="2" class="text-center text-muted">Belum ada master materai</td>
+                                  </tr>
+                                @endforelse
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12 col-xl-7">
+                        <div class="card h-100">
+                          <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">Transaksi Terbaru</h6>
+                            @if($canReadLedger)
+                              <a href="{{ route('admin.stamps.transactions.index') }}" class="btn btn-outline-secondary btn-sm">Buka ledger</a>
+                            @endif
+                          </div>
+                          <div class="card-body table-responsive">
+                            <table class="table table-striped table-bordered align-middle">
+                              <thead>
+                                <tr>
+                                  <th style="width: 110px;">Tanggal</th>
+                                  <th style="width: 140px;">No. Trx</th>
+                                  <th>Materai</th>
+                                  <th style="width: 70px;">Tipe</th>
+                                  <th style="width: 80px;" class="text-end">Qty</th>
+                                  <th style="width: 90px;" class="text-end">Saldo</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @forelse($stRecent as $trx)
+                                  <tr>
+                                    <td>{{ optional($trx->trx_date)->format('d-m-Y') }}</td>
+                                    <td class="text-nowrap">{{ $trx->trx_no }}</td>
+                                    <td>
+                                      <div class="fw-semibold">{{ $trx->stamp?->name }}</div>
+                                      <div class="text-muted small">{{ $trx->stamp?->code }}</div>
+                                    </td>
+                                    <td>
+                                      <span class="badge {{ $trx->trx_type === 'IN' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }}">
+                                        {{ $trx->trx_type }}
+                                      </span>
+                                    </td>
+                                    <td class="text-end">{{ number_format((int) $trx->qty, 0, ',', '.') }}</td>
+                                    <td class="text-end">{{ number_format((int) $trx->on_hand_after, 0, ',', '.') }}</td>
+                                  </tr>
+                                @empty
+                                  <tr>
+                                    <td colspan="6" class="text-center text-muted">Belum ada transaksi</td>
+                                  </tr>
+                                @endforelse
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                @endif
+
                 @if($showDocuments)
                   @php
                     $docExpiring = $documents['expiring'] ?? collect();
@@ -575,7 +755,7 @@
                   <div class="tab-pane fade {{ $activeTab === 'documents' ? 'show active' : '' }}" id="tab-documents"
                     role="tabpanel">
                     <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-                      <div class="text-muted small">Ringkasan kontrak/lampiran dari Archived Berkas.</div>
+                      <div class="text-muted small">Ringkasan kontrak/lampiran dari Arsip Berkas.</div>
                       <div class="d-flex gap-2">
                         <a href="{{ route('admin.documents.index') }}" class="btn btn-outline-secondary btn-sm">Open List</a>
                         @if($canCreateDoc)

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\UniformIssue;
+use App\Support\MenuAccess;
 
 class UserDashboardController extends Controller
 {
@@ -19,6 +20,10 @@ class UserDashboardController extends Controller
     $roleName = $user?->role?->role_name;
 
     if (in_array($roleName, ['Super Admin', 'Admin'], true)) {
+      return redirect()->route('admin.dashboard');
+    }
+
+    if ($user && MenuAccess::can($user, 'admin_dashboard', 'read')) {
       return redirect()->route('admin.dashboard');
     }
 

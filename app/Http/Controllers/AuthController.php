@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Support\MenuAccess;
 
 class AuthController extends Controller
 {
@@ -62,7 +63,31 @@ class AuthController extends Controller
                 return redirect()->intended(route('admin'));
             }
 
-            return redirect()->intended(route('user.dashboard'));
+            // For non-admin users, do not honor the previous intended URL.
+            // It commonly points to /dashboard (karyawan) and would override the permission-based landing.
+            $request->session()->forget('url.intended');
+
+            // Non-admin users: route by explicit menu permissions.
+            if ($user && MenuAccess::can($user, 'admin_dashboard', 'read')) {
+                return redirect()->route('admin.dashboard');
+            }
+
+            // If user can access Materai but not the admin dashboard, go straight to Materai Ledger.
+            if ($user && (
+                MenuAccess::can($user, 'stamps_transactions', 'read') ||
+                MenuAccess::can($user, 'stamps_master', 'read')
+            )) {
+                return redirect()->route('admin.stamps.dashboard');
+            }
+
+            if ($user && MenuAccess::can($user, 'user_dashboard', 'read')) {
+                return redirect()->route('user.dashboard');
+            }
+
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('auth')->withErrors(['username' => 'Akun Anda tidak memiliki akses dashboard.']);
         }
 
         return back()->withErrors(['username' => 'The provided credentials do not match our records.']);

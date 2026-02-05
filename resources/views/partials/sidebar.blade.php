@@ -124,6 +124,7 @@
                                 'admin.dashboard',
                                 'admin.dashboard.assets',
                                 'admin.dashboard.uniforms',
+                                'admin.dashboard.stamps',
                             ],
                         ],
                     ],
@@ -131,6 +132,26 @@
                 [
                     'title_group' => 'Application',
                     'items' => [
+                        [
+                            'title' => 'Manajemen Materai',
+                            'icon' => 'fas fa-stamp',
+                            'active_routes' => [
+                                'admin.stamps.transactions.index',
+                                'admin.stamps.transactions.store_in',
+                                'admin.stamps.transactions.store_out',
+                                'admin.stamps.report.pdf',
+                                'admin.stamps.master.index',
+                                'admin.stamps.master.create',
+                                'admin.stamps.master.store',
+                                'admin.stamps.master.edit',
+                                'admin.stamps.master.update',
+                                'admin.stamps.master.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Ledger', 'route' => 'admin.stamps.transactions.index', 'active_routes' => ['admin.stamps.transactions.datatable', 'admin.stamps.transactions.store_in', 'admin.stamps.transactions.store_out', 'admin.stamps.report.pdf'], 'default' => true, 'permission_key' => 'stamps_transactions'],
+                                ['title' => 'Master', 'route' => 'admin.stamps.master.index', 'active_routes' => ['admin.stamps.master.datatable', 'admin.stamps.master.create', 'admin.stamps.master.store', 'admin.stamps.master.edit', 'admin.stamps.master.update', 'admin.stamps.master.toggle'], 'permission_key' => 'stamps_master'],
+                            ],
+                        ],
                         [
                             'title' => 'Perlengkapan Aset',
                             'icon' => 'fas fa-hard-drive',
@@ -483,6 +504,27 @@
                                 'admin.dashboard',
                                 'admin.dashboard.assets',
                                 'admin.dashboard.uniforms',
+                                'admin.dashboard.stamps',
+                            ],
+                        ],
+                        [
+                            'title' => 'Manajemen Materai',
+                            'icon' => 'fas fa-stamp',
+                            'active_routes' => [
+                                'admin.stamps.transactions.index',
+                                'admin.stamps.transactions.store_in',
+                                'admin.stamps.transactions.store_out',
+                                'admin.stamps.report.pdf',
+                                'admin.stamps.master.index',
+                                'admin.stamps.master.create',
+                                'admin.stamps.master.store',
+                                'admin.stamps.master.edit',
+                                'admin.stamps.master.update',
+                                'admin.stamps.master.toggle',
+                            ],
+                            'children' => [
+                                ['title' => 'Ledger', 'route' => 'admin.stamps.transactions.index', 'active_routes' => ['admin.stamps.transactions.datatable', 'admin.stamps.transactions.store_in', 'admin.stamps.transactions.store_out', 'admin.stamps.report.pdf'], 'default' => true, 'permission_key' => 'stamps_transactions'],
+                                ['title' => 'Master', 'route' => 'admin.stamps.master.index', 'active_routes' => ['admin.stamps.master.datatable', 'admin.stamps.master.create', 'admin.stamps.master.store', 'admin.stamps.master.edit', 'admin.stamps.master.update', 'admin.stamps.master.toggle'], 'permission_key' => 'stamps_master'],
                             ],
                         ],
                         [
@@ -1022,6 +1064,13 @@
 
                 if (str_starts_with($routeName, 'admin.devices.')) {
                     return 'devices';
+                }
+
+                if (str_starts_with($routeName, 'admin.stamps.master.')) {
+                    return 'stamps_master';
+                }
+                if (str_starts_with($routeName, 'admin.stamps.transactions.') || $routeName === 'admin.stamps.report.pdf') {
+                    return 'stamps_transactions';
                 }
 
                 if (str_starts_with($routeName, 'admin.account_types.')) {

@@ -27,22 +27,50 @@ const popovers = initializeBootstrapComponents(
 // Function to handle both sticky menu and button loading
 function initializeAppFeatures() {
     const stickyMenu = document.getElementById("appHeader"); // Ensure this ID matches your HTML
-    const stickyOffset = stickyMenu.offsetTop;
+    let stickyOffset = stickyMenu ? stickyMenu.offsetTop : 0;
 
-    // Function to toggle sticky class on scroll
-    function toggleStickyMenu() {
-        if (window.scrollY > stickyOffset) {
-            stickyMenu.classList.add("sticky-scroll");
-        } else {
-            stickyMenu.classList.remove("sticky-scroll");
-        }
+    // Toggle sticky class on scroll (throttled to animation frame).
+    let rafScheduled = false;
+    let lastShouldStick = null;
+
+    function updateStickyMenu() {
+        rafScheduled = false;
+        if (!stickyMenu) return;
+
+        const shouldStick = window.scrollY > stickyOffset;
+        if (shouldStick === lastShouldStick) return;
+        lastShouldStick = shouldStick;
+
+        stickyMenu.classList.toggle("sticky-scroll", shouldStick);
     }
 
-    // Attach the scroll event listener
-    window.addEventListener("scroll", toggleStickyMenu);
+    function onScroll() {
+        if (rafScheduled) return;
+        rafScheduled = true;
+        window.requestAnimationFrame(updateStickyMenu);
+    }
+
+    if (stickyMenu) {
+        // Attach a passive scroll listener for smoother scrolling.
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener(
+            "resize",
+            () => {
+                stickyOffset = stickyMenu.offsetTop;
+                onScroll();
+            },
+            { passive: true }
+        );
+
+        // Run once at start.
+        onScroll();
+    }
 
     // Attach click event listeners to all loader buttons
-    document.querySelectorAll(".btn-loader").forEach((button) => {
+    const loaderButtons = document.querySelectorAll(".btn-loader");
+    if (!loaderButtons.length) return;
+
+    loaderButtons.forEach((button) => {
         button.addEventListener("click", function () {
             const indicatorLabel = this.querySelector(".indicator-label");
             const originalText = indicatorLabel.textContent;

@@ -14,7 +14,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\DeletedUserController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\DepartmentController;
@@ -25,6 +24,7 @@ use App\Http\Controllers\Admin\UniformCategoryController;
 use App\Http\Controllers\Admin\UniformColorController;
 use App\Http\Controllers\Admin\UniformUomController;
 use App\Http\Controllers\Admin\UniformSizeController;
+use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\AssetCategoryController;
 use App\Http\Controllers\Admin\AssetLocationController;
 use App\Http\Controllers\Admin\PlantSiteController;
@@ -45,6 +45,10 @@ use App\Http\Controllers\Admin\WebsiteSettingsController;
 use App\Http\Controllers\Admin\WebsiteContactPageController;
 use App\Http\Controllers\Admin\WebsiteHomeSectionsController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\Admin\Stamp\StampDashboardController;
+use App\Http\Controllers\Admin\Stamp\StampMasterController;
+use App\Http\Controllers\Admin\Stamp\StampReportController;
+use App\Http\Controllers\Admin\Stamp\StampTransactionController;
 use App\Http\Middleware\EnsureAuthenticated;
 use App\Http\Middleware\EnsureGuest;
 
@@ -101,6 +105,8 @@ Route::get('/sitemap.xml', function () {
         ->header('Content-Type', 'application/xml; charset=UTF-8');
 })->name('sitemap');
 
+// NOTE: Manajemen Materai sekarang berada di dalam /admin (tidak ada lagi folder/route ERP).
+
 // Optimized image variants (resize/compress + cache)
 Route::get('/img/{path}', [ImageController::class, 'show'])
     ->where('path', '.*')
@@ -156,17 +162,41 @@ Route::get('/dashboard', [UserDashboardController::class, 'index'])
 Route::get('/admin', [AdminController::class, 'admin'])
     ->middleware([
         EnsureAuthenticated::class,
-        'role:Super Admin,Admin',
     ])
     ->name('admin');
 
 Route::prefix('admin')->middleware([
     EnsureAuthenticated::class,
-    'role:Super Admin,Admin',
 ])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->middleware('menu:admin_dashboard')->name('admin.dashboard');
     Route::get('/dashboard/assets', [AdminController::class, 'dashboardAssets'])->middleware('menu:admin_dashboard')->name('admin.dashboard.assets');
     Route::get('/dashboard/uniforms', [AdminController::class, 'dashboardUniforms'])->middleware('menu:admin_dashboard')->name('admin.dashboard.uniforms');
+    Route::get('/dashboard/stamps', [AdminController::class, 'dashboardStamps'])->middleware('menu:admin_dashboard')->name('admin.dashboard.stamps');
+
+    // Manajemen Materai
+    Route::prefix('stamps')->name('admin.stamps.')->group(function () {
+        // Entry point for Manajemen Materai now lands on Ledger.
+        Route::get('/', [StampDashboardController::class, 'index'])->middleware('menu:stamps_transactions')->name('dashboard');
+
+        Route::get('master', [StampMasterController::class, 'index'])->middleware('menu:stamps_master')->name('master.index');
+        Route::get('master/datatable', [StampMasterController::class, 'datatable'])->middleware('menu:stamps_master')->name('master.datatable');
+        Route::get('master/{stamp}/json', [StampMasterController::class, 'json'])->middleware('menu:stamps_master')->name('master.json');
+        Route::get('master/create', [StampMasterController::class, 'create'])->middleware('menu:stamps_master')->name('master.create');
+        Route::post('master', [StampMasterController::class, 'store'])->middleware('menu:stamps_master')->name('master.store');
+        Route::get('master/{stamp}/edit', [StampMasterController::class, 'edit'])->middleware('menu:stamps_master')->name('master.edit');
+        Route::put('master/{stamp}', [StampMasterController::class, 'update'])->middleware('menu:stamps_master')->name('master.update');
+        Route::patch('master/{stamp}/toggle', [StampMasterController::class, 'toggle'])->middleware('menu:stamps_master')->name('master.toggle');
+
+        Route::get('transactions', [StampTransactionController::class, 'index'])->middleware('menu:stamps_transactions')->name('transactions.index');
+        Route::get('transactions/datatable', [StampTransactionController::class, 'datatable'])->middleware('menu:stamps_transactions')->name('transactions.datatable');
+        Route::post('transactions/in', [StampTransactionController::class, 'storeIn'])->middleware('menu:stamps_transactions')->name('transactions.store_in');
+        Route::post('transactions/out', [StampTransactionController::class, 'storeOut'])->middleware('menu:stamps_transactions')->name('transactions.store_out');
+
+        Route::get('report.pdf', [StampReportController::class, 'pdf'])->middleware('menu:stamps_transactions')->name('report.pdf');
+    });
+
+    // Everything else in /admin stays restricted to Super Admin/Admin.
+    Route::middleware('role:Super Admin,Admin')->group(function () {
 
     // Device (Computer) Management
     Route::get('/devices', [DeviceController::class, 'index'])->middleware('menu:devices')->name('admin.devices.index');
@@ -297,6 +327,8 @@ Route::prefix('admin')->middleware([
     Route::delete('/certificates/{certificate}', [AdminCertificateController::class, 'destroy'])->middleware('menu:certificate')->name('admin.certificates.destroy');
 });
 
+});
+
 // Admin pages that can be granted to Users (read-only via GET).
 Route::prefix('admin')->middleware([
     EnsureAuthenticated::class,
@@ -305,6 +337,7 @@ Route::prefix('admin')->middleware([
     // Assets (read-only)
     Route::get('/assets', [AssetController::class, 'index'])->middleware('menu:assets_data')->name('admin.assets.index');
     Route::get('/assets/datatables', [AssetController::class, 'datatable'])->middleware('menu:assets_data')->name('admin.assets.datatable');
+    Route::get('/assets/export/pdf', [AssetController::class, 'exportPdf'])->middleware('menu:assets_data')->name('admin.assets.export.pdf');
     Route::get('/assets/jababeka', [AssetController::class, 'jababeka'])->middleware('menu:assets_jababeka')->name('admin.assets.jababeka');
     Route::get('/assets/karawang', [AssetController::class, 'karawang'])->middleware('menu:assets_karawang')->name('admin.assets.karawang');
     Route::get('/assets/transfer', [AssetController::class, 'transfer'])->middleware('menu:assets_transfer')->name('admin.assets.transfer');
@@ -491,6 +524,7 @@ Route::prefix('admin')->middleware([
     Route::post('/uniforms/reconcile/create-adjustment', [UniformController::class, 'reconcileCreateAdjustment'])->middleware('menu:uniforms_stock')->name('admin.uniforms.reconcile.adjustment');
 
     Route::get('/uniforms/history', [UniformController::class, 'history'])->middleware('menu:uniforms_history')->name('admin.uniforms.history');
+
 });
 
 // Safe 404 fallback: avoid exposing internal routes/pages when URL is guessed.

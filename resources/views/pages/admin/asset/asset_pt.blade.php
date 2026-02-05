@@ -78,6 +78,9 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">{{ __('assets.management') }}</h5>
             <div class="d-flex gap-2">
+              <button type="button" class="btn btn-danger" id="btn-export-assets-pdf">
+                <i class="fas fa-file-pdf"></i> Unduh PDF
+              </button>
               <button type="button" class="btn btn-success" id="btn-open-create-asset" data-bs-toggle="modal" data-bs-target="#assetCreateModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : __('assets.actions.no_access_create') }}">
                 <i class="fas fa-plus"></i> {{ __('assets.pt.add_asset') }}
               </button>
@@ -91,6 +94,9 @@
             </div>
           </div>
           <div class="card-body">
+            <div class="text-muted small mb-2">
+              PDF mengikuti filter & pencarian. Bisa export: item dipilih, halaman ini, atau semua hasil.
+            </div>
             <div class="row g-2 align-items-end mb-3">
               <div class="col-12 col-md-3">
                 <label class="form-label mb-1">{{ __('assets.fields.location') }}</label>
@@ -152,6 +158,7 @@
               <thead>
                 <tr>
                   <th><input type="checkbox" id="select-all"></th>
+                  <th class="d-none">ID</th>
                   <th>{{ __('assets.pt.table.no') }}</th>
                   <th>{{ __('assets.fields.asset_code') }}</th>
                   <th>{{ __('assets.fields.asset_name') }}</th>
@@ -161,8 +168,6 @@
                   <th>{{ __('assets.fields.pic') }}</th>
                   <th>{{ __('assets.fields.purchase_date') }}</th>
                   <th>{{ __('assets.fields.price') }}</th>
-                  <th>{{ __('assets.fields.qty') }}</th>
-                  <th>{{ __('assets.fields.uom') }}</th>
                   <th>{{ __('assets.fields.condition') }}</th>
                   <th>{{ __('assets.fields.ownership_status') }}</th>
                   <th>{{ __('assets.fields.status') }}</th>
@@ -670,6 +675,7 @@
       const csrfToken = @json(csrf_token());
       const currentLocation = @json(request('location'));
       const dtUrl = @json(route('admin.assets.datatable'));
+      const exportPdfUrl = @json(route('admin.assets.export.pdf'));
 
       // Avoid "Cannot reinitialise DataTable" if the table gets initialized twice (e.g., cached/old init script on VPS).
       if ($.fn.dataTable && $.fn.dataTable.isDataTable('#alternative-pagination')) {
@@ -731,8 +737,17 @@
       const dt = $('#alternative-pagination').DataTable({
         processing: true,
         serverSide: true,
+        pagingType: "full_numbers",
         pageLength: 10,
         lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        dom:
+          "<'row'<'col-sm-12 col-md-6 mb-3'l><'col-sm-12 col-md-6 mt-5'f>>" +
+          "<'table-responsive'tr>" +
+          "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+        language: {
+          search: @json(__('common.search')) + ' : ',
+          searchPlaceholder: @json(__('common.search_placeholder'))
+        },
         ajax: {
           url: dtUrl,
           data: function (d) {
@@ -749,7 +764,7 @@
             if (fpic) d.f_pic_employee_id = fpic;
           }
         },
-        order: [[2, 'desc']],
+        order: [[1, 'desc']],
         columns: [
           {
             data: 'id',
@@ -760,6 +775,11 @@
               const checked = selectedIds.has(id) ? 'checked' : '';
               return `<input type="checkbox" class="select-asset" value="${id}" ${checked}>`;
             }
+          },
+          {
+            data: 'id',
+            visible: false,
+            searchable: false,
           },
           {
             data: 'id',
@@ -777,8 +797,6 @@
           { data: 'person_in_charge', defaultContent: '-' },
           { data: 'purchase_date', defaultContent: '-' },
           { data: 'price', defaultContent: '-' },
-          { data: 'qty', defaultContent: '-' },
-          { data: 'satuan', defaultContent: '-' },
           { data: 'asset_condition', defaultContent: '-' },
           { data: 'ownership_status', defaultContent: '-' },
           {
@@ -850,6 +868,88 @@
         $filterPic.val('');
         $filterLocation.val(currentLocation ? String(currentLocation) : '');
         redrawAssets();
+      });
+
+      const buildExportPdfUrl = (mode) => {
+        const params = new URLSearchParams();
+
+        if (currentLocation) params.set('location', String(currentLocation));
+
+        const fl = ($filterLocation.val() || '').toString().trim();
+        const fc = ($filterCategory.val() || '').toString().trim();
+        const fs = ($filterStatus.val() || '').toString().trim();
+        const fcond = ($filterCondition.val() || '').toString().trim();
+        const fpic = ($filterPic.val() || '').toString().trim();
+        const q = (dt.search() || '').toString().trim();
+
+        if (fl) params.set('f_location', fl);
+        if (fc) params.set('f_category', fc);
+        if (fs) params.set('f_status', fs);
+        if (fcond) params.set('f_condition', fcond);
+        if (fpic) params.set('f_pic_employee_id', fpic);
+        if (q) params.set('q', q);
+
+        if (mode === 'selected') {
+          const ids = Array.from(selectedIds);
+          if (ids.length > 0) params.set('selected_ids', ids.join(','));
+        }
+
+        if (mode === 'page') {
+          const info = dt.page.info();
+          params.set('scope', 'page');
+          params.set('start', String(info.start || 0));
+          params.set('length', String(info.length || 10));
+        }
+
+        const qs = params.toString();
+        return qs ? `${exportPdfUrl}?${qs}` : exportPdfUrl;
+      };
+
+      $('#btn-export-assets-pdf').on('click', function () {
+        const ids = Array.from(selectedIds);
+
+        if (ids.length > 0 && typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'question',
+            title: 'Unduh PDF',
+            text: 'Pilih jenis export:',
+            showDenyButton: true,
+            showCancelButton: true,
+            showCloseButton: true,
+            confirmButtonText: 'Yang dipilih',
+            denyButtonText: 'Halaman ini',
+            cancelButtonText: @json(__('common.cancel')),
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.open(buildExportPdfUrl('selected'), '_blank');
+            } else if (result.isDenied) {
+              window.open(buildExportPdfUrl('page'), '_blank');
+            }
+          });
+          return;
+        }
+
+        if (typeof Swal !== 'undefined') {
+          Swal.fire({
+            icon: 'question',
+            title: 'Unduh PDF',
+            text: 'Export halaman ini atau semua hasil sesuai filter?',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: 'Halaman ini',
+            denyButtonText: 'Semua hasil',
+            cancelButtonText: @json(__('common.cancel')),
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.open(buildExportPdfUrl('page'), '_blank');
+            } else if (result.isDenied) {
+              window.open(buildExportPdfUrl('filtered'), '_blank');
+            }
+          });
+          return;
+        }
+
+        window.open(buildExportPdfUrl('filtered'), '_blank');
       });
 
       const initSelect2InModal = ($modal) => {

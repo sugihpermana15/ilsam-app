@@ -13,6 +13,9 @@ use App\Models\DeletedAsset;
 use App\Models\TransferAsset;
 use App\Models\Department;
 use App\Models\Employee;
+use Carbon\Carbon;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -173,7 +176,9 @@ class AssetController extends Controller
 
       $assets = Asset::query()->whereIn('id', $idsToTransfer)->get();
 
+      /** @var \Illuminate\Support\Collection<int, \App\Models\Asset> $assets */
       foreach ($assets as $asset) {
+        /** @var \App\Models\Asset $asset */
         $fromLocation = $asset->asset_location;
         $toLocation = $fromLocation === 'Jababeka' ? 'Karawang' : null;
 
@@ -262,6 +267,7 @@ class AssetController extends Controller
 
       $cancelledCount = 0;
       foreach ($transfers as $transfer) {
+        /** @var \App\Models\TransferAsset $transfer */
         $isAlreadyCancelled = !empty($transfer->cancelled_at) || ($transfer->status === 'CANCELLED');
         if ($isAlreadyCancelled) {
           continue;
@@ -501,6 +507,143 @@ class AssetController extends Controller
       'recordsFiltered' => $recordsFiltered,
       'data' => $rows,
     ]);
+  }
+
+  public function exportPdf(Request $request)
+  {
+    $location = trim((string) $request->query('location', ''));
+    $filterLocation = trim((string) $request->query('f_location', ''));
+    $filterCategory = trim((string) $request->query('f_category', ''));
+    $filterStatus = trim((string) $request->query('f_status', ''));
+    $filterCondition = trim((string) $request->query('f_condition', ''));
+    $filterPicEmployeeId = (int) $request->query('f_pic_employee_id', 0);
+    $search = trim((string) $request->query('q', ''));
+
+    $scope = strtolower(trim((string) $request->query('scope', 'all')));
+    $scope = in_array($scope, ['all', 'page'], true) ? $scope : 'all';
+    $start = max(0, (int) $request->query('start', 0));
+    $length = (int) $request->query('length', 0);
+    $length = $length <= 0 ? 0 : min($length, 500);
+
+    $selectedIdsRaw = trim((string) $request->query('selected_ids', ''));
+    $selectedIds = collect($selectedIdsRaw !== '' ? explode(',', $selectedIdsRaw) : [])
+      ->map(fn($v) => (int) trim((string) $v))
+      ->filter(fn($id) => $id > 0)
+      ->unique()
+      ->values()
+      ->all();
+
+    $activeTransferIds = TransferAsset::query()
+      ->whereNull('cancelled_at')
+      ->whereNull('received_at')
+      ->pluck('asset_id')
+      ->filter()
+      ->all();
+
+    $query = Asset::query()
+      // Keep support for legacy location filter via URL/query param
+      ->when($location !== '', fn($q) => $q->where('asset_location', $location))
+      // Optional server-side filters from UI
+      ->when($filterLocation !== '', fn($q) => $q->where('asset_location', $filterLocation))
+      ->when($filterCategory !== '', fn($q) => $q->where('asset_category', $filterCategory))
+      ->when($filterStatus !== '', fn($q) => $q->where('asset_status', $filterStatus))
+      ->when($filterCondition !== '', fn($q) => $q->where('asset_condition', $filterCondition))
+      ->when($filterPicEmployeeId > 0, fn($q) => $q->where('person_in_charge_employee_id', $filterPicEmployeeId))
+      ->when(!empty($activeTransferIds), fn($q) => $q->whereNotIn('id', $activeTransferIds))
+      ->when(!empty($selectedIds), fn($q) => $q->whereIn('id', $selectedIds));
+
+    if ($search !== '') {
+      $query->where(function ($q) use ($search) {
+        $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $search) . '%';
+        $q->where('asset_code', 'like', $like)
+          ->orWhere('asset_name', 'like', $like)
+          ->orWhere('serial_number', 'like', $like)
+          ->orWhere('asset_category', 'like', $like)
+          ->orWhere('asset_location', 'like', $like)
+          ->orWhere('person_in_charge', 'like', $like)
+          ->orWhere('ownership_status', 'like', $like)
+          ->orWhere('asset_status', 'like', $like)
+          ->orWhere('description', 'like', $like);
+      });
+    }
+
+    $assetsQuery = $query
+      ->orderByDesc('id');
+
+    if ($scope === 'page' && empty($selectedIds) && $length > 0) {
+      $assetsQuery->skip($start)->take($length);
+    }
+
+    $assets = $assetsQuery->get([
+        'id',
+        'asset_code',
+        'asset_name',
+        'serial_number',
+        'asset_category',
+        'asset_location',
+        'person_in_charge',
+        'purchase_date',
+        'price',
+        'asset_condition',
+        'ownership_status',
+        'asset_status',
+        'description',
+        'last_updated',
+      ])
+      ->map(function (Asset $asset) {
+        return [
+          'id' => $asset->id,
+          'asset_code' => (string) ($asset->asset_code ?? ''),
+          'asset_name' => (string) ($asset->asset_name ?? ''),
+          'serial_number' => (string) ($asset->serial_number ?? ''),
+          'asset_category' => (string) ($asset->asset_category ?? ''),
+          'asset_location' => (string) ($asset->asset_location ?? ''),
+          'person_in_charge' => (string) ($asset->person_in_charge ?? ''),
+          'purchase_date' => $asset->purchase_date ? Carbon::parse($asset->purchase_date)->format('d-m-Y') : '-',
+          'price' => $asset->price !== null ? ('Rp. ' . number_format((float) $asset->price, 0, ',', '.')) : '-',
+          'asset_condition' => (string) ($asset->asset_condition ?? ''),
+          'ownership_status' => (string) ($asset->ownership_status ?? ''),
+          'asset_status' => (string) ($asset->asset_status ?? ''),
+          'description' => (string) ($asset->description ?? ''),
+          'last_updated' => $asset->last_updated ? Carbon::parse($asset->last_updated)->format('d-m-Y H:i') : '-',
+        ];
+      })
+      ->values();
+
+    $filters = [
+      'scope' => $scope,
+      'location' => $location,
+      'f_location' => $filterLocation,
+      'f_category' => $filterCategory,
+      'f_status' => $filterStatus,
+      'f_condition' => $filterCondition,
+      'f_pic_employee_id' => $filterPicEmployeeId,
+      'q' => $search,
+      'selected_ids' => $selectedIds,
+    ];
+
+    $html = view('pages.admin.asset.export_pdf', [
+      'generatedAt' => now()->format('Y-m-d H:i'),
+      'filters' => $filters,
+      'assets' => $assets,
+    ])->render();
+
+    $options = new Options();
+    $options->set('isRemoteEnabled', false);
+    // Allow local file access for assets under public/ via file:// URLs.
+    $options->set('chroot', public_path());
+    $options->set('defaultFont', 'DejaVu Sans');
+
+    $dompdf = new Dompdf($options);
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'landscape');
+    $dompdf->render();
+
+    $filename = 'assets_' . now()->format('Ymd_His') . '.pdf';
+
+    return response($dompdf->output(), 200)
+      ->header('Content-Type', 'application/pdf')
+         ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
   }
 
   public function jababeka()

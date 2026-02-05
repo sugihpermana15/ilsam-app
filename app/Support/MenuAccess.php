@@ -109,6 +109,12 @@ final class MenuAccess
                 'user_dashboard' => self::readOnly(),
                 'admin_dashboard' => self::none(),
 
+                // Stamps (Materai)
+                // Legacy umbrella key: kept for backward compatibility with stored overrides.
+                'stamps' => self::none(),
+                'stamps_master' => self::none(),
+                'stamps_transactions' => self::none(),
+
                 // Daily Tasks
                 'daily_tasks' => self::readCreateUpdate(),
 
@@ -188,6 +194,12 @@ final class MenuAccess
         $all = [
             'user_dashboard' => self::readOnly(),
             'admin_dashboard' => self::readOnly(),
+
+            // Stamps (Materai)
+            // Legacy umbrella key: kept for backward compatibility with stored overrides.
+            'stamps' => self::all(),
+            'stamps_master' => self::all(),
+            'stamps_transactions' => self::all(),
 
             // Daily Tasks
             'daily_tasks' => self::all(),
@@ -291,6 +303,18 @@ final class MenuAccess
         if (is_array($stored) && array_key_exists('master_data', $stored)) {
             $legacy = self::normalize($stored['master_data']);
             foreach (['master_hr', 'master_assets', 'master_accounts', 'master_uniform', 'master_daily_task'] as $k) {
+                if (!array_key_exists($k, $stored)) {
+                    $effective[$k] = $legacy;
+                }
+            }
+        }
+
+        // Backward compatibility: legacy "stamps" umbrella key.
+        // If a user has overrides for stamps but not the new granular stamps_* keys,
+        // mirror the legacy permission into the new leaf keys.
+        if (is_array($stored) && array_key_exists('stamps', $stored)) {
+            $legacy = self::normalize($stored['stamps']);
+            foreach (['stamps_master', 'stamps_transactions'] as $k) {
                 if (!array_key_exists($k, $stored)) {
                     $effective[$k] = $legacy;
                 }

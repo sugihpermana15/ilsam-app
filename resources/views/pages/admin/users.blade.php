@@ -272,6 +272,7 @@
                                     <form action="{{ route('admin.users.store') }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="dash_permissions_present" value="1">
+                                        <input type="hidden" name="dash_tabs_present" value="1">
                                         <input type="hidden" name="menu_permissions_present" value="1">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="addUserModalLabel">Tambah Pengguna</h5>
@@ -312,6 +313,39 @@
                                                     <option value="2">Admin</option>
                                                     <option value="3">Pengguna</option>
                                                 </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Tab Dashboard Admin</label>
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2">
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_asset" name="dash_tab_asset" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_asset">Asset</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_uniform" name="dash_tab_uniform" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_uniform">Uniform</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_stamps" name="dash_tab_stamps" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_stamps">Materai</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_documents" name="dash_tab_documents" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_documents">Arsip Berkas</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_employee" name="dash_tab_employee" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_employee">Karyawan</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-text">Jika semua dicentang, dashboard mengikuti akses default (tanpa pembatasan tab).</div>
                                             </div>
 
                                             <div class="mb-3">
@@ -434,6 +468,25 @@
                                                                         <label class="form-check-label"
                                                                             for="add_menu_admin_dashboard">Dashboard
                                                                             Admin</label>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_stamps" name="menu_stamps" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_stamps">Manajemen Materai <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_stamps"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_stamps_master" name="menu_stamps_master" value="1">
+                                                                            <label class="form-check-label" for="add_menu_stamps_master">Master Materai</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_stamps_transactions" name="menu_stamps_transactions" value="1">
+                                                                            <label class="form-check-label" for="add_menu_stamps_transactions">Transaksi Materai</label>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
@@ -617,7 +670,7 @@
                                                                             id="add_menu_master_daily_task"
                                                                             name="menu_master_daily_task" value="1">
                                                                         <label class="form-check-label"
-                                                                            for="add_menu_master_daily_task">Master Daily Task <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_daily_task"></span></label>
+                                                                            for="add_menu_master_daily_task">Master Tugas Harian <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_daily_task"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">
@@ -625,21 +678,21 @@
                                                                                 id="add_menu_daily_task_types" name="menu_daily_task_types"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_daily_task_types">Task Type (Daily Task)</label>
+                                                                                for="add_menu_daily_task_types">Tipe Tugas</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_daily_task_priorities" name="menu_daily_task_priorities"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_daily_task_priorities">Priority (Daily Task)</label>
+                                                                                for="add_menu_daily_task_priorities">Prioritas</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_daily_task_statuses" name="menu_daily_task_statuses"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_daily_task_statuses">Status (Daily Task)</label>
+                                                                                for="add_menu_daily_task_statuses">Status</label>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-check">
@@ -721,14 +774,14 @@
                                                                                 id="add_menu_documents_archive"
                                                                                 name="menu_documents_archive" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_documents_archive">Archived Berkas</label>
+                                                                                for="add_menu_documents_archive">Arsip Berkas</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="add_menu_documents_restricted"
                                                                                 name="menu_documents_restricted" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="add_menu_documents_restricted">Archived Berkas (Restricted)</label>
+                                                                                for="add_menu_documents_restricted">Arsip Berkas (Terbatas)</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
@@ -879,6 +932,7 @@
                                                 data-username="{{ $user->username }}" data-email="{{ $user->email }}"
                                                 data-role="{{ $user->role_id }}"
                                                 data-dashboard='@json($user->dashboard_permissions)'
+                                                data-dashboard-tabs='@json($user->dashboard_tabs)'
                                                 data-menu='@json($user->menu_permissions)'>
                                                 Ubah
                                             </button>
@@ -907,6 +961,7 @@
                                         @csrf
                                         @method('PUT')
                                         <input type="hidden" name="dash_permissions_present" value="1">
+                                        <input type="hidden" name="dash_tabs_present" value="1">
                                         <input type="hidden" name="menu_permissions_present" value="1">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="editUserModalLabel">Ubah Pengguna</h5>
@@ -949,6 +1004,39 @@
                                                     <option value="2">Admin</option>
                                                     <option value="3">Pengguna</option>
                                                 </select>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Tab Dashboard Admin</label>
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2">
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_asset" name="dash_tab_asset" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_asset">Asset</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_uniform" name="dash_tab_uniform" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_uniform">Uniform</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_stamps" name="dash_tab_stamps" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_stamps">Materai</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12 col-md-6">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_documents" name="dash_tab_documents" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_documents">Arsip Berkas</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_employee" name="dash_tab_employee" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_employee">Karyawan</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-text">Matikan tab tertentu untuk menyembunyikannya dari pengguna. Jika semua aktif, dashboard default (tanpa pembatasan tab).</div>
                                             </div>
 
                                             <div class="mb-3">
@@ -1072,6 +1160,25 @@
                                                                         <label class="form-check-label"
                                                                             for="edit_menu_admin_dashboard">Dashboard
                                                                             Admin</label>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_stamps" name="menu_stamps" value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_stamps">Manajemen Materai <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_stamps"></span></label>
+                                                                    </div>
+                                                                    <div class="ms-3">
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_stamps_master" name="menu_stamps_master" value="1">
+                                                                            <label class="form-check-label" for="edit_menu_stamps_master">Master Materai</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_stamps_transactions" name="menu_stamps_transactions" value="1">
+                                                                            <label class="form-check-label" for="edit_menu_stamps_transactions">Transaksi Materai</label>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
@@ -1256,7 +1363,7 @@
                                                                             id="edit_menu_master_daily_task"
                                                                             name="menu_master_daily_task" value="1">
                                                                         <label class="form-check-label"
-                                                                            for="edit_menu_master_daily_task">Master Daily Task <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_daily_task"></span></label>
+                                                                            for="edit_menu_master_daily_task">Master Tugas Harian <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_daily_task"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">
@@ -1264,21 +1371,21 @@
                                                                                 id="edit_menu_daily_task_types" name="menu_daily_task_types"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_daily_task_types">Task Type (Daily Task)</label>
+                                                                                for="edit_menu_daily_task_types">Tipe Tugas</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_daily_task_priorities" name="menu_daily_task_priorities"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_daily_task_priorities">Priority (Daily Task)</label>
+                                                                                for="edit_menu_daily_task_priorities">Prioritas</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_daily_task_statuses" name="menu_daily_task_statuses"
                                                                                 value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_daily_task_statuses">Status (Daily Task)</label>
+                                                                                for="edit_menu_daily_task_statuses">Status</label>
                                                                         </div>
                                                                     </div>
                                                                     <div class="form-check">
@@ -1360,14 +1467,14 @@
                                                                                 id="edit_menu_documents_archive"
                                                                                 name="menu_documents_archive" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_documents_archive">Archived Berkas</label>
+                                                                                for="edit_menu_documents_archive">Arsip Berkas</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
                                                                                 id="edit_menu_documents_restricted"
                                                                                 name="menu_documents_restricted" value="1">
                                                                             <label class="form-check-label"
-                                                                                for="edit_menu_documents_restricted">Archived Berkas (Restricted)</label>
+                                                                                for="edit_menu_documents_restricted">Arsip Berkas (Terbatas)</label>
                                                                         </div>
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox"
@@ -1544,6 +1651,11 @@
                         user_dashboard: readOnly,
                         admin_dashboard: none,
 
+                        // Materai
+                        stamps: none,
+                        stamps_master: none,
+                        stamps_transactions: none,
+
                         // Daily Tasks
                         daily_tasks: { read: true, create: true, update: true, delete: false },
 
@@ -1619,6 +1731,11 @@
                 const perms = {
                     user_dashboard: readOnly,
                     admin_dashboard: readOnly,
+
+                    // Materai
+                    stamps: all,
+                    stamps_master: all,
+                    stamps_transactions: all,
 
                     // Daily Tasks
                     daily_tasks: all,
@@ -1756,6 +1873,12 @@
                 // Read checkboxes (existing)
                 $('#' + prefix + '_menu_user_dashboard').prop('checked', hasRead(permissions.user_dashboard));
                 $('#' + prefix + '_menu_admin_dashboard').prop('checked', hasRead(permissions.admin_dashboard));
+
+                // Materai
+                $('#' + prefix + '_menu_stamps').prop('checked', hasRead(permissions.stamps));
+                $('#' + prefix + '_menu_stamps_master').prop('checked', hasRead(permissions.stamps_master));
+                $('#' + prefix + '_menu_stamps_transactions').prop('checked', hasRead(permissions.stamps_transactions));
+
                 $('#' + prefix + '_menu_daily_tasks').prop('checked', hasRead(permissions.daily_tasks));
                 $('#' + prefix + '_menu_devices').prop('checked', hasRead(permissions.devices));
                 $('#' + prefix + '_menu_assets').prop('checked', hasRead(permissions.assets));
@@ -1812,6 +1935,7 @@
                 // Action toggles (injected)
                 const keys = [
                     'user_dashboard', 'admin_dashboard',
+                    'stamps', 'stamps_master', 'stamps_transactions',
                     'daily_tasks', 'devices',
                     'assets', 'assets_data', 'accounts_data', 'accounts_secrets', 'documents_archive', 'documents_restricted', 'assets_jababeka', 'assets_karawang', 'assets_in', 'assets_transfer',
                     'uniforms', 'uniforms_master', 'uniforms_stock', 'uniforms_distribution', 'uniforms_history',
@@ -1882,13 +2006,10 @@
                 if (checkedCount === 0) {
                     $group.prop('checked', false);
                     setIndeterminate($group, false);
-                } else if (checkedCount === total) {
-                    $group.prop('checked', true);
-                    setIndeterminate($group, false);
                 } else {
-                    // Partial selection
-                    $group.prop('checked', false);
-                    setIndeterminate($group, true);
+                    // Any child selected => parent stays checked; partial => indeterminate
+                    $group.prop('checked', true);
+                    setIndeterminate($group, checkedCount !== total);
                 }
 
                 const syncAction = ($groupAction, $childrenAction) => {
@@ -1904,7 +2025,8 @@
                         $groupAction.prop('checked', true);
                         setIndeterminate($groupAction, false);
                     } else {
-                        $groupAction.prop('checked', false);
+                        // Any child action selected => parent action stays checked; partial => indeterminate
+                        $groupAction.prop('checked', true);
                         setIndeterminate($groupAction, true);
                     }
                 };
@@ -1943,6 +2065,11 @@
             }
 
             function updateGroupCounters(prefix) {
+                updateGroupCounter(prefix, 'stamps', [
+                    'stamps_master',
+                    'stamps_transactions',
+                ]);
+
                 updateGroupCounter(prefix, 'assets', [
                     'assets_data',
                     'accounts_data',
@@ -2007,6 +2134,11 @@
             }
 
             function updateGroupStates(prefix) {
+                updateGroupState(prefix, 'stamps', [
+                    'stamps_master',
+                    'stamps_transactions',
+                ]);
+
                 updateGroupState(prefix, 'assets', [
                     'assets_data',
                     'accounts_data',
@@ -2271,6 +2403,36 @@
                 return $('#' + prefix + '_menu_access_container');
             }
 
+            function attachMenuKeysPresentToForm(prefix) {
+                const $container = getMenuAccessContainer(prefix);
+                if (!$container || $container.length === 0) {
+                    return;
+                }
+
+                const $form = prefix === 'edit' ? $('#editUserForm') : $('#addUserModal form');
+                if (!$form || $form.length === 0) {
+                    return;
+                }
+
+                // Remove previous generated inputs
+                $form.find('input[name="menu_keys_present[]"]').remove();
+
+                $container
+                    .find('input[type="checkbox"][id^="' + prefix + '_menu_"]')
+                    .filter(function () {
+                        const id = $(this).attr('id') || '';
+                        return !id.endsWith('_create') && !id.endsWith('_update') && !id.endsWith('_delete');
+                    })
+                    .each(function () {
+                        const id = $(this).attr('id') || '';
+                        const key = id.replace(prefix + '_menu_', '');
+                        if (!key) {
+                            return;
+                        }
+                        $form.append('<input type="hidden" name="menu_keys_present[]" value="' + key + '">');
+                    });
+            }
+
             function setAllMenuCheckboxes(prefix, checked) {
                 const $container = getMenuAccessContainer(prefix);
                 // Select/Clear should operate on READ only.
@@ -2345,12 +2507,37 @@
                 });
             }
 
+            function enforceAdminDashboardPermissionForRestrictedTabs(prefix) {
+                const allTabs = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+                const checkedCount = allTabs.filter(function (key) {
+                    return $('#' + prefix + '_dash_tab_' + key).is(':checked');
+                }).length;
+
+                // Only enforce when tabs are being restricted (some checked, some unchecked).
+                if (checkedCount > 0 && checkedCount < allTabs.length) {
+                    $('#' + prefix + '_menu_admin_dashboard').prop('checked', true);
+                    updateGroupStates(prefix);
+                    syncActionDisables(prefix);
+                }
+            }
+
             $(document).on('click', '.btn-edit-user', function () {
                 $('#edit_user_id').val($(this).data('id'));
                 $('#edit_name').val($(this).data('name'));
                 $('#edit_username').val($(this).data('username'));
                 $('#edit_email').val($(this).data('email'));
                 $('#edit_role').val($(this).data('role'));
+
+                const tabOverrides = $(this).data('dashboardTabs');
+                const allTabs = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+                const enabledTabs = Array.isArray(tabOverrides) ? tabOverrides : allTabs;
+                $('#edit_dash_tab_asset').prop('checked', enabledTabs.includes('asset'));
+                $('#edit_dash_tab_uniform').prop('checked', enabledTabs.includes('uniform'));
+                $('#edit_dash_tab_stamps').prop('checked', enabledTabs.includes('stamps'));
+                $('#edit_dash_tab_documents').prop('checked', enabledTabs.includes('documents'));
+                $('#edit_dash_tab_employee').prop('checked', enabledTabs.includes('employee'));
+
+                enforceAdminDashboardPermissionForRestrictedTabs('edit');
 
                 const perms = $(this).data('dashboard');
                 const asset = (perms && perms.asset) ? perms.asset : { kpi: true, charts: true, recent: true };
@@ -2374,6 +2561,23 @@
                 // Set form action
                 $('#editUserForm').attr('action', '/admin/users/' + $(this).data('id'));
                 $('#editUserModal').modal('show');
+            });
+
+            // If admin dashboard tabs are restricted, make sure Dashboard menu access is enabled.
+            $(document).on('change', '#add_dash_tab_asset, #add_dash_tab_uniform, #add_dash_tab_stamps, #add_dash_tab_documents, #add_dash_tab_employee', function () {
+                enforceAdminDashboardPermissionForRestrictedTabs('add');
+            });
+            $(document).on('change', '#edit_dash_tab_asset, #edit_dash_tab_uniform, #edit_dash_tab_stamps, #edit_dash_tab_documents, #edit_dash_tab_employee', function () {
+                enforceAdminDashboardPermissionForRestrictedTabs('edit');
+            });
+
+            // Before submitting, send the list of menu keys shown in the UI.
+            // This allows the backend to persist unchecked states (checkboxes don't submit when unchecked).
+            $(document).on('submit', '#editUserForm', function () {
+                attachMenuKeysPresentToForm('edit');
+            });
+            $(document).on('submit', '#addUserModal form', function () {
+                attachMenuKeysPresentToForm('add');
             });
 
             // Menu toolbar actions (Add)
@@ -2422,6 +2626,10 @@
                 ensureWriteControls('add');
                 ensureWriteControls('edit');
                 // Keep group/submenu checkboxes in sync
+                bindGroupToggle('add', 'stamps', [
+                    'stamps_master',
+                    'stamps_transactions',
+                ]);
                 bindGroupToggle('add', 'assets', [
                     'assets_data',
                     'accounts_data',
@@ -2542,6 +2750,11 @@
                     'settings_users',
                     'settings_history_user',
                     'settings_history_asset',
+                ]);
+
+                bindGroupToggle('edit', 'stamps', [
+                    'stamps_master',
+                    'stamps_transactions',
                 ]);
 
                 applyMenuCheckboxes('add', defaultMenuPermissionsForRole($('#role').val()));

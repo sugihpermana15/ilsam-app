@@ -25,6 +25,7 @@ class User extends Authenticatable
         'locale',
         'role_id',
         'dashboard_permissions',
+        'dashboard_tabs',
         'menu_permissions',
     ];
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'dashboard_permissions' => 'array',
+            'dashboard_tabs' => 'array',
             'menu_permissions' => 'array',
         ];
     }

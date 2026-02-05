@@ -12,13 +12,36 @@ use App\Models\Employee;
 use App\Models\UniformItem;
 use App\Models\UniformIssue;
 use App\Models\UniformMovement;
+use App\Models\Stamp;
+use App\Models\StampTransaction;
 use App\Support\MenuAccess;
 
 class AdminController extends Controller
 {
     public function admin()
     {
-        return redirect()->route('admin.dashboard');
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+        if ($user && !$user->relationLoaded('role')) {
+            $user->load('role');
+        }
+
+        if (MenuAccess::can($user, 'admin_dashboard', 'read')) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if (
+            MenuAccess::can($user, 'stamps_transactions', 'read') ||
+            MenuAccess::can($user, 'stamps_master', 'read')
+        ) {
+            return redirect()->route('admin.stamps.dashboard');
+        }
+
+        if (MenuAccess::can($user, 'user_dashboard', 'read')) {
+            return redirect()->route('user.dashboard');
+        }
+
+        abort(403, 'Anda tidak memiliki akses.');
     }
 
     private function dashboardDefaults(): array
@@ -315,10 +338,47 @@ class AdminController extends Controller
         return compact('expiring', 'latest', 'activeByMonth');
     }
 
+    private function buildStampDashboardData(): array
+    {
+        $kpi = DB::table('stamps')
+            ->leftJoin('stamp_balances', 'stamps.id', '=', 'stamp_balances.stamp_id')
+            ->selectRaw('COALESCE(SUM(COALESCE(stamp_balances.on_hand_qty, 0)), 0) as total_qty')
+            ->selectRaw('COALESCE(SUM(COALESCE(stamp_balances.on_hand_qty, 0) * stamps.face_value), 0) as total_value')
+            ->first();
+
+        $totalOutQty = (int) DB::table('stamp_transactions')
+            ->where('trx_type', 'OUT')
+            ->sum('qty');
+
+        $recentTransactions = StampTransaction::query()
+            ->with(['stamp', 'pic', 'creator'])
+            ->orderByDesc('trx_date')
+            ->orderByDesc('id')
+            ->limit(10)
+            ->get();
+
+        $topStamps = Stamp::query()
+            ->with('balance')
+            ->orderBy('is_active', 'desc')
+            ->orderBy('name')
+            ->limit(8)
+            ->get();
+
+        return [
+            'kpi' => [
+                'total_qty' => (int) ($kpi->total_qty ?? 0),
+                'total_value' => (int) ($kpi->total_value ?? 0),
+                'total_out_qty' => $totalOutQty,
+            ],
+            'recentTransactions' => $recentTransactions,
+            'topStamps' => $topStamps,
+        ];
+    }
+
     public function dashboard(Request $request)
     {
         $permissions = $this->resolveDashboardPermissions(Auth::user()?->dashboard_permissions);
-        $tab = $request->query('tab');
+        $tab = (string) $request->query('tab', '');
 
         $asset = $this->buildAssetDashboardData($permissions);
         $uniform = $this->buildUniformDashboardData($permissions);
@@ -327,11 +387,66 @@ class AdminController extends Controller
         $employee = $this->buildEmployeeDashboardData();
 
         $user = Auth::user();
+
+        $stamps = null;
+        if ($user && (
+            MenuAccess::can($user, 'stamps_transactions', 'read') ||
+            MenuAccess::can($user, 'stamps_master', 'read')
+        )) {
+            $stamps = $this->buildStampDashboardData();
+        }
+
         $showDocuments = $user ? MenuAccess::can($user, 'documents_archive', 'read') : false;
         $canSeeRestricted = $user && (($user->role?->role_name ?? null) === 'Super Admin' || MenuAccess::can($user, 'documents_restricted', 'read'));
         $documents = $showDocuments ? $this->buildDocumentsDashboardData($canSeeRestricted) : null;
 
-        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'uniform', 'employee', 'showDocuments', 'documents'));
+        // Apply per-user tab access overrides (if configured).
+        $tabOverrides = $user && is_array($user->dashboard_tabs) ? array_values($user->dashboard_tabs) : null;
+        if (is_array($tabOverrides)) {
+            $allowedKeys = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+            $tabOverrides = array_values(array_intersect($tabOverrides, $allowedKeys));
+        }
+
+        $showAsset = !empty($permissions['asset']) && (
+            !empty($permissions['asset']['kpi']) ||
+            !empty($permissions['asset']['charts']) ||
+            !empty($permissions['asset']['recent'])
+        );
+        $showUniform = !empty($permissions['uniform']) && (
+            !empty($permissions['uniform']['kpi']) ||
+            !empty($permissions['uniform']['charts']) ||
+            !empty($permissions['uniform']['recent'])
+        );
+        $showStamps = (bool) $stamps;
+        $showEmployee = !empty($employee) && !empty($employee['kpi']);
+        $showDocs = (bool) $showDocuments;
+
+        $tabOrder = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+        $tabs = [];
+        foreach ($tabOrder as $key) {
+            $available = match ($key) {
+                'asset' => $showAsset,
+                'uniform' => $showUniform,
+                'stamps' => $showStamps,
+                'documents' => $showDocs,
+                'employee' => $showEmployee,
+                default => false,
+            };
+
+            $allowedByOverride = $tabOverrides === null || in_array($key, $tabOverrides, true);
+            if ($available && $allowedByOverride) {
+                $tabs[] = $key;
+            }
+        }
+
+        $activeTab = in_array($tab, $tabs, true) ? $tab : ($tabs[0] ?? '');
+        if ($activeTab !== '' && $activeTab !== $tab) {
+            return redirect()->route('admin.dashboard', ['tab' => $activeTab]);
+        }
+
+        $tab = $activeTab;
+
+        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'uniform', 'employee', 'showDocuments', 'documents', 'stamps'));
     }
 
     public function dashboardAssets()
@@ -342,6 +457,11 @@ class AdminController extends Controller
     public function dashboardUniforms()
     {
         return redirect()->route('admin.dashboard', ['tab' => 'uniform']);
+    }
+
+    public function dashboardStamps()
+    {
+        return redirect()->route('admin.dashboard', ['tab' => 'stamps']);
     }
 
     public function dataAsset()

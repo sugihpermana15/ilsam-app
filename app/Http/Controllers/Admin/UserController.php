@@ -13,6 +13,24 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+  private function extractDashboardTabs(Request $request): ?array
+  {
+    if (!$request->boolean('dash_tabs_present')) {
+      return null;
+    }
+
+    $keys = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+    $enabled = [];
+    foreach ($keys as $key) {
+      if ($request->boolean('dash_tab_' . $key)) {
+        $enabled[] = $key;
+      }
+    }
+
+    // If all are enabled, keep default behavior (no override).
+    return count($enabled) === count($keys) ? null : $enabled;
+  }
+
   private function extractDashboardPermissions(Request $request): ?array
   {
     if (!$request->boolean('dash_permissions_present')) {
@@ -56,8 +74,14 @@ class UserController extends Controller
     $defaults = MenuAccess::defaultsForRole(null, $roleId);
     $existingOverrides = is_array($existingUser?->menu_permissions) ? $existingUser->menu_permissions : [];
 
-    $permFor = function (string $key) use ($request, $defaults, $existingOverrides): array {
-      $hasAny = $request->has('menu_' . $key)
+    $presentKeys = $request->input('menu_keys_present', []);
+    if (!is_array($presentKeys)) {
+      $presentKeys = [];
+    }
+
+    $permFor = function (string $key) use ($request, $defaults, $existingOverrides, $presentKeys): array {
+      $hasAny = in_array($key, $presentKeys, true)
+        || $request->has('menu_' . $key)
         || $request->has('menu_' . $key . '_create')
         || $request->has('menu_' . $key . '_update')
         || $request->has('menu_' . $key . '_delete');
@@ -95,6 +119,12 @@ class UserController extends Controller
 
       // Admin area
       'admin_dashboard' => $permFor('admin_dashboard'),
+
+      // Stamps (Materai)
+      // Legacy umbrella key: kept for backward compatibility.
+      'stamps' => $permFor('stamps'),
+      'stamps_master' => $permFor('stamps_master'),
+      'stamps_transactions' => $permFor('stamps_transactions'),
 
       // Daily Tasks
       'daily_tasks' => $permFor('daily_tasks'),
@@ -166,6 +196,12 @@ class UserController extends Controller
       'settings_history_user' => $permFor('settings_history_user'),
       'settings_history_asset' => $permFor('settings_history_asset'),
     ];
+
+    // Preserve any unknown/hidden keys already stored, but override with submitted keys.
+    return array_merge(
+      is_array($existingOverrides) ? $existingOverrides : [],
+      $permissions
+    );
 
     return $permissions == $defaults ? null : $permissions;
   }
@@ -251,8 +287,19 @@ class UserController extends Controller
       'role_id' => 'required|integer|exists:roles,id',
     ]);
 
+    $dashboardTabs = $this->extractDashboardTabs($request);
     $dashboardPermissions = $this->extractDashboardPermissions($request);
     $menuPermissions = $this->extractMenuPermissions($request);
+
+    // If admin dashboard tabs are explicitly restricted, ensure the user can access the admin dashboard.
+    // Otherwise the tab configuration is effectively useless.
+    if (is_array($dashboardTabs) && count($dashboardTabs) > 0) {
+      if (!is_array($menuPermissions)) {
+        $menuPermissions = [];
+      }
+      $menuPermissions['admin_dashboard'] = MenuAccess::normalize($menuPermissions['admin_dashboard'] ?? MenuAccess::none());
+      $menuPermissions['admin_dashboard']['read'] = true;
+    }
 
     $user = User::create([
       'name' => $validated['name'],
@@ -261,6 +308,7 @@ class UserController extends Controller
       'password' => Hash::make($validated['password']),
       'role_id' => (int) $validated['role_id'],
       'dashboard_permissions' => $dashboardPermissions,
+      'dashboard_tabs' => $dashboardTabs,
       'menu_permissions' => $menuPermissions,
     ]);
 
@@ -277,8 +325,18 @@ class UserController extends Controller
       'role_id' => 'required|integer|exists:roles,id',
     ]);
 
+    $dashboardTabs = $this->extractDashboardTabs($request);
     $dashboardPermissions = $this->extractDashboardPermissions($request);
     $menuPermissions = $this->extractMenuPermissions($request, $user);
+
+    // If admin dashboard tabs are explicitly restricted, ensure the user can access the admin dashboard.
+    if (is_array($dashboardTabs) && count($dashboardTabs) > 0) {
+      if (!is_array($menuPermissions)) {
+        $menuPermissions = [];
+      }
+      $menuPermissions['admin_dashboard'] = MenuAccess::normalize($menuPermissions['admin_dashboard'] ?? MenuAccess::none());
+      $menuPermissions['admin_dashboard']['read'] = true;
+    }
 
     $user->name = $validated['name'];
     $user->username = $validated['username'] ?? null;
@@ -288,6 +346,7 @@ class UserController extends Controller
     }
     $user->role_id = (int) $validated['role_id'];
     $user->dashboard_permissions = $dashboardPermissions;
+    $user->dashboard_tabs = $dashboardTabs;
     $user->menu_permissions = $menuPermissions;
     $user->save();
 

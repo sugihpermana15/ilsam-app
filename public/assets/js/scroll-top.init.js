@@ -19,26 +19,38 @@ if (scrollToTop) {
     document.addEventListener("DOMContentLoaded", () => {
         const progressWrap = document.querySelector('.progress-wrap');
         const progressCircle = document.querySelector('.progress');
-        const pathLength = 282.6; // Circumference of the circle (2 * π * radius) = 2 * π * 45
+        if (!progressWrap || !progressCircle) return;
 
+        const pathLength = 282.6; // Circumference of the circle (2 * π * radius) = 2 * π * 45
         progressCircle.style.strokeDasharray = `${pathLength} ${pathLength}`;
         progressCircle.style.strokeDashoffset = `${pathLength}`;
 
+        let maxScrollHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        let rafScheduled = false;
+
         const updateProgress = () => {
+            rafScheduled = false;
             const scroll = window.scrollY || document.documentElement.scrollTop;
-            const height = document.documentElement.scrollHeight - window.innerHeight;
-            const progress = pathLength - (scroll * pathLength / height);
-            progressCircle.style.strokeDashoffset = `${progress}`;
+            const progress = pathLength - (scroll * pathLength / maxScrollHeight);
+            progressCircle.style.strokeDashoffset = String(progress);
+            progressWrap.classList.toggle('active-progress', scroll > 200);
         };
 
-        window.addEventListener('scroll', () => {
-            updateProgress();
+        const onScroll = () => {
+            if (rafScheduled) return;
+            rafScheduled = true;
+            window.requestAnimationFrame(updateProgress);
+        };
 
-            if (window.scrollY > 200) {
-                progressWrap.classList.add('active-progress');
-            } else {
-                progressWrap.classList.remove('active-progress');
-            }
-        });
+        const onResize = () => {
+            maxScrollHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+            onScroll();
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize, { passive: true });
+
+        // Run once at start.
+        onResize();
     });
 }
