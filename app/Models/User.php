@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -19,11 +20,13 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'employee_id',
         'username',
         'email',
         'password',
         'locale',
         'role_id',
+        'stamp_validator_user_id',
         'dashboard_permissions',
         'dashboard_tabs',
         'menu_permissions',
@@ -60,5 +63,20 @@ class User extends Authenticatable
             'dashboard_tabs' => 'array',
             'menu_permissions' => 'array',
         ];
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'employee_id');
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        $employeeName = (string) ($this->employee?->name ?? '');
+        if (trim($employeeName) !== '') {
+            return $employeeName;
+        }
+
+        return (string) ($this->name ?? '');
     }
 }

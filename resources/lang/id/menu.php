@@ -21,14 +21,6 @@ return [
         'out' => 'Aset Keluar',
     ],
 
-    'uniform_stock' => 'Stok Seragam',
-    'uniforms' => [
-        'master' => 'Master Seragam',
-        'stock_in' => 'Stok Masuk',
-        'distribution' => 'Distribusi',
-        'history' => 'Riwayat',
-    ],
-
     'employees_master' => 'Master Karyawan',
     'employees' => [
         'employees' => 'Karyawan',
@@ -42,7 +34,6 @@ return [
         'hr' => 'Master HR',
         'assets' => 'Master Aset',
         'accounts' => 'Master Akun',
-        'uniform' => 'Master Seragam',
         'daily_task' => 'Master Daily Task',
     ],
     'master' => [
@@ -54,11 +45,6 @@ return [
         'plant_sites' => 'Plant/Site',
         'asset_uoms' => 'Satuan Aset',
         'asset_vendors' => 'Vendor Aset',
-        'uniform_sizes' => 'Ukuran Seragam',
-        'uniform_item_names' => 'Nama Item Seragam',
-        'uniform_categories' => 'Kategori Seragam',
-        'uniform_colors' => 'Warna Seragam',
-        'uniform_uoms' => 'UOM Seragam',
 
         'daily_task_types' => 'Task Type (Daily Task)',
         'daily_task_priorities' => 'Priority (Daily Task)',

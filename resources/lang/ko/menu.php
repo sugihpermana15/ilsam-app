@@ -21,14 +21,6 @@ return [
         'out' => '출고 자산',
     ],
 
-    'uniform_stock' => '유니폼 재고',
-    'uniforms' => [
-        'master' => '유니폼 마스터',
-        'stock_in' => '입고',
-        'distribution' => '배포',
-        'history' => '이력',
-    ],
-
     'employees_master' => '직원 마스터',
     'employees' => [
         'employees' => '직원',
@@ -42,7 +34,6 @@ return [
         'hr' => 'HR 마스터',
         'assets' => '자산 마스터',
         'accounts' => '계정 마스터',
-        'uniform' => '유니폼 마스터',
         'daily_task' => '일일 작업 마스터',
     ],
     'master' => [
@@ -54,11 +45,6 @@ return [
         'plant_sites' => 'Plant/Site',
         'asset_uoms' => '자산 단위',
         'asset_vendors' => '자산 벤더',
-        'uniform_sizes' => '유니폼 사이즈',
-        'uniform_item_names' => '유니폼 아이템명',
-        'uniform_categories' => '유니폼 카테고리',
-        'uniform_colors' => '유니폼 색상',
-        'uniform_uoms' => '유니폼 단위',
 
         'daily_task_types' => '일일 작업 유형',
         'daily_task_priorities' => '일일 작업 우선순위',

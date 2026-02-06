@@ -50,54 +50,6 @@
                   <div class="card-body position-relative z-1">
                     <div class="d-flex justify-content-between align-items-center">
                       <div>
-                        <div class="text-muted">Total Riwayat Seragam</div>
-                        <div class="fs-4 fw-semibold">{{ number_format($totalIssues ?? 0) }}</div>
-                      </div>
-                      <div class="text-primary fs-3"><i class="fas fa-list-check"></i></div>
-                    </div>
-                  </div>
-                  <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
-                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="card overflow-hidden h-100 kpi-card">
-                  <div class="card-body position-relative z-1">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <div class="text-muted">Sedang Dipinjam</div>
-                        <div class="fs-4 fw-semibold">{{ number_format($activeIssued ?? 0) }}</div>
-                      </div>
-                      <div class="text-success fs-3"><i class="fas fa-shirt"></i></div>
-                    </div>
-                  </div>
-                  <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
-                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="card overflow-hidden h-100 kpi-card">
-                  <div class="card-body position-relative z-1">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <div class="text-muted">Pengambilan (30 hari)</div>
-                        <div class="fs-4 fw-semibold">{{ number_format($issues30d ?? 0) }}</div>
-                      </div>
-                      <div class="text-info fs-3"><i class="fas fa-calendar-days"></i></div>
-                    </div>
-                  </div>
-                  <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
-                    class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                </div>
-              </div>
-
-              <div class="col">
-                <div class="card overflow-hidden h-100 kpi-card">
-                  <div class="card-body position-relative z-1">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
                         <div class="text-muted">Status Akun</div>
                         <div class="fs-6 fw-semibold">{{ auth()->user()->role?->role_name ?? '-' }}</div>
                       </div>
@@ -107,54 +59,6 @@
                   <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
                     class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
                 </div>
-              </div>
-            </div>
-
-            <hr class="my-4" />
-
-            <div class="card">
-              <div class="card-header d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">Riwayat Seragam Terakhir</h6>
-              </div>
-              <div class="card-body table-responsive">
-                @if(($recentIssues ?? collect())->isEmpty())
-                  <div class="alert alert-info mb-0">
-                    Belum ada riwayat pengambilan/pengembalian seragam.
-                  </div>
-                @else
-                  <table class="table table-striped table-bordered">
-                    <thead>
-                      <tr>
-                        <th>Tanggal</th>
-                        <th>Kode</th>
-                        <th>Item</th>
-                        <th>Qty</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @foreach($recentIssues as $iss)
-                        <tr>
-                          <td>{{ $iss->issued_at ? \Carbon\Carbon::parse($iss->issued_at)->format('d-m-Y H:i') : '-' }}</td>
-                          <td>{{ $iss->issue_code }}</td>
-                          <td>{{ $iss->item?->item_code }} - {{ $iss->item?->item_name }}</td>
-                          <td>{{ $iss->qty }}</td>
-                          <td>
-                            @php
-                              $badge = match ($iss->status) {
-                                'RETURNED' => 'success',
-                                'LOST' => 'danger',
-                                'DAMAGED' => 'warning',
-                                default => 'primary',
-                              };
-                            @endphp
-                            <span class="badge bg-{{ $badge }}">{{ $iss->status }}</span>
-                          </td>
-                        </tr>
-                      @endforeach
-                    </tbody>
-                  </table>
-                @endif
               </div>
             </div>
           </div>
@@ -177,33 +81,38 @@
         !empty($permissions['asset']['charts']) ||
         !empty($permissions['asset']['recent'])
       );
-      $showUniform = !empty($permissions['uniform']) && (
-        !empty($permissions['uniform']['kpi']) ||
-        !empty($permissions['uniform']['charts']) ||
-        !empty($permissions['uniform']['recent'])
-      );
 
       $showStamps = auth()->check() && (
         \App\Support\MenuAccess::can(auth()->user(), 'stamps_transactions', 'read') ||
         \App\Support\MenuAccess::can(auth()->user(), 'stamps_master', 'read')
       );
 
+      $showUniforms = auth()->check() && (
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_distribution', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_reports', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_master', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_variants', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_lots', 'read') ||
+        \App\Support\MenuAccess::can(auth()->user(), 'uniforms_entitlements', 'read')
+      );
+
       $showDocuments = !empty($showDocuments);
 
       // Apply per-user tab access overrides.
       $showAsset = $tabAllowed('asset') && $showAsset;
-      $showUniform = $tabAllowed('uniform') && $showUniform;
       $showStamps = $tabAllowed('stamps') && $showStamps;
+      $showUniforms = $tabAllowed('uniforms') && $showUniforms;
       $showDocuments = $tabAllowed('documents') && $showDocuments;
       $showEmployee = $tabAllowed('employee') && $showEmployee;
 
       $tabs = [];
       if ($showAsset)
         $tabs[] = 'asset';
-      if ($showUniform)
-        $tabs[] = 'uniform';
       if ($showStamps)
         $tabs[] = 'stamps';
+      if ($showUniforms)
+        $tabs[] = 'uniforms';
       if ($showDocuments)
         $tabs[] = 'documents';
       if ($showEmployee)
@@ -221,7 +130,7 @@
           </div>
 
           <div class="card-body">
-            @if(!$showAsset && !$showUniform && !$showStamps && !$showEmployee && !$showDocuments)
+            @if(!$showAsset && !$showStamps && !$showUniforms && !$showEmployee && !$showDocuments)
               <div class="alert alert-warning mb-0">
                 Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
               </div>
@@ -236,19 +145,19 @@
                       </button>
                     </li>
                   @endif
-                  @if($showUniform)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'uniform' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-uniform" type="button" role="tab">
-                        <i class="fas fa-chart-pie me-1"></i> Uniform
-                      </button>
-                    </li>
-                  @endif
                   @if($showStamps)
                     <li class="nav-item" role="presentation">
                       <button class="nav-link {{ $activeTab === 'stamps' ? 'active' : '' }}" data-bs-toggle="tab"
                         data-bs-target="#tab-stamps" type="button" role="tab">
                         <i class="fas fa-stamp me-1"></i> Materai
+                      </button>
+                    </li>
+                  @endif
+                  @if($showUniforms)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'uniforms' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-uniforms" type="button" role="tab">
+                        <i class="fas fa-shirt me-1"></i> Seragam
                       </button>
                     </li>
                   @endif
@@ -437,149 +346,6 @@
                   </div>
                 @endif
 
-                @if($showUniform)
-                  <div class="tab-pane fade {{ $activeTab === 'uniform' ? 'show active' : '' }}" id="tab-uniform"
-                    role="tabpanel">
-                    @if(!empty($permissions['uniform']['kpi']))
-                      <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-4">
-                        <div class="col">
-                          <div class="card overflow-hidden h-100 kpi-card">
-                            <div class="card-body position-relative z-1">
-                              <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                  <div class="text-muted">Total Items</div>
-                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['total_items'] ?? 0) }}</div>
-                                </div>
-                                <div class="text-primary fs-3"><i class="fas fa-shirt"></i></div>
-                              </div>
-                            </div>
-                            <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
-                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                          </div>
-                        </div>
-                        <div class="col">
-                          <div class="card overflow-hidden h-100 kpi-card">
-                            <div class="card-body position-relative z-1">
-                              <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                  <div class="text-muted">Total Stock</div>
-                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['total_stock'] ?? 0) }}</div>
-                                </div>
-                                <div class="text-success fs-3"><i class="fas fa-warehouse"></i></div>
-                              </div>
-                            </div>
-                            <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
-                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                          </div>
-                        </div>
-                        <div class="col">
-                          <div class="card overflow-hidden h-100 kpi-card">
-                            <div class="card-body position-relative z-1">
-                              <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                  <div class="text-muted">Low Stock Items</div>
-                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['low_stock_items'] ?? 0) }}</div>
-                                </div>
-                                <div class="text-danger fs-3"><i class="fas fa-triangle-exclamation"></i></div>
-                              </div>
-                            </div>
-                            <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
-                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                          </div>
-                        </div>
-                        <div class="col">
-                          <div class="card overflow-hidden h-100 kpi-card">
-                            <div class="card-body position-relative z-1">
-                              <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                  <div class="text-muted">Issues (30 days)</div>
-                                  <div class="fs-4 fw-semibold">{{ number_format($uniform['kpi']['issues_30d'] ?? 0) }}</div>
-                                </div>
-                                <div class="text-primary fs-3"><i class="fas fa-paper-plane"></i></div>
-                              </div>
-                            </div>
-                            <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
-                              class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
-                          </div>
-                        </div>
-                      </div>
-
-                      <hr class="my-4" />
-                    @endif
-
-                    @if(!empty($permissions['uniform']['charts']))
-                      <div class="row g-3">
-                        <div class="col-12 col-xl-6">
-                          <div class="card">
-                            <div class="card-header">
-                              <h6 class="mb-0">Stock by Location</h6>
-                            </div>
-                            <div class="card-body">
-                              <div id="uniformStockByLocation" style="min-height: 320px;"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12 col-xl-6">
-                          <div class="card">
-                            <div class="card-header">
-                              <h6 class="mb-0">Top Categories (Stock)</h6>
-                            </div>
-                            <div class="card-body">
-                              <div id="uniformStockByCategory" style="min-height: 320px;"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12">
-                          <div class="card">
-                            <div class="card-header">
-                              <h6 class="mb-0">Monthly Movements</h6>
-                            </div>
-                            <div class="card-body">
-                              <div id="uniformMonthlyMovements" style="min-height: 320px;"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <hr class="my-4" />
-                    @endif
-
-                    @if(!empty($permissions['uniform']['recent']))
-                      <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                          <h6 class="mb-0">Recent Issues</h6>
-                          <a href="{{ route('admin.uniforms.history') }}" class="btn btn-outline-secondary btn-sm">Open
-                            History</a>
-                        </div>
-                        <div class="card-body table-responsive">
-                          <table class="table table-striped table-bordered">
-                            <thead>
-                              <tr>
-                                <th>Date</th>
-                                <th>Issue Code</th>
-                                <th>Item</th>
-                                <th>Employee</th>
-                                <th>Qty</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              @foreach(($uniform['recent'] ?? collect()) as $iss)
-                                <tr>
-                                  <td>{{ $iss->issued_at ? \Carbon\Carbon::parse($iss->issued_at)->format('d-m-Y H:i') : '-' }}</td>
-                                  <td>{{ $iss->issue_code }}</td>
-                                  <td>{{ $iss->item?->item_code }} - {{ $iss->item?->item_name }}</td>
-                                  <td>{{ $iss->issuedToEmployee?->name ?? $iss->issuedTo?->name ?? '-' }}</td>
-                                  <td>{{ $iss->qty }}</td>
-                                </tr>
-                              @endforeach
-                            </tbody>
-                          </table>
-                        </div>
-                      </div>
-                    @endif
-                  </div>
-                @endif
-
                 @if($showStamps)
                   @php
                     $stKpi = $stamps['kpi'] ?? ['total_qty' => 0, 'total_value' => 0, 'total_out_qty' => 0];
@@ -737,6 +503,199 @@
                                 @endforelse
                               </tbody>
                             </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                @endif
+
+                @if($showUniforms)
+                  @php
+                    $unKpi = $uniforms['kpi'] ?? [];
+                    $unRecent = $uniforms['recentAllocations'] ?? collect();
+
+                    $canReadStock = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'read');
+                    $canReadDist = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_distribution', 'read');
+                    $canReadReports = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_reports', 'read');
+                  @endphp
+
+                  <div class="tab-pane fade {{ $activeTab === 'uniforms' ? 'show active' : '' }}" id="tab-uniforms" role="tabpanel">
+                    <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+                      @if($canReadStock)
+                        <a href="{{ route('admin.uniforms.stock.index') }}" class="btn btn-outline-secondary btn-sm">
+                          <i class="fas fa-boxes-stacked"></i> Stok
+                        </a>
+                      @endif
+                      @if($canReadDist)
+                        <a href="{{ route('admin.uniforms.distributions.index') }}" class="btn btn-outline-primary btn-sm">
+                          <i class="fas fa-people-carry-box"></i> Distribusi
+                        </a>
+                        <a href="{{ route('admin.uniforms.distributions.dashboard') }}" class="btn btn-primary btn-sm">
+                          <i class="fas fa-chart-simple"></i> Dashboard Distribusi
+                        </a>
+                      @endif
+                      @if($canReadReports)
+                        <a href="{{ route('admin.uniforms.reports.pivot.index') }}" class="btn btn-outline-secondary btn-sm">
+                          <i class="fas fa-table"></i> Pivot
+                        </a>
+                        <a href="{{ route('admin.uniforms.reports.lots.index') }}" class="btn btn-outline-secondary btn-sm">
+                          <i class="fas fa-layer-group"></i> Lots
+                        </a>
+                      @endif
+                    </div>
+
+                    <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-5">
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Total Seragam</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($unKpi['total_uniforms'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-primary fs-3"><i class="fas fa-shirt"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg1.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Total Varian</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($unKpi['total_variants'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-success fs-3"><i class="fas fa-tags"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg2.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Stok On Hand</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($unKpi['total_on_hand'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-warning fs-3"><i class="fas fa-boxes-stacked"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Qty Distribusi (30 hari)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($unKpi['allocated_qty_30d'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-danger fs-3"><i class="fas fa-hand-holding"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg4.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                <div class="text-muted">Transaksi Distribusi (30 hari)</div>
+                                <div class="fs-4 fw-semibold">{{ number_format((int) ($unKpi['allocations_30d'] ?? 0), 0, ',', '.') }}</div>
+                              </div>
+                              <div class="text-info fs-3"><i class="fas fa-receipt"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg5.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+                    </div>
+
+                    @if(!empty($uniforms['charts']['allocatedDaily30d'] ?? null))
+                      <div class="row g-3 mt-1">
+                        <div class="col-12">
+                          <div class="card">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                              <h6 class="mb-0">Grafik Distribusi (30 hari terakhir)</h6>
+                            </div>
+                            <div class="card-body">
+                              <div id="uniformsAllocatedDaily30d"></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    @endif
+
+                    <div class="row g-3 mt-1">
+                      <div class="col-12">
+                        <div class="card">
+                          <div class="card-header d-flex align-items-center justify-content-between">
+                            <h6 class="mb-0">Distribusi Terbaru</h6>
+                            @if($canReadDist)
+                              <a href="{{ route('admin.uniforms.distributions.index') }}" class="btn btn-sm btn-outline-primary">Lihat</a>
+                            @endif
+                          </div>
+                          <div class="card-body">
+                            <div class="table-responsive">
+                              <table class="table table-striped table-bordered align-middle mb-0">
+                                <thead>
+                                  <tr>
+                                    <th style="width: 130px;">Tanggal</th>
+                                    <th style="width: 180px;">No. ID</th>
+                                    <th style="width: 220px;">Karyawan</th>
+                                    <th>Seragam / Ukuran / Qty</th>
+                                    <th style="width: 90px;" class="text-end">Qty</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  @forelse($unRecent as $row)
+                                    <tr>
+                                      <td>{{ !empty($row['allocated_at']) ? \Carbon\Carbon::parse($row['allocated_at'])->format('d-m-Y') : '-' }}</td>
+                                      <td class="text-nowrap">{{ $row['employee_no_id'] ?? '-' }}</td>
+                                      <td>
+                                        <div class="fw-semibold">{{ $row['employee_name'] ?? '-' }}</div>
+                                        <div class="text-muted small">{{ $row['allocation_no'] ?? '-' }}</div>
+                                      </td>
+                                      <td>
+                                        @php $lines = $row['items_lines'] ?? collect(); @endphp
+                                        @if($lines instanceof \Illuminate\Support\Collection)
+                                          @foreach($lines as $line)
+                                            <div>{{ $line }}</div>
+                                          @endforeach
+                                        @elseif(is_array($lines))
+                                          @foreach($lines as $line)
+                                            <div>{{ $line }}</div>
+                                          @endforeach
+                                        @else
+                                          <div class="text-muted">-</div>
+                                        @endif
+                                      </td>
+                                      <td class="text-end">{{ number_format((int) ($row['total_qty'] ?? 0), 0, ',', '.') }}</td>
+                                    </tr>
+                                  @empty
+                                    <tr>
+                                      <td colspan="5" class="text-center text-muted">Belum ada distribusi</td>
+                                    </tr>
+                                  @endforelse
+                                </tbody>
+                              </table>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -1021,7 +980,7 @@
   @php
     $shouldLoadCharts = !$isUser && (
       !empty($permissions['asset']['charts']) ||
-      !empty($permissions['uniform']['charts'])
+      !empty($uniforms['charts'] ?? null)
     );
   @endphp
 
@@ -1030,7 +989,7 @@
     <script>
       window.combinedDashboardData = @json([
         'asset' => $asset['charts'] ?? null,
-        'uniform' => $uniform['charts'] ?? null,
+        'uniforms' => $uniforms['charts'] ?? null,
       ]);
 
       (function () {
@@ -1083,10 +1042,8 @@
         donut('#assetByLocation', asset.byLocation?.labels || [], asset.byLocation?.series || []);
         line('#assetMonthlyNew', asset.monthlyNew?.categories || [], asset.monthlyNew?.series || [], null, 'New Assets');
 
-        const uni = all.uniform || {};
-        donut('#uniformStockByLocation', uni.stockByLocation?.labels || [], uni.stockByLocation?.series || []);
-        bar('#uniformStockByCategory', uni.stockByCategory?.categories || [], uni.stockByCategory?.series || [], 'Stock');
-        line('#uniformMonthlyMovements', uni.monthlyMovements?.categories || [], uni.monthlyMovements?.inSeries || [], uni.monthlyMovements?.outSeries || [], 'IN', 'OUT');
+        const uniforms = all.uniforms || {};
+        bar('#uniformsAllocatedDaily30d', uniforms.allocatedDaily30d?.categories || [], uniforms.allocatedDaily30d?.series || [], 'Qty');
       })();
     </script>
   @endif

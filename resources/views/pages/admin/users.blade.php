@@ -282,9 +282,28 @@
                                         <div class="modal-body">
                                             <div class="row g-3">
                                                 <div class="col-12 col-lg-5">
+                                            @if ((int) (auth()->user()->role_id ?? 0) === 1)
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="add_no_employee" name="no_employee" value="1">
+                                                    <label class="form-check-label" for="add_no_employee">Akun tanpa karyawan</label>
+                                                </div>
+                                                <div class="form-text">Hanya untuk Super Admin. Jika dicentang, akun tidak terhubung ke data karyawan.</div>
+                                            </div>
+                                            @endif
+                                            <div class="mb-3">
+                                                <label for="employee_id" class="form-label">Karyawan</label>
+                                                <select class="form-select" id="employee_id" name="employee_id" required>
+                                                    <option value="">Pilih Karyawan</option>
+                                                    @foreach (($employees ?? collect()) as $emp)
+                                                        <option value="{{ $emp->id }}" data-emp-name="{{ $emp->name }}">{{ $emp->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                             <div class="mb-3">
                                                 <label for="name" class="form-label">Nama</label>
-                                                <input type="text" class="form-control" id="name" name="name" required>
+                                                <input type="text" class="form-control" id="name" name="name" required readonly>
+                                                <div class="form-text">Nama otomatis mengikuti data karyawan.</div>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="username" class="form-label">Username</label>
@@ -315,6 +334,19 @@
                                                 </select>
                                             </div>
 
+                                            @if ((int) (auth()->user()->role_id ?? 0) === 1)
+                                            <div class="mb-3">
+                                                <label for="stamp_validator_user_id" class="form-label">Validator Materai (default)</label>
+                                                <select class="form-select" id="stamp_validator_user_id" name="stamp_validator_user_id">
+                                                    <option value="">(Tidak ditentukan)</option>
+                                                    @foreach (($stampValidatorCandidates ?? collect()) as $cand)
+                                                        <option value="{{ $cand->id }}">{{ $cand->display_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <div class="form-text">Jika diisi, permintaan Materai dari user ini otomatis ditugaskan ke validator tersebut.</div>
+                                            </div>
+                                            @endif
+
                                             <div class="mb-3">
                                                 <label class="form-label">Tab Dashboard Admin</label>
                                                 <div class="border rounded p-2">
@@ -325,12 +357,12 @@
                                                                 <label class="form-check-label" for="add_dash_tab_asset">Asset</label>
                                                             </div>
                                                             <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_uniform" name="dash_tab_uniform" value="1" checked>
-                                                                <label class="form-check-label" for="add_dash_tab_uniform">Uniform</label>
-                                                            </div>
-                                                            <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox" id="add_dash_tab_stamps" name="dash_tab_stamps" value="1" checked>
                                                                 <label class="form-check-label" for="add_dash_tab_stamps">Materai</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_uniforms" name="dash_tab_uniforms" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_uniforms">Seragam</label>
                                                             </div>
                                                         </div>
                                                         <div class="col-12 col-md-6">
@@ -367,6 +399,10 @@
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
                                                                     for="add_dash_asset_charts">Grafik</label>
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_uniforms" name="dash_tab_uniforms" value="1">
+                                                                                <label class="form-check-label" for="edit_dash_tab_uniforms">Seragam</label>
+                                                                            </div>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
@@ -374,32 +410,6 @@
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
                                                                     for="add_dash_asset_recent">Terbaru</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Seragam</div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="add_dash_uniform_kpi" name="dash_uniform_kpi"
-                                                                    value="1" checked>
-                                                                <label class="form-check-label"
-                                                                    for="add_dash_uniform_kpi">KPI</label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="add_dash_uniform_charts" name="dash_uniform_charts"
-                                                                    value="1" checked>
-                                                                <label class="form-check-label"
-                                                                    for="add_dash_uniform_charts">Grafik</label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="add_dash_uniform_recent" name="dash_uniform_recent"
-                                                                    value="1" checked>
-                                                                <label class="form-check-label"
-                                                                    for="add_dash_uniform_recent">Terbaru</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -487,6 +497,16 @@
                                                                                 id="add_menu_stamps_transactions" name="menu_stamps_transactions" value="1">
                                                                             <label class="form-check-label" for="add_menu_stamps_transactions">Transaksi Materai</label>
                                                                         </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_stamps_requests" name="menu_stamps_requests" value="1">
+                                                                            <label class="form-check-label" for="add_menu_stamps_requests">Permintaan Materai</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="add_menu_stamps_validation" name="menu_stamps_validation" value="1">
+                                                                            <label class="form-check-label" for="add_menu_stamps_validation">Validasi Permintaan</label>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
@@ -532,6 +552,43 @@
                                                                             value="1">
                                                                         <label class="form-check-label"
                                                                             for="add_menu_devices">Master Device</label>
+                                                                    </div>
+
+                                                                    <div class="fw-semibold mt-3 mb-2">Seragam Karyawan</div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_stock" name="menu_uniforms_stock" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_stock">Stok Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_distribution" name="menu_uniforms_distribution" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_distribution">Distribusi Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_reports" name="menu_uniforms_reports" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_reports">Laporan Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_entitlements" name="menu_uniforms_entitlements" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_entitlements">Kuota Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_master" name="menu_uniforms_master" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_master">Master Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_variants" name="menu_uniforms_variants" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_variants">Varian Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_uniforms_lots" name="menu_uniforms_lots" value="1">
+                                                                        <label class="form-check-label" for="add_menu_uniforms_lots">Lots Seragam</label>
                                                                     </div>
 
                                                                     <div class="form-check">
@@ -617,51 +674,6 @@
                                                                                 name="menu_account_types" value="1">
                                                                             <label class="form-check-label"
                                                                                 for="add_menu_account_types">Kategori Akun</label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input" type="checkbox"
-                                                                            id="add_menu_master_uniform"
-                                                                            name="menu_master_uniform" value="1">
-                                                                        <label class="form-check-label"
-                                                                            for="add_menu_master_uniform">Master Seragam <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_master_uniform"></span></label>
-                                                                    </div>
-                                                                    <div class="ms-3">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniform_sizes" name="menu_uniform_sizes"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniform_sizes">Ukuran Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniform_item_names"
-                                                                                name="menu_uniform_item_names" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniform_item_names">Nama Item Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniform_categories"
-                                                                                name="menu_uniform_categories" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniform_categories">Kategori Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniform_colors" name="menu_uniform_colors"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniform_colors">Warna Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniform_uoms" name="menu_uniform_uoms"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniform_uoms">UOM Seragam</label>
                                                                         </div>
                                                                     </div>
 
@@ -817,45 +829,6 @@
                                                                     </div>
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            id="add_menu_uniforms" name="menu_uniforms"
-                                                                            value="1">
-                                                                        <label class="form-check-label"
-                                                                            for="add_menu_uniforms">Stok Seragam <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_uniforms"></span></label>
-                                                                    </div>
-                                                                    <div class="ms-3">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniforms_master"
-                                                                                name="menu_uniforms_master" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniforms_master">Master
-                                                                                Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniforms_stock"
-                                                                                name="menu_uniforms_stock" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniforms_stock">Stok
-                                                                                Masuk</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniforms_distribution"
-                                                                                name="menu_uniforms_distribution" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniforms_distribution">Distribusi</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="add_menu_uniforms_history"
-                                                                                name="menu_uniforms_history" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="add_menu_uniforms_history">Riwayat</label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input" type="checkbox"
                                                                             id="add_menu_settings" name="menu_settings"
                                                                             value="1">
                                                                         <label class="form-check-label"
@@ -922,15 +895,16 @@
                                 @foreach($users as $user)
                                     <tr>
                                         <td>{{ $user->id }}</td>
-                                        <td>{{ $user->name }}</td>
+                                        <td>{{ $user->employee?->name ?? $user->name }}</td>
                                         <td>{{ $user->username }}</td>
                                         <td>{{ $user->email }}</td>
                                         <td>{{ $user->role->role_name ?? '-' }}</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-primary btn-edit-user" {{ $canUpdate ? '' : 'disabled' }} title="{{ $canUpdate ? '' : 'Tidak punya akses edit' }}"
-                                                data-id="{{ $user->id }}" data-name="{{ $user->name }}"
+                                                data-id="{{ $user->id }}" data-employee-id="{{ $user->employee_id }}" data-name="{{ $user->employee?->name ?? $user->name }}"
                                                 data-username="{{ $user->username }}" data-email="{{ $user->email }}"
                                                 data-role="{{ $user->role_id }}"
+                                                data-stamp-validator-user-id="{{ $user->stamp_validator_user_id }}"
                                                 data-dashboard='@json($user->dashboard_permissions)'
                                                 data-dashboard-tabs='@json($user->dashboard_tabs)'
                                                 data-menu='@json($user->menu_permissions)'>
@@ -972,9 +946,28 @@
                                             <input type="hidden" id="edit_user_id" name="user_id">
                                             <div class="row g-3">
                                                 <div class="col-12 col-lg-5">
+                                            @if ((int) (auth()->user()->role_id ?? 0) === 1)
+                                            <div class="mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="edit_no_employee" name="no_employee" value="1">
+                                                    <label class="form-check-label" for="edit_no_employee">Akun tanpa karyawan</label>
+                                                </div>
+                                                <div class="form-text">Jika dicentang, akun tidak terhubung ke data karyawan.</div>
+                                            </div>
+                                            @endif
+                                            <div class="mb-3">
+                                                <label for="edit_employee_id" class="form-label">Karyawan</label>
+                                                <select class="form-select" id="edit_employee_id" name="employee_id" required>
+                                                    <option value="">Pilih Karyawan</option>
+                                                    @foreach (($employees ?? collect()) as $emp)
+                                                        <option value="{{ $emp->id }}" data-emp-name="{{ $emp->name }}">{{ $emp->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                             <div class="mb-3">
                                                 <label for="edit_name" class="form-label">Nama</label>
-                                                <input type="text" class="form-control" id="edit_name" name="name" required>
+                                                <input type="text" class="form-control" id="edit_name" name="name" required readonly>
+                                                <div class="form-text">Nama otomatis mengikuti data karyawan.</div>
                                             </div>
                                             <div class="mb-3">
                                                 <label for="edit_username" class="form-label">Username</label>
@@ -1006,6 +999,23 @@
                                                 </select>
                                             </div>
 
+                                            @if ((int) (auth()->user()->role_id ?? 0) === 1)
+                                            <div class="mb-3">
+                                                <label for="edit_stamp_validator_user_id" class="form-label">Validator Materai (default)</label>
+                                                <select class="form-select" id="edit_stamp_validator_user_id" name="stamp_validator_user_id">
+                                                    <option value="">(Tidak ditentukan)</option>
+                                                    @foreach (($stampValidatorCandidates ?? collect()) as $cand)
+                                                        <option value="{{ $cand->id }}">{{ $cand->display_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <div id="edit_stamp_validator_warning" class="alert alert-warning py-2 px-3 mt-2 mb-0 d-none" role="alert">
+                                                    Validator Materai yang tersimpan sudah tidak valid (mis. akses "Validasi Permintaan" dicabut), jadi tidak efektif.
+                                                    Silakan pilih ulang validator.
+                                                </div>
+                                                <div class="form-text">Jika diisi, permintaan Materai dari user ini otomatis ditugaskan ke validator tersebut.</div>
+                                            </div>
+                                            @endif
+
                                             <div class="mb-3">
                                                 <label class="form-label">Tab Dashboard Admin</label>
                                                 <div class="border rounded p-2">
@@ -1014,10 +1024,6 @@
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox" id="edit_dash_tab_asset" name="dash_tab_asset" value="1">
                                                                 <label class="form-check-label" for="edit_dash_tab_asset">Asset</label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_uniform" name="dash_tab_uniform" value="1">
-                                                                <label class="form-check-label" for="edit_dash_tab_uniform">Uniform</label>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox" id="edit_dash_tab_stamps" name="dash_tab_stamps" value="1">
@@ -1065,32 +1071,6 @@
                                                                     value="1">
                                                                 <label class="form-check-label"
                                                                     for="edit_dash_asset_recent">Terbaru</label>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-12 col-md-6">
-                                                        <div class="border rounded p-2 h-100">
-                                                            <div class="fw-semibold mb-2">Seragam</div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="edit_dash_uniform_kpi" name="dash_uniform_kpi"
-                                                                    value="1">
-                                                                <label class="form-check-label"
-                                                                    for="edit_dash_uniform_kpi">KPI</label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="edit_dash_uniform_charts" name="dash_uniform_charts"
-                                                                    value="1">
-                                                                <label class="form-check-label"
-                                                                    for="edit_dash_uniform_charts">Grafik</label>
-                                                            </div>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"
-                                                                    id="edit_dash_uniform_recent" name="dash_uniform_recent"
-                                                                    value="1">
-                                                                <label class="form-check-label"
-                                                                    for="edit_dash_uniform_recent">Terbaru</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1179,6 +1159,16 @@
                                                                                 id="edit_menu_stamps_transactions" name="menu_stamps_transactions" value="1">
                                                                             <label class="form-check-label" for="edit_menu_stamps_transactions">Transaksi Materai</label>
                                                                         </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_stamps_requests" name="menu_stamps_requests" value="1">
+                                                                            <label class="form-check-label" for="edit_menu_stamps_requests">Permintaan Materai</label>
+                                                                        </div>
+                                                                        <div class="form-check">
+                                                                            <input class="form-check-input" type="checkbox"
+                                                                                id="edit_menu_stamps_validation" name="menu_stamps_validation" value="1">
+                                                                            <label class="form-check-label" for="edit_menu_stamps_validation">Validasi Permintaan</label>
+                                                                        </div>
                                                                     </div>
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
@@ -1225,6 +1215,43 @@
                                                                             value="1">
                                                                         <label class="form-check-label"
                                                                             for="edit_menu_devices">Master Device</label>
+                                                                    </div>
+
+                                                                    <div class="fw-semibold mt-3 mb-2">Seragam Karyawan</div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_stock" name="menu_uniforms_stock" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_stock">Stok Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_distribution" name="menu_uniforms_distribution" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_distribution">Distribusi Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_reports" name="menu_uniforms_reports" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_reports">Laporan Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_entitlements" name="menu_uniforms_entitlements" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_entitlements">Kuota Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_master" name="menu_uniforms_master" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_master">Master Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_variants" name="menu_uniforms_variants" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_variants">Varian Seragam</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_uniforms_lots" name="menu_uniforms_lots" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_uniforms_lots">Lots Seragam</label>
                                                                     </div>
 
                                                                     <div class="form-check">
@@ -1310,51 +1337,6 @@
                                                                                 name="menu_account_types" value="1">
                                                                             <label class="form-check-label"
                                                                                 for="edit_menu_account_types">Kategori Akun</label>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input" type="checkbox"
-                                                                            id="edit_menu_master_uniform"
-                                                                            name="menu_master_uniform" value="1">
-                                                                        <label class="form-check-label"
-                                                                            for="edit_menu_master_uniform">Master Seragam <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_master_uniform"></span></label>
-                                                                    </div>
-                                                                    <div class="ms-3">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniform_sizes" name="menu_uniform_sizes"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniform_sizes">Ukuran Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniform_item_names"
-                                                                                name="menu_uniform_item_names" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniform_item_names">Nama Item Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniform_categories"
-                                                                                name="menu_uniform_categories" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniform_categories">Kategori Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniform_colors" name="menu_uniform_colors"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniform_colors">Warna Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniform_uoms" name="menu_uniform_uoms"
-                                                                                value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniform_uoms">UOM Seragam</label>
                                                                         </div>
                                                                     </div>
 
@@ -1510,45 +1492,6 @@
                                                                     </div>
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
-                                                                            id="edit_menu_uniforms" name="menu_uniforms"
-                                                                            value="1">
-                                                                        <label class="form-check-label"
-                                                                            for="edit_menu_uniforms">Stok Seragam <span class="badge bg-light text-dark ms-2 menu-counter" id="edit_menu_counter_uniforms"></span></label>
-                                                                    </div>
-                                                                    <div class="ms-3">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniforms_master"
-                                                                                name="menu_uniforms_master" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniforms_master">Master
-                                                                                Seragam</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniforms_stock"
-                                                                                name="menu_uniforms_stock" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniforms_stock">Stok
-                                                                                Masuk</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniforms_distribution"
-                                                                                name="menu_uniforms_distribution" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniforms_distribution">Distribusi</label>
-                                                                        </div>
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox"
-                                                                                id="edit_menu_uniforms_history"
-                                                                                name="menu_uniforms_history" value="1">
-                                                                            <label class="form-check-label"
-                                                                                for="edit_menu_uniforms_history">Riwayat</label>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="form-check">
-                                                                        <input class="form-check-input" type="checkbox"
                                                                             id="edit_menu_settings" name="menu_settings"
                                                                             value="1">
                                                                         <label class="form-check-label"
@@ -1655,6 +1598,8 @@
                         stamps: none,
                         stamps_master: none,
                         stamps_transactions: none,
+                        stamps_requests: { read: true, create: true, update: true, delete: false },
+                        stamps_validation: none,
 
                         // Daily Tasks
                         daily_tasks: { read: true, create: true, update: true, delete: false },
@@ -1664,7 +1609,6 @@
 
                         // Groups
                         assets: none,
-                        uniforms: none,
 
                         // Assets submenus
                         assets_data: none,
@@ -1677,12 +1621,6 @@
                         assets_in: none,
                         assets_transfer: none,
 
-                        // Uniforms submenus
-                        uniforms_master: none,
-                        uniforms_stock: none,
-                        uniforms_distribution: none,
-                        uniforms_history: none,
-
                         employees: none,
                         employees_index: none,
                         employees_deleted: none,
@@ -1692,7 +1630,6 @@
                         master_hr: none,
                         master_assets: none,
                         master_accounts: none,
-                        master_uniform: none,
                         master_daily_task: none,
 
                         master_data: none,
@@ -1704,11 +1641,6 @@
                         plant_sites: none,
                         asset_uoms: none,
                         asset_vendors: none,
-                        uniform_sizes: none,
-                        uniform_item_names: none,
-                        uniform_categories: none,
-                        uniform_colors: none,
-                        uniform_uoms: none,
 
                         // Daily Tasks Masters
                         daily_task_types: none,
@@ -1725,6 +1657,15 @@
                         settings_users: none,
                         settings_history_user: none,
                         settings_history_asset: none,
+
+                        // Uniforms (Seragam Karyawan)
+                        uniforms_stock: none,
+                        uniforms_distribution: none,
+                        uniforms_reports: none,
+                        uniforms_master: none,
+                        uniforms_variants: none,
+                        uniforms_lots: none,
+                        uniforms_entitlements: none,
                     };
                 }
 
@@ -1736,6 +1677,8 @@
                     stamps: all,
                     stamps_master: all,
                     stamps_transactions: all,
+                    stamps_requests: all,
+                    stamps_validation: all,
 
                     // Daily Tasks
                     daily_tasks: all,
@@ -1745,7 +1688,6 @@
 
                     // Groups
                     assets: all,
-                    uniforms: all,
 
                     // Assets submenus
                     assets_data: all,
@@ -1758,12 +1700,6 @@
                     assets_in: all,
                     assets_transfer: all,
 
-                    // Uniforms submenus
-                    uniforms_master: all,
-                    uniforms_stock: all,
-                    uniforms_distribution: all,
-                    uniforms_history: all,
-
                     employees: all,
                     employees_index: all,
                     employees_deleted: all,
@@ -1773,7 +1709,6 @@
                     master_hr: all,
                     master_assets: all,
                     master_accounts: all,
-                    master_uniform: all,
                     master_daily_task: all,
 
                     master_data: all,
@@ -1785,11 +1720,6 @@
                     plant_sites: all,
                     asset_uoms: all,
                     asset_vendors: all,
-                    uniform_sizes: all,
-                    uniform_item_names: all,
-                    uniform_categories: all,
-                    uniform_colors: all,
-                    uniform_uoms: all,
 
                     // Daily Tasks Masters
                     daily_task_types: all,
@@ -1806,6 +1736,15 @@
                     settings_users: all,
                     settings_history_user: readOnly,
                     settings_history_asset: readOnly,
+
+                    // Uniforms (Seragam Karyawan)
+                    uniforms_stock: all,
+                    uniforms_distribution: all,
+                    uniforms_reports: all,
+                    uniforms_master: all,
+                    uniforms_variants: all,
+                    uniforms_lots: all,
+                    uniforms_entitlements: all,
                 };
 
                 // Force view-only keys to read-only (even if defaults above change).
@@ -1878,6 +1817,8 @@
                 $('#' + prefix + '_menu_stamps').prop('checked', hasRead(permissions.stamps));
                 $('#' + prefix + '_menu_stamps_master').prop('checked', hasRead(permissions.stamps_master));
                 $('#' + prefix + '_menu_stamps_transactions').prop('checked', hasRead(permissions.stamps_transactions));
+                $('#' + prefix + '_menu_stamps_requests').prop('checked', hasRead(permissions.stamps_requests));
+                $('#' + prefix + '_menu_stamps_validation').prop('checked', hasRead(permissions.stamps_validation));
 
                 $('#' + prefix + '_menu_daily_tasks').prop('checked', hasRead(permissions.daily_tasks));
                 $('#' + prefix + '_menu_devices').prop('checked', hasRead(permissions.devices));
@@ -1891,11 +1832,6 @@
                 $('#' + prefix + '_menu_assets_karawang').prop('checked', hasRead(permissions.assets_karawang));
                 $('#' + prefix + '_menu_assets_in').prop('checked', hasRead(permissions.assets_in));
                 $('#' + prefix + '_menu_assets_transfer').prop('checked', hasRead(permissions.assets_transfer));
-                $('#' + prefix + '_menu_uniforms').prop('checked', hasRead(permissions.uniforms));
-                $('#' + prefix + '_menu_uniforms_master').prop('checked', hasRead(permissions.uniforms_master));
-                $('#' + prefix + '_menu_uniforms_stock').prop('checked', hasRead(permissions.uniforms_stock));
-                $('#' + prefix + '_menu_uniforms_distribution').prop('checked', hasRead(permissions.uniforms_distribution));
-                $('#' + prefix + '_menu_uniforms_history').prop('checked', hasRead(permissions.uniforms_history));
                 $('#' + prefix + '_menu_employees').prop('checked', hasRead(permissions.employees));
                 $('#' + prefix + '_menu_employees_index').prop('checked', hasRead(permissions.employees_index));
                 $('#' + prefix + '_menu_employees_deleted').prop('checked', hasRead(permissions.employees_deleted));
@@ -1903,7 +1839,6 @@
                 $('#' + prefix + '_menu_master_hr').prop('checked', hasRead(permissions.master_hr));
                 $('#' + prefix + '_menu_master_assets').prop('checked', hasRead(permissions.master_assets));
                 $('#' + prefix + '_menu_master_accounts').prop('checked', hasRead(permissions.master_accounts));
-                $('#' + prefix + '_menu_master_uniform').prop('checked', hasRead(permissions.master_uniform));
                 $('#' + prefix + '_menu_master_daily_task').prop('checked', hasRead(permissions.master_daily_task));
                 $('#' + prefix + '_menu_departments').prop('checked', hasRead(permissions.departments));
                 $('#' + prefix + '_menu_positions').prop('checked', hasRead(permissions.positions));
@@ -1913,11 +1848,6 @@
                 $('#' + prefix + '_menu_plant_sites').prop('checked', hasRead(permissions.plant_sites));
                 $('#' + prefix + '_menu_asset_uoms').prop('checked', hasRead(permissions.asset_uoms));
                 $('#' + prefix + '_menu_asset_vendors').prop('checked', hasRead(permissions.asset_vendors));
-                $('#' + prefix + '_menu_uniform_sizes').prop('checked', hasRead(permissions.uniform_sizes));
-                $('#' + prefix + '_menu_uniform_item_names').prop('checked', hasRead(permissions.uniform_item_names));
-                $('#' + prefix + '_menu_uniform_categories').prop('checked', hasRead(permissions.uniform_categories));
-                $('#' + prefix + '_menu_uniform_colors').prop('checked', hasRead(permissions.uniform_colors));
-                $('#' + prefix + '_menu_uniform_uoms').prop('checked', hasRead(permissions.uniform_uoms));
                 $('#' + prefix + '_menu_daily_task_types').prop('checked', hasRead(permissions.daily_task_types));
                 $('#' + prefix + '_menu_daily_task_priorities').prop('checked', hasRead(permissions.daily_task_priorities));
                 $('#' + prefix + '_menu_daily_task_statuses').prop('checked', hasRead(permissions.daily_task_statuses));
@@ -1935,14 +1865,12 @@
                 // Action toggles (injected)
                 const keys = [
                     'user_dashboard', 'admin_dashboard',
-                    'stamps', 'stamps_master', 'stamps_transactions',
+                    'stamps', 'stamps_master', 'stamps_transactions', 'stamps_requests', 'stamps_validation',
                     'daily_tasks', 'devices',
                     'assets', 'assets_data', 'accounts_data', 'accounts_secrets', 'documents_archive', 'documents_restricted', 'assets_jababeka', 'assets_karawang', 'assets_in', 'assets_transfer',
-                    'uniforms', 'uniforms_master', 'uniforms_stock', 'uniforms_distribution', 'uniforms_history',
                     'employees', 'employees_index', 'employees_deleted', 'employees_audit',
-                    'master_hr', 'master_assets', 'master_accounts', 'master_uniform', 'master_daily_task',
+                    'master_hr', 'master_assets', 'master_accounts', 'master_daily_task',
                     'departments', 'positions', 'asset_categories', 'account_types', 'asset_locations', 'plant_sites', 'asset_uoms', 'asset_vendors',
-                    'uniform_sizes', 'uniform_item_names', 'uniform_categories', 'uniform_colors', 'uniform_uoms',
                     'daily_task_types', 'daily_task_priorities', 'daily_task_statuses',
                     'career', 'certificate',
                     'website_settings', 'website_products', 'website_home_sections', 'website_contact_page',
@@ -2068,6 +1996,8 @@
                 updateGroupCounter(prefix, 'stamps', [
                     'stamps_master',
                     'stamps_transactions',
+                    'stamps_requests',
+                    'stamps_validation',
                 ]);
 
                 updateGroupCounter(prefix, 'assets', [
@@ -2080,13 +2010,6 @@
                     'assets_karawang',
                     'assets_in',
                     'assets_transfer',
-                ]);
-
-                updateGroupCounter(prefix, 'uniforms', [
-                    'uniforms_master',
-                    'uniforms_stock',
-                    'uniforms_distribution',
-                    'uniforms_history',
                 ]);
 
                 updateGroupCounter(prefix, 'employees', [
@@ -2112,14 +2035,6 @@
                     'account_types',
                 ]);
 
-                updateGroupCounter(prefix, 'master_uniform', [
-                    'uniform_sizes',
-                    'uniform_item_names',
-                    'uniform_categories',
-                    'uniform_colors',
-                    'uniform_uoms',
-                ]);
-
                 updateGroupCounter(prefix, 'master_daily_task', [
                     'daily_task_types',
                     'daily_task_priorities',
@@ -2137,6 +2052,8 @@
                 updateGroupState(prefix, 'stamps', [
                     'stamps_master',
                     'stamps_transactions',
+                    'stamps_requests',
+                    'stamps_validation',
                 ]);
 
                 updateGroupState(prefix, 'assets', [
@@ -2149,13 +2066,6 @@
                     'assets_karawang',
                     'assets_in',
                     'assets_transfer',
-                ]);
-
-                updateGroupState(prefix, 'uniforms', [
-                    'uniforms_master',
-                    'uniforms_stock',
-                    'uniforms_distribution',
-                    'uniforms_history',
                 ]);
 
                 updateGroupState(prefix, 'employees', [
@@ -2179,14 +2089,6 @@
 
                 updateGroupState(prefix, 'master_accounts', [
                     'account_types',
-                ]);
-
-                updateGroupState(prefix, 'master_uniform', [
-                    'uniform_sizes',
-                    'uniform_item_names',
-                    'uniform_categories',
-                    'uniform_colors',
-                    'uniform_uoms',
                 ]);
 
                 updateGroupState(prefix, 'master_daily_task', [
@@ -2508,7 +2410,7 @@
             }
 
             function enforceAdminDashboardPermissionForRestrictedTabs(prefix) {
-                const allTabs = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+                const allTabs = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
                 const checkedCount = allTabs.filter(function (key) {
                     return $('#' + prefix + '_dash_tab_' + key).is(':checked');
                 }).length;
@@ -2524,16 +2426,40 @@
             $(document).on('click', '.btn-edit-user', function () {
                 $('#edit_user_id').val($(this).data('id'));
                 $('#edit_name').val($(this).data('name'));
+                const employeeId = $(this).data('employeeId') || '';
+                $('#edit_employee_id').val(employeeId).trigger('change');
                 $('#edit_username').val($(this).data('username'));
                 $('#edit_email').val($(this).data('email'));
                 $('#edit_role').val($(this).data('role'));
 
+                if ($('#edit_stamp_validator_user_id').length) {
+                    const storedValidatorId = $(this).data('stampValidatorUserId') || '';
+                    const $validatorSelect = $('#edit_stamp_validator_user_id');
+                    const $validatorWarning = $('#edit_stamp_validator_warning');
+
+                    $validatorSelect.val(storedValidatorId);
+
+                    const isStoredSet = String(storedValidatorId || '') !== '';
+                    const isApplied = String($validatorSelect.val() || '') === String(storedValidatorId || '');
+
+                    if ($validatorWarning.length) {
+                        // If a stored value exists but doesn't exist in eligible candidates, show warning.
+                        $validatorWarning.toggleClass('d-none', !(isStoredSet && !isApplied));
+                    }
+                }
+
+                if ($('#edit_no_employee').length) {
+                    const noEmployee = !employeeId;
+                    $('#edit_no_employee').prop('checked', noEmployee);
+                    setEditNoEmployeeMode(noEmployee);
+                }
+
                 const tabOverrides = $(this).data('dashboardTabs');
-                const allTabs = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+                const allTabs = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
                 const enabledTabs = Array.isArray(tabOverrides) ? tabOverrides : allTabs;
                 $('#edit_dash_tab_asset').prop('checked', enabledTabs.includes('asset'));
-                $('#edit_dash_tab_uniform').prop('checked', enabledTabs.includes('uniform'));
                 $('#edit_dash_tab_stamps').prop('checked', enabledTabs.includes('stamps'));
+                $('#edit_dash_tab_uniforms').prop('checked', enabledTabs.includes('uniforms'));
                 $('#edit_dash_tab_documents').prop('checked', enabledTabs.includes('documents'));
                 $('#edit_dash_tab_employee').prop('checked', enabledTabs.includes('employee'));
 
@@ -2541,14 +2467,10 @@
 
                 const perms = $(this).data('dashboard');
                 const asset = (perms && perms.asset) ? perms.asset : { kpi: true, charts: true, recent: true };
-                const uniform = (perms && perms.uniform) ? perms.uniform : { kpi: true, charts: true, recent: true };
 
                 $('#edit_dash_asset_kpi').prop('checked', !!asset.kpi);
                 $('#edit_dash_asset_charts').prop('checked', !!asset.charts);
                 $('#edit_dash_asset_recent').prop('checked', !!asset.recent);
-                $('#edit_dash_uniform_kpi').prop('checked', !!uniform.kpi);
-                $('#edit_dash_uniform_charts').prop('checked', !!uniform.charts);
-                $('#edit_dash_uniform_recent').prop('checked', !!uniform.recent);
 
                 const roleId = $(this).data('role');
                 const storedMenu = $(this).data('menu');
@@ -2563,11 +2485,72 @@
                 $('#editUserModal').modal('show');
             });
 
+            function syncNameFromEmployee($select, $nameInput) {
+                const selectedName = $select.find('option:selected').data('emp-name');
+                if (selectedName) {
+                    $nameInput.val(selectedName);
+                }
+            }
+
+            function setAddNoEmployeeMode(enabled) {
+                const $employee = $('#employee_id');
+                const $name = $('#name');
+
+                if (enabled) {
+                    $employee.val('').prop('required', false).prop('disabled', true);
+                    $name.prop('readonly', false);
+                } else {
+                    $employee.prop('disabled', false).prop('required', true);
+                    $name.prop('readonly', true);
+                    syncNameFromEmployee($employee, $name);
+                }
+            }
+
+            function setEditNoEmployeeMode(enabled) {
+                const $employee = $('#edit_employee_id');
+                const $name = $('#edit_name');
+
+                if (enabled) {
+                    $employee.val('').prop('required', false).prop('disabled', true);
+                    $name.prop('readonly', false);
+                } else {
+                    $employee.prop('disabled', false).prop('required', true);
+                    $name.prop('readonly', true);
+                    syncNameFromEmployee($employee, $name);
+                }
+            }
+
+            $(document).on('change', '#employee_id', function () {
+                if ($('#add_no_employee').length && $('#add_no_employee').is(':checked')) {
+                    return;
+                }
+                syncNameFromEmployee($(this), $('#name'));
+            });
+
+            $(document).on('change', '#edit_employee_id', function () {
+                if ($('#edit_no_employee').length && $('#edit_no_employee').is(':checked')) {
+                    return;
+                }
+                syncNameFromEmployee($(this), $('#edit_name'));
+            });
+
+            $(document).on('change', '#add_no_employee', function () {
+                setAddNoEmployeeMode($(this).is(':checked'));
+            });
+
+            $(document).on('change', '#edit_no_employee', function () {
+                setEditNoEmployeeMode($(this).is(':checked'));
+            });
+
+            if ($('#add_no_employee').length) {
+                setAddNoEmployeeMode($('#add_no_employee').is(':checked'));
+            }
+
             // If admin dashboard tabs are restricted, make sure Dashboard menu access is enabled.
-            $(document).on('change', '#add_dash_tab_asset, #add_dash_tab_uniform, #add_dash_tab_stamps, #add_dash_tab_documents, #add_dash_tab_employee', function () {
+            $(document).on('change', '#add_dash_tab_asset, #add_dash_tab_stamps, #add_dash_tab_uniforms, #add_dash_tab_documents, #add_dash_tab_employee', function () {
                 enforceAdminDashboardPermissionForRestrictedTabs('add');
             });
-            $(document).on('change', '#edit_dash_tab_asset, #edit_dash_tab_uniform, #edit_dash_tab_stamps, #edit_dash_tab_documents, #edit_dash_tab_employee', function () {
+            $(document).on('change', '#edit_dash_tab_asset, #edit_dash_tab_stamps, #edit_dash_tab_uniforms, #edit_dash_tab_documents, #edit_dash_tab_employee', function () {
                 enforceAdminDashboardPermissionForRestrictedTabs('edit');
             });
 
@@ -2621,6 +2604,14 @@
                 applyMenuFilter('edit', $('#edit_menu_filter').val());
             });
 
+            // If Super Admin re-selects validator, hide warning.
+            $(document).on('change', '#edit_stamp_validator_user_id', function () {
+                const $warn = $('#edit_stamp_validator_warning');
+                if ($warn.length) {
+                    $warn.addClass('d-none');
+                }
+            });
+
             // Initialize Add modal defaults once on load
             $(document).ready(function () {
                 ensureWriteControls('add');
@@ -2629,6 +2620,8 @@
                 bindGroupToggle('add', 'stamps', [
                     'stamps_master',
                     'stamps_transactions',
+                    'stamps_requests',
+                    'stamps_validation',
                 ]);
                 bindGroupToggle('add', 'assets', [
                     'assets_data',
@@ -2640,12 +2633,6 @@
                     'assets_karawang',
                     'assets_in',
                     'assets_transfer',
-                ]);
-                bindGroupToggle('add', 'uniforms', [
-                    'uniforms_master',
-                    'uniforms_stock',
-                    'uniforms_distribution',
-                    'uniforms_history',
                 ]);
 
                 bindGroupToggle('add', 'employees', [
@@ -2671,14 +2658,6 @@
                     'account_types',
                 ]);
 
-                bindGroupToggle('add', 'master_uniform', [
-                    'uniform_sizes',
-                    'uniform_item_names',
-                    'uniform_categories',
-                    'uniform_colors',
-                    'uniform_uoms',
-                ]);
-
                 bindGroupToggle('add', 'master_daily_task', [
                     'daily_task_types',
                     'daily_task_priorities',
@@ -2701,12 +2680,6 @@
                     'assets_karawang',
                     'assets_in',
                     'assets_transfer',
-                ]);
-                bindGroupToggle('edit', 'uniforms', [
-                    'uniforms_master',
-                    'uniforms_stock',
-                    'uniforms_distribution',
-                    'uniforms_history',
                 ]);
 
                 bindGroupToggle('edit', 'employees', [
@@ -2732,14 +2705,6 @@
                     'account_types',
                 ]);
 
-                bindGroupToggle('edit', 'master_uniform', [
-                    'uniform_sizes',
-                    'uniform_item_names',
-                    'uniform_categories',
-                    'uniform_colors',
-                    'uniform_uoms',
-                ]);
-
                 bindGroupToggle('edit', 'master_daily_task', [
                     'daily_task_types',
                     'daily_task_priorities',
@@ -2755,6 +2720,8 @@
                 bindGroupToggle('edit', 'stamps', [
                     'stamps_master',
                     'stamps_transactions',
+                    'stamps_requests',
+                    'stamps_validation',
                 ]);
 
                 applyMenuCheckboxes('add', defaultMenuPermissionsForRole($('#role').val()));

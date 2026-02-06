@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\DeletedUser;
 use App\Models\Role;
+use App\Models\Employee;
 use App\Support\MenuAccess;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class UserController extends Controller
       return null;
     }
 
-    $keys = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+    $keys = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
     $enabled = [];
     foreach ($keys as $key) {
       if ($request->boolean('dash_tab_' . $key)) {
@@ -43,15 +44,10 @@ class UserController extends Controller
         'charts' => $request->boolean('dash_asset_charts'),
         'recent' => $request->boolean('dash_asset_recent'),
       ],
-      'uniform' => [
-        'kpi' => $request->boolean('dash_uniform_kpi'),
-        'charts' => $request->boolean('dash_uniform_charts'),
-        'recent' => $request->boolean('dash_uniform_recent'),
-      ],
     ];
 
     $allTrue = true;
-    foreach (['asset', 'uniform'] as $section) {
+    foreach (['asset'] as $section) {
       foreach (['kpi', 'charts', 'recent'] as $key) {
         if (!($permissions[$section][$key] ?? false)) {
           $allTrue = false;
@@ -125,6 +121,8 @@ class UserController extends Controller
       'stamps' => $permFor('stamps'),
       'stamps_master' => $permFor('stamps_master'),
       'stamps_transactions' => $permFor('stamps_transactions'),
+      'stamps_requests' => $permFor('stamps_requests'),
+      'stamps_validation' => $permFor('stamps_validation'),
 
       // Daily Tasks
       'daily_tasks' => $permFor('daily_tasks'),
@@ -134,7 +132,6 @@ class UserController extends Controller
 
       // Groups
       'assets' => $permFor('assets'),
-      'uniforms' => $permFor('uniforms'),
 
       // Assets submenus
       'assets_data' => $permFor('assets_data'),
@@ -147,12 +144,6 @@ class UserController extends Controller
       'assets_in' => $permFor('assets_in'),
       'assets_transfer' => $permFor('assets_transfer'),
 
-      // Uniforms submenus
-      'uniforms_master' => $permFor('uniforms_master'),
-      'uniforms_stock' => $permFor('uniforms_stock'),
-      'uniforms_distribution' => $permFor('uniforms_distribution'),
-      'uniforms_history' => $permFor('uniforms_history'),
-
       'employees' => $permFor('employees'),
       'employees_index' => $permFor('employees_index'),
       'employees_deleted' => $permFor('employees_deleted'),
@@ -162,7 +153,6 @@ class UserController extends Controller
       'master_hr' => $permFor('master_hr'),
       'master_assets' => $permFor('master_assets'),
       'master_accounts' => $permFor('master_accounts'),
-      'master_uniform' => $permFor('master_uniform'),
       'master_daily_task' => $permFor('master_daily_task'),
 
       'master_data' => $permFor('master_data'),
@@ -174,11 +164,6 @@ class UserController extends Controller
       'plant_sites' => $permFor('plant_sites'),
       'asset_uoms' => $permFor('asset_uoms'),
       'asset_vendors' => $permFor('asset_vendors'),
-      'uniform_sizes' => $permFor('uniform_sizes'),
-      'uniform_item_names' => $permFor('uniform_item_names'),
-      'uniform_categories' => $permFor('uniform_categories'),
-      'uniform_colors' => $permFor('uniform_colors'),
-      'uniform_uoms' => $permFor('uniform_uoms'),
 
       // Daily Tasks Masters
       'daily_task_types' => $permFor('daily_task_types'),
@@ -210,7 +195,7 @@ class UserController extends Controller
   {
     $search = $request->input('search');
 
-    $query = User::query()->with('role');
+    $query = User::query()->with(['role', 'employee']);
     if ($search) {
       $query->where(function ($q) use ($search) {
         $q->where('name', 'like', "%{$search}%")
@@ -224,7 +209,21 @@ class UserController extends Controller
 
     $users = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
-    return view('pages.admin.users', compact('users', 'search'));
+    $employees = Employee::query()->orderBy('name')->get(['id', 'name']);
+
+    $isSuperAdmin = (int) (Auth::user()?->role_id ?? 0) === 1;
+    $stampValidatorCandidates = $isSuperAdmin
+      ? User::query()
+          ->with('employee')
+          ->orderBy('name')
+          ->get(['id', 'name', 'employee_id', 'role_id', 'menu_permissions'])
+          ->filter(function (User $u) {
+            return MenuAccess::can($u, 'stamps_validation', MenuAccess::ACTION_READ);
+          })
+          ->values()
+      : collect();
+
+    return view('pages.admin.users', compact('users', 'search', 'employees', 'stampValidatorCandidates'));
   }
 
   public function data(Request $request)
@@ -236,7 +235,7 @@ class UserController extends Controller
     $length = intval($request->input('length', 10));
     $search = $request->input('search.value');
 
-    $query = User::query()->with('role');
+    $query = User::query()->with(['role', 'employee']);
 
     $recordsTotal = $query->count();
 
@@ -262,13 +261,22 @@ class UserController extends Controller
       $query->orderBy('id', 'desc');
     }
 
-    $data = $query->skip($start)->take($length)->get(['id', 'name', 'username', 'email', 'role_id', 'created_at']);
+    $data = $query->skip($start)->take($length)->get(['id', 'name', 'employee_id', 'username', 'email', 'role_id', 'created_at']);
 
     return response()->json([
       'draw' => $draw,
       'recordsTotal' => $recordsTotal,
       'recordsFiltered' => $recordsFiltered,
-      'data' => $data,
+      'data' => $data->map(function ($u) {
+        return [
+          'id' => $u->id,
+          'name' => $u->employee?->name ?? $u->name,
+          'username' => $u->username,
+          'email' => $u->email,
+          'role_id' => $u->role_id,
+          'created_at' => $u->created_at,
+        ];
+      }),
     ]);
   }
 
@@ -279,13 +287,35 @@ class UserController extends Controller
 
   public function store(Request $request)
   {
-    $validated = $request->validate([
-      'name' => 'required|string|max:255',
+    $isSuperAdmin = (int) (Auth::user()?->role_id ?? 0) === 1;
+    $noEmployee = $isSuperAdmin && $request->boolean('no_employee');
+
+    $validated = $request->validate(array_filter([
+      'employee_id' => $noEmployee
+        ? 'nullable|integer|exists:m_igi_employees,id'
+        : 'required|integer|exists:m_igi_employees,id|unique:users,employee_id',
+      'name' => $noEmployee ? 'required|string|max:255' : null,
       'username' => 'nullable|string|max:255|unique:users,username',
       'email' => 'required|email|unique:users,email',
       'password' => 'required|min:8',
       'role_id' => 'required|integer|exists:roles,id',
-    ]);
+      'stamp_validator_user_id' => $isSuperAdmin ? 'nullable|integer|exists:users,id' : null,
+    ]));
+
+    if ($isSuperAdmin && !empty($validated['stamp_validator_user_id'])) {
+      $candidate = User::query()->whereKey((int) $validated['stamp_validator_user_id'])->first(['id', 'role_id', 'menu_permissions']);
+      if ($candidate === null || !MenuAccess::can($candidate, 'stamps_validation', MenuAccess::ACTION_READ)) {
+        return back()->withInput()->with('error', 'Validator Materai harus user yang punya akses "Validasi Permintaan".');
+      }
+    }
+
+    $employee = null;
+    if (!$noEmployee) {
+      $employee = Employee::query()->whereKey((int) $validated['employee_id'])->first();
+      if ($employee === null) {
+        return back()->withInput()->with('error', 'Karyawan tidak ditemukan.');
+      }
+    }
 
     $dashboardTabs = $this->extractDashboardTabs($request);
     $dashboardPermissions = $this->extractDashboardPermissions($request);
@@ -302,11 +332,13 @@ class UserController extends Controller
     }
 
     $user = User::create([
-      'name' => $validated['name'],
+      'name' => $noEmployee ? (string) $validated['name'] : (string) $employee->name,
+      'employee_id' => $noEmployee ? null : (int) $validated['employee_id'],
       'username' => $validated['username'] ?? null,
       'email' => $validated['email'],
       'password' => Hash::make($validated['password']),
       'role_id' => (int) $validated['role_id'],
+      'stamp_validator_user_id' => $validated['stamp_validator_user_id'] ?? null,
       'dashboard_permissions' => $dashboardPermissions,
       'dashboard_tabs' => $dashboardTabs,
       'menu_permissions' => $menuPermissions,
@@ -317,13 +349,35 @@ class UserController extends Controller
 
   public function update(Request $request, User $user)
   {
-    $validated = $request->validate([
-      'name' => 'required|string|max:255',
+    $isSuperAdmin = (int) (Auth::user()?->role_id ?? 0) === 1;
+    $noEmployee = $isSuperAdmin && $request->boolean('no_employee');
+
+    $validated = $request->validate(array_filter([
+      'employee_id' => $noEmployee
+        ? 'nullable|integer|exists:m_igi_employees,id'
+        : 'required|integer|exists:m_igi_employees,id|unique:users,employee_id,' . $user->id,
+      'name' => $noEmployee ? 'required|string|max:255' : null,
       'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
       'email' => 'required|email|unique:users,email,' . $user->id,
       'password' => 'nullable|min:8',
       'role_id' => 'required|integer|exists:roles,id',
-    ]);
+      'stamp_validator_user_id' => $isSuperAdmin ? 'nullable|integer|exists:users,id' : null,
+    ]));
+
+    if ($isSuperAdmin && !empty($validated['stamp_validator_user_id'])) {
+      $candidate = User::query()->whereKey((int) $validated['stamp_validator_user_id'])->first(['id', 'role_id', 'menu_permissions']);
+      if ($candidate === null || !MenuAccess::can($candidate, 'stamps_validation', MenuAccess::ACTION_READ)) {
+        return back()->withInput()->with('error', 'Validator Materai harus user yang punya akses "Validasi Permintaan".');
+      }
+    }
+
+    $employee = null;
+    if (!$noEmployee) {
+      $employee = Employee::query()->whereKey((int) $validated['employee_id'])->first();
+      if ($employee === null) {
+        return back()->withInput()->with('error', 'Karyawan tidak ditemukan.');
+      }
+    }
 
     $dashboardTabs = $this->extractDashboardTabs($request);
     $dashboardPermissions = $this->extractDashboardPermissions($request);
@@ -338,13 +392,17 @@ class UserController extends Controller
       $menuPermissions['admin_dashboard']['read'] = true;
     }
 
-    $user->name = $validated['name'];
+    $user->name = $noEmployee ? (string) $validated['name'] : (string) $employee->name;
+    $user->employee_id = $noEmployee ? null : (int) $validated['employee_id'];
     $user->username = $validated['username'] ?? null;
     $user->email = $validated['email'];
     if (!empty($validated['password'])) {
       $user->password = Hash::make($validated['password']);
     }
     $user->role_id = (int) $validated['role_id'];
+    if ($isSuperAdmin) {
+      $user->stamp_validator_user_id = $validated['stamp_validator_user_id'] ?? null;
+    }
     $user->dashboard_permissions = $dashboardPermissions;
     $user->dashboard_tabs = $dashboardTabs;
     $user->menu_permissions = $menuPermissions;

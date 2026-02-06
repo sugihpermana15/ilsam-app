@@ -63,12 +63,6 @@
                 'Aset Masuk' => __('menu.assets.in'),
                 'Aset Keluar' => __('menu.assets.out'),
 
-                'Stok Seragam' => __('menu.uniform_stock'),
-                'Master Seragam' => __('menu.uniforms.master'),
-                'Stok Masuk' => __('menu.uniforms.stock_in'),
-                'Distribusi' => __('menu.uniforms.distribution'),
-                'Riwayat' => __('menu.uniforms.history'),
-
                 'Master Karyawan' => __('menu.employees_master'),
                 'Employees' => __('menu.employees.employees'),
                 'Deleted' => __('menu.employees.deleted'),
@@ -78,7 +72,6 @@
                 'Master HR' => __('menu.master_groups.hr'),
                 'Master Assets' => __('menu.master_groups.assets'),
                 'Master Accounts' => __('menu.master_groups.accounts'),
-                'Master Uniform' => __('menu.master_groups.uniform'),
                 'Master Daily Task' => __('menu.master_groups.daily_task'),
                 'Departments' => __('menu.master.departments'),
                 'Positions' => __('menu.master.positions'),
@@ -88,11 +81,6 @@
                 'Plant/Site' => __('menu.master.plant_sites'),
                 'Satuan Asset' => __('menu.master.asset_uoms'),
                 'Vendor Asset' => __('menu.master.asset_vendors'),
-                'Ukuran Seragam' => __('menu.master.uniform_sizes'),
-                'Nama Item Seragam' => __('menu.master.uniform_item_names'),
-                'Kategori Seragam' => __('menu.master.uniform_categories'),
-                'Warna Seragam' => __('menu.master.uniform_colors'),
-                'UOM Seragam' => __('menu.master.uniform_uoms'),
 
                 'Task Types' => __('menu.master.daily_task_types'),
                 'Task Priorities' => __('menu.master.daily_task_priorities'),
@@ -140,6 +128,12 @@
                                 'admin.stamps.transactions.store_in',
                                 'admin.stamps.transactions.store_out',
                                 'admin.stamps.report.pdf',
+                                'admin.stamps.requests.index',
+                                'admin.stamps.requests.store',
+                                'admin.stamps.validation.index',
+                                'admin.stamps.validation.approve',
+                                'admin.stamps.validation.reject',
+                                'admin.stamps.validation.handover',
                                 'admin.stamps.master.index',
                                 'admin.stamps.master.create',
                                 'admin.stamps.master.store',
@@ -149,7 +143,35 @@
                             ],
                             'children' => [
                                 ['title' => 'Ledger', 'route' => 'admin.stamps.transactions.index', 'active_routes' => ['admin.stamps.transactions.datatable', 'admin.stamps.transactions.store_in', 'admin.stamps.transactions.store_out', 'admin.stamps.report.pdf'], 'default' => true, 'permission_key' => 'stamps_transactions'],
+                                ['title' => 'Permintaan', 'route' => 'admin.stamps.requests.index', 'active_routes' => ['admin.stamps.requests.store'], 'permission_key' => 'stamps_requests'],
+                                ['title' => 'Validasi', 'route' => 'admin.stamps.validation.index', 'active_routes' => ['admin.stamps.validation.approve', 'admin.stamps.validation.reject', 'admin.stamps.validation.handover'], 'permission_key' => 'stamps_validation'],
                                 ['title' => 'Master', 'route' => 'admin.stamps.master.index', 'active_routes' => ['admin.stamps.master.datatable', 'admin.stamps.master.create', 'admin.stamps.master.store', 'admin.stamps.master.edit', 'admin.stamps.master.update', 'admin.stamps.master.toggle'], 'permission_key' => 'stamps_master'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Manajemen Seragam',
+                            'icon' => 'fas fa-shirt',
+                            'active_routes' => [
+                                'admin.uniforms.master.index',
+                                'admin.uniforms.variants.index',
+                                'admin.uniforms.lots.index',
+                                'admin.uniforms.entitlements.index',
+                                'admin.uniforms.stock.index',
+                                'admin.uniforms.stock.in',
+                                'admin.uniforms.distributions.index',
+                                'admin.uniforms.distributions.store',
+                                'admin.uniforms.reports.pivot.index',
+                                'admin.uniforms.reports.lots.index',
+                            ],
+                            'children' => [
+                                ['title' => 'Master Uniform', 'route' => 'admin.uniforms.master.index', 'active_routes' => ['admin.uniforms.master.datatable', 'admin.uniforms.master.json', 'admin.uniforms.master.store', 'admin.uniforms.master.update', 'admin.uniforms.master.toggle'], 'permission_key' => 'uniforms_master'],
+                                ['title' => 'Master Varian', 'route' => 'admin.uniforms.variants.index', 'active_routes' => ['admin.uniforms.variants.datatable', 'admin.uniforms.variants.json', 'admin.uniforms.variants.store', 'admin.uniforms.variants.update', 'admin.uniforms.variants.toggle'], 'permission_key' => 'uniforms_variants'],
+                                ['title' => 'Master LOT', 'route' => 'admin.uniforms.lots.index', 'active_routes' => ['admin.uniforms.lots.datatable', 'admin.uniforms.lots.json', 'admin.uniforms.lots.store', 'admin.uniforms.lots.update'], 'permission_key' => 'uniforms_lots'],
+                                ['title' => 'Kuota Seragam', 'route' => 'admin.uniforms.entitlements.index', 'active_routes' => ['admin.uniforms.entitlements.datatable', 'admin.uniforms.entitlements.json', 'admin.uniforms.entitlements.store', 'admin.uniforms.entitlements.update'], 'permission_key' => 'uniforms_entitlements'],
+                                ['title' => 'Stok', 'route' => 'admin.uniforms.stock.index', 'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'], 'default' => true, 'permission_key' => 'uniforms_stock'],
+                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distributions.index', 'active_routes' => ['admin.uniforms.distributions.datatable', 'admin.uniforms.distributions.store'], 'permission_key' => 'uniforms_distribution'],
+                                ['title' => 'Pivot Stok', 'route' => 'admin.uniforms.reports.pivot.index', 'active_routes' => ['admin.uniforms.reports.pivot.datatable'], 'permission_key' => 'uniforms_reports'],
+                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.reports.lots.index', 'active_routes' => ['admin.uniforms.reports.lots.datatable'], 'permission_key' => 'uniforms_reports'],
                             ],
                         ],
                         [
@@ -208,27 +230,6 @@
                                 'admin.daily_tasks.checklists.add',
                                 'admin.daily_tasks.checklists.toggle',
                                 'admin.daily_tasks.checklists.delete',
-                            ],
-                        ],
-                        [
-                            'title' => 'Stok Seragam',
-                            'icon' => 'fas fa-box-open',
-                            'permission_key' => 'uniforms',
-                            'active_routes' => [
-                                'admin.uniforms.master',
-                                'admin.uniforms.items.store',
-                                'admin.uniforms.items.toggle',
-                                'admin.uniforms.stock',
-                                'admin.uniforms.stock.in',
-                                'admin.uniforms.distribution',
-                                'admin.uniforms.distribution.issue',
-                                'admin.uniforms.history',
-                            ],
-                            'children' => [
-                                ['title' => 'Master Seragam', 'route' => 'admin.uniforms.master', 'active_routes' => ['admin.uniforms.items.store', 'admin.uniforms.items.update', 'admin.uniforms.items.toggle'], 'default' => true, 'permission_key' => 'uniforms_master'],
-                                ['title' => 'Stok Masuk', 'route' => 'admin.uniforms.stock', 'active_routes' => ['admin.uniforms.stock.in', 'admin.uniforms.adjustments', 'admin.uniforms.adjustments.store', 'admin.uniforms.adjustments.approve', 'admin.uniforms.adjustments.reject', 'admin.uniforms.writeoffs', 'admin.uniforms.writeoffs.store', 'admin.uniforms.writeoffs.approve', 'admin.uniforms.writeoffs.reject', 'admin.uniforms.lots', 'admin.uniforms.reconcile', 'admin.uniforms.reconcile.adjustment'], 'permission_key' => 'uniforms_stock'],
-                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distribution', 'active_routes' => ['admin.uniforms.distribution.issue', 'admin.uniforms.issues.return', 'admin.uniforms.issues.replace'], 'permission_key' => 'uniforms_distribution'],
-                                ['title' => 'Riwayat', 'route' => 'admin.uniforms.history', 'permission_key' => 'uniforms_history'],
                             ],
                         ],
                         [
@@ -315,40 +316,6 @@
                             ],
                             'children' => [
                                 ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'default' => true, 'permission_key' => 'account_types'],
-                            ],
-                        ],
-                        [
-                            'title' => 'Master Uniform',
-                            'icon' => 'fas fa-database',
-                            'permission_key' => 'master_uniform',
-                            'active_routes' => [
-                                'admin.uniform_sizes.index',
-                                'admin.uniform_sizes.store',
-                                'admin.uniform_sizes.update',
-                                'admin.uniform_sizes.toggle',
-                                'admin.uniform_item_names.index',
-                                'admin.uniform_item_names.store',
-                                'admin.uniform_item_names.update',
-                                'admin.uniform_item_names.toggle',
-                                'admin.uniform_categories.index',
-                                'admin.uniform_categories.store',
-                                'admin.uniform_categories.update',
-                                'admin.uniform_categories.toggle',
-                                'admin.uniform_colors.index',
-                                'admin.uniform_colors.store',
-                                'admin.uniform_colors.update',
-                                'admin.uniform_colors.toggle',
-                                'admin.uniform_uoms.index',
-                                'admin.uniform_uoms.store',
-                                'admin.uniform_uoms.update',
-                                'admin.uniform_uoms.toggle',
-                            ],
-                            'children' => [
-                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'default' => true, 'permission_key' => 'uniform_sizes'],
-                                ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index', 'permission_key' => 'uniform_item_names'],
-                                ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index', 'permission_key' => 'uniform_categories'],
-                                ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index', 'permission_key' => 'uniform_colors'],
-                                ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index', 'permission_key' => 'uniform_uoms'],
                             ],
                         ],
                         [
@@ -515,6 +482,12 @@
                                 'admin.stamps.transactions.store_in',
                                 'admin.stamps.transactions.store_out',
                                 'admin.stamps.report.pdf',
+                                'admin.stamps.requests.index',
+                                'admin.stamps.requests.store',
+                                'admin.stamps.validation.index',
+                                'admin.stamps.validation.approve',
+                                'admin.stamps.validation.reject',
+                                'admin.stamps.validation.handover',
                                 'admin.stamps.master.index',
                                 'admin.stamps.master.create',
                                 'admin.stamps.master.store',
@@ -524,7 +497,35 @@
                             ],
                             'children' => [
                                 ['title' => 'Ledger', 'route' => 'admin.stamps.transactions.index', 'active_routes' => ['admin.stamps.transactions.datatable', 'admin.stamps.transactions.store_in', 'admin.stamps.transactions.store_out', 'admin.stamps.report.pdf'], 'default' => true, 'permission_key' => 'stamps_transactions'],
+                                ['title' => 'Permintaan', 'route' => 'admin.stamps.requests.index', 'active_routes' => ['admin.stamps.requests.store'], 'permission_key' => 'stamps_requests'],
+                                ['title' => 'Validasi', 'route' => 'admin.stamps.validation.index', 'active_routes' => ['admin.stamps.validation.approve', 'admin.stamps.validation.reject', 'admin.stamps.validation.handover'], 'permission_key' => 'stamps_validation'],
                                 ['title' => 'Master', 'route' => 'admin.stamps.master.index', 'active_routes' => ['admin.stamps.master.datatable', 'admin.stamps.master.create', 'admin.stamps.master.store', 'admin.stamps.master.edit', 'admin.stamps.master.update', 'admin.stamps.master.toggle'], 'permission_key' => 'stamps_master'],
+                            ],
+                        ],
+                        [
+                            'title' => 'Manajemen Seragam',
+                            'icon' => 'fas fa-shirt',
+                            'active_routes' => [
+                                'admin.uniforms.master.index',
+                                'admin.uniforms.variants.index',
+                                'admin.uniforms.lots.index',
+                                'admin.uniforms.entitlements.index',
+                                'admin.uniforms.stock.index',
+                                'admin.uniforms.stock.in',
+                                'admin.uniforms.distributions.index',
+                                'admin.uniforms.distributions.store',
+                                'admin.uniforms.reports.pivot.index',
+                                'admin.uniforms.reports.lots.index',
+                            ],
+                            'children' => [
+                                ['title' => 'Master Uniform', 'route' => 'admin.uniforms.master.index', 'active_routes' => ['admin.uniforms.master.datatable', 'admin.uniforms.master.json', 'admin.uniforms.master.store', 'admin.uniforms.master.update', 'admin.uniforms.master.toggle'], 'permission_key' => 'uniforms_master'],
+                                ['title' => 'Master Varian', 'route' => 'admin.uniforms.variants.index', 'active_routes' => ['admin.uniforms.variants.datatable', 'admin.uniforms.variants.json', 'admin.uniforms.variants.store', 'admin.uniforms.variants.update', 'admin.uniforms.variants.toggle'], 'permission_key' => 'uniforms_variants'],
+                                ['title' => 'Master LOT', 'route' => 'admin.uniforms.lots.index', 'active_routes' => ['admin.uniforms.lots.datatable', 'admin.uniforms.lots.json', 'admin.uniforms.lots.store', 'admin.uniforms.lots.update'], 'permission_key' => 'uniforms_lots'],
+                                ['title' => 'Kuota Seragam', 'route' => 'admin.uniforms.entitlements.index', 'active_routes' => ['admin.uniforms.entitlements.datatable', 'admin.uniforms.entitlements.json', 'admin.uniforms.entitlements.store', 'admin.uniforms.entitlements.update'], 'permission_key' => 'uniforms_entitlements'],
+                                ['title' => 'Stok', 'route' => 'admin.uniforms.stock.index', 'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'], 'default' => true, 'permission_key' => 'uniforms_stock'],
+                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distributions.index', 'active_routes' => ['admin.uniforms.distributions.datatable', 'admin.uniforms.distributions.store'], 'permission_key' => 'uniforms_distribution'],
+                                ['title' => 'Pivot Stok', 'route' => 'admin.uniforms.reports.pivot.index', 'active_routes' => ['admin.uniforms.reports.pivot.datatable'], 'permission_key' => 'uniforms_reports'],
+                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.reports.lots.index', 'active_routes' => ['admin.uniforms.reports.lots.datatable'], 'permission_key' => 'uniforms_reports'],
                             ],
                         ],
                         [
@@ -614,40 +615,6 @@
                             ],
                         ],
                         [
-                            'title' => 'Master Uniform',
-                            'icon' => 'fas fa-database',
-                            'permission_key' => 'master_uniform',
-                            'active_routes' => [
-                                'admin.uniform_sizes.index',
-                                'admin.uniform_sizes.store',
-                                'admin.uniform_sizes.update',
-                                'admin.uniform_sizes.toggle',
-                                'admin.uniform_item_names.index',
-                                'admin.uniform_item_names.store',
-                                'admin.uniform_item_names.update',
-                                'admin.uniform_item_names.toggle',
-                                'admin.uniform_categories.index',
-                                'admin.uniform_categories.store',
-                                'admin.uniform_categories.update',
-                                'admin.uniform_categories.toggle',
-                                'admin.uniform_colors.index',
-                                'admin.uniform_colors.store',
-                                'admin.uniform_colors.update',
-                                'admin.uniform_colors.toggle',
-                                'admin.uniform_uoms.index',
-                                'admin.uniform_uoms.store',
-                                'admin.uniform_uoms.update',
-                                'admin.uniform_uoms.toggle',
-                            ],
-                            'children' => [
-                                ['title' => 'Ukuran Seragam', 'route' => 'admin.uniform_sizes.index', 'default' => true, 'permission_key' => 'uniform_sizes'],
-                                ['title' => 'Nama Item Seragam', 'route' => 'admin.uniform_item_names.index', 'permission_key' => 'uniform_item_names'],
-                                ['title' => 'Kategori Seragam', 'route' => 'admin.uniform_categories.index', 'permission_key' => 'uniform_categories'],
-                                ['title' => 'Warna Seragam', 'route' => 'admin.uniform_colors.index', 'permission_key' => 'uniform_colors'],
-                                ['title' => 'UOM Seragam', 'route' => 'admin.uniform_uoms.index', 'permission_key' => 'uniform_uoms'],
-                            ],
-                        ],
-                        [
                             'title' => 'Master Daily Task',
                             'icon' => 'fas fa-database',
                             'permission_key' => 'master_daily_task',
@@ -729,6 +696,28 @@
                     'title_group' => 'Application',
                     'items' => [
                         [
+                            'title' => 'Permintaan Materai',
+                            'icon' => 'fas fa-stamp',
+                            'route' => 'admin.stamps.requests.index',
+                            'permission_key' => 'stamps_requests',
+                            'active_routes' => [
+                                'admin.stamps.requests.index',
+                                'admin.stamps.requests.store',
+                            ],
+                        ],
+                        [
+                            'title' => 'Validasi Materai',
+                            'icon' => 'fas fa-check-circle',
+                            'route' => 'admin.stamps.validation.index',
+                            'permission_key' => 'stamps_validation',
+                            'active_routes' => [
+                                'admin.stamps.validation.index',
+                                'admin.stamps.validation.approve',
+                                'admin.stamps.validation.reject',
+                                'admin.stamps.validation.handover',
+                            ],
+                        ],
+                        [
                             'title' => 'Perlengkapan Aset',
                             'icon' => 'fas fa-hard-drive',
                             'permission_key' => 'assets',
@@ -748,23 +737,6 @@
                                 ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Karawang'], 'permission_key' => 'assets_karawang'],
                                 ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'active_routes' => ['admin.assets.in.scan'], 'permission_key' => 'assets_in'],
                                 ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'active_routes' => ['admin.assets.transfer.list'], 'permission_key' => 'assets_transfer'],
-                            ],
-                        ],
-                        [
-                            'title' => 'Stok Seragam',
-                            'icon' => 'fas fa-box-open',
-                            'permission_key' => 'uniforms',
-                            'active_routes' => [
-                                'admin.uniforms.master',
-                                'admin.uniforms.stock',
-                                'admin.uniforms.distribution',
-                                'admin.uniforms.history',
-                            ],
-                            'children' => [
-                                ['title' => 'Master Seragam', 'route' => 'admin.uniforms.master', 'active_routes' => ['admin.uniforms.items.store', 'admin.uniforms.items.update', 'admin.uniforms.items.toggle'], 'default' => true, 'permission_key' => 'uniforms_master'],
-                                ['title' => 'Stok Masuk', 'route' => 'admin.uniforms.stock', 'active_routes' => ['admin.uniforms.stock.in', 'admin.uniforms.adjustments', 'admin.uniforms.adjustments.store', 'admin.uniforms.adjustments.approve', 'admin.uniforms.adjustments.reject', 'admin.uniforms.writeoffs', 'admin.uniforms.writeoffs.store', 'admin.uniforms.writeoffs.approve', 'admin.uniforms.writeoffs.reject', 'admin.uniforms.lots', 'admin.uniforms.reconcile', 'admin.uniforms.reconcile.adjustment'], 'permission_key' => 'uniforms_stock'],
-                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distribution', 'active_routes' => ['admin.uniforms.distribution.issue', 'admin.uniforms.issues.return', 'admin.uniforms.issues.replace'], 'permission_key' => 'uniforms_distribution'],
-                                ['title' => 'Riwayat', 'route' => 'admin.uniforms.history', 'permission_key' => 'uniforms_history'],
                             ],
                         ],
                         [
@@ -1076,49 +1048,6 @@
                 if (str_starts_with($routeName, 'admin.account_types.')) {
                     return 'account_types';
                 }
-                if (str_starts_with($routeName, 'admin.uniforms.')) {
-                    // Uniforms leaf permissions
-                    if (
-                        in_array($routeName, [
-                            'admin.uniforms.master',
-                            'admin.uniforms.items.store',
-                            'admin.uniforms.items.update',
-                            'admin.uniforms.items.toggle',
-                        ], true)
-                    ) {
-                        return 'uniforms_master';
-                    }
-
-                    if (
-                        in_array($routeName, [
-                            'admin.uniforms.stock',
-                            'admin.uniforms.stock.in',
-                        ], true)
-                    ) {
-                        return 'uniforms_stock';
-                    }
-
-                    if (
-                        in_array($routeName, [
-                            'admin.uniforms.distribution',
-                            'admin.uniforms.distribution.issue',
-                            'admin.uniforms.issues.return',
-                        ], true)
-                    ) {
-                        return 'uniforms_distribution';
-                    }
-
-                    if (
-                        in_array($routeName, [
-                            'admin.uniforms.history',
-                        ], true)
-                    ) {
-                        return 'uniforms_history';
-                    }
-
-                    // Fallback: treat as uniforms group
-                    return 'uniforms';
-                }
                 if (str_starts_with($routeName, 'admin.employees.')) {
                     if (in_array($routeName, ['admin.employees.deleted', 'admin.employees.restore'], true)) {
                         return 'employees_deleted';
@@ -1133,21 +1062,6 @@
                 }
                 if (preg_match('/^admin\.(positions)\./', $routeName) === 1) {
                     return 'positions';
-                }
-                if (preg_match('/^admin\.(uniform_sizes)\./', $routeName) === 1) {
-                    return 'uniform_sizes';
-                }
-                if (preg_match('/^admin\.(uniform_item_names)\./', $routeName) === 1) {
-                    return 'uniform_item_names';
-                }
-                if (preg_match('/^admin\.(uniform_categories)\./', $routeName) === 1) {
-                    return 'uniform_categories';
-                }
-                if (preg_match('/^admin\.(uniform_colors)\./', $routeName) === 1) {
-                    return 'uniform_colors';
-                }
-                if (preg_match('/^admin\.(uniform_uoms)\./', $routeName) === 1) {
-                    return 'uniform_uoms';
                 }
                 if (str_starts_with($routeName, 'admin.daily_tasks.')) {
                     return 'daily_tasks';

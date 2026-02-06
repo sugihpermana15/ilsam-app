@@ -3,39 +3,34 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class UniformLot extends Model
 {
-  protected $table = 'm_igi_uniform_lots';
+    protected $table = 'm_igi_uniform_lots';
 
-  protected $fillable = [
-    'uniform_item_id',
-    'lot_number',
-    'qty_in',
-    'remaining_qty',
-    'expired_at',
-    'received_at',
-    'received_by',
-    'notes',
-  ];
+    protected $fillable = [
+        'lot_code',
+        'received_at',
+        'notes',
+    ];
 
-  protected $casts = [
-    'expired_at' => 'date',
-    'received_at' => 'datetime',
-  ];
+    protected $casts = [
+        'received_at' => 'datetime',
+    ];
 
-  public function item()
-  {
-    return $this->belongsTo(UniformItem::class, 'uniform_item_id');
-  }
+    public function lotStocks(): HasMany
+    {
+        return $this->hasMany(UniformLotStock::class, 'uniform_lot_id');
+    }
 
-  public function receivedBy()
-  {
-    return $this->belongsTo(User::class, 'received_by');
-  }
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(UniformStockMovement::class, 'uniform_lot_id');
+    }
 
-  public function movements()
-  {
-    return $this->hasMany(UniformMovement::class, 'lot_id');
-  }
+    public function allocationItems(): HasMany
+    {
+        return $this->hasMany(UniformAllocationItem::class, 'uniform_lot_id');
+    }
 }

@@ -9,11 +9,15 @@ use App\Models\Asset;
 use App\Models\ContractTerms;
 use App\Models\Document;
 use App\Models\Employee;
-use App\Models\UniformItem;
-use App\Models\UniformIssue;
-use App\Models\UniformMovement;
 use App\Models\Stamp;
 use App\Models\StampTransaction;
+use App\Models\Uniform;
+use App\Models\UniformAllocation;
+use App\Models\UniformAllocationItem;
+use App\Models\UniformEntitlement;
+use App\Models\UniformLot;
+use App\Models\UniformLotStock;
+use App\Models\UniformVariant;
 use App\Support\MenuAccess;
 
 class AdminController extends Controller
@@ -52,11 +56,6 @@ class AdminController extends Controller
                 'charts' => true,
                 'recent' => true,
             ],
-            'uniform' => [
-                'kpi' => true,
-                'charts' => true,
-                'recent' => true,
-            ],
         ];
     }
 
@@ -68,7 +67,7 @@ class AdminController extends Controller
         }
 
         $merged = array_replace_recursive($defaults, $raw);
-        foreach (['asset', 'uniform'] as $section) {
+        foreach (['asset'] as $section) {
             foreach (['kpi', 'charts', 'recent'] as $key) {
                 $merged[$section][$key] = filter_var($merged[$section][$key] ?? false, FILTER_VALIDATE_BOOL);
             }
@@ -163,103 +162,6 @@ class AdminController extends Controller
 
         if ($permissions['asset']['recent'] ?? false) {
             $data['recent'] = Asset::query()->orderByDesc('last_updated')->limit(10)->get();
-        }
-
-        return $data;
-    }
-
-    private function buildUniformDashboardData(array $permissions): array
-    {
-        $data = ['kpi' => null, 'charts' => null, 'recent' => collect()];
-
-        if (!($permissions['uniform']['kpi'] ?? false) && !($permissions['uniform']['charts'] ?? false) && !($permissions['uniform']['recent'] ?? false)) {
-            return $data;
-        }
-
-        if ($permissions['uniform']['kpi'] ?? false) {
-            $totalItems = UniformItem::query()->count();
-            $totalStock = (int) UniformItem::query()->sum('current_stock');
-            $lowStockItems = UniformItem::query()
-                ->whereNotNull('min_stock')
-                ->whereColumn('current_stock', '<=', 'min_stock')
-                ->count();
-            $issues30d = UniformIssue::query()->where('issued_at', '>=', now()->subDays(30))->count();
-
-            $data['kpi'] = [
-                'total_items' => $totalItems,
-                'total_stock' => $totalStock,
-                'low_stock_items' => $lowStockItems,
-                'issues_30d' => $issues30d,
-            ];
-        }
-
-        if ($permissions['uniform']['charts'] ?? false) {
-            $stockByLocation = UniformItem::query()
-                ->select('location', DB::raw('SUM(current_stock) as total'))
-                ->groupBy('location')
-                ->orderByDesc('total')
-                ->get();
-
-            $stockByCategory = UniformItem::query()
-                ->select('category', DB::raw('SUM(current_stock) as total'))
-                ->groupBy('category')
-                ->orderByDesc('total')
-                ->limit(10)
-                ->get();
-
-            $monthsBack = 12;
-            $from = now()->startOfMonth()->subMonths($monthsBack - 1);
-            $expr = $this->monthExpr('performed_at');
-
-            $inMonthly = UniformMovement::query()
-                ->where('performed_at', '>=', $from)
-                ->where('movement_type', 'IN')
-                ->select(DB::raw($expr . ' as ym'), DB::raw('SUM(qty_change) as total'))
-                ->groupBy('ym')
-                ->orderBy('ym')
-                ->pluck('total', 'ym');
-
-            $outMonthly = UniformMovement::query()
-                ->where('performed_at', '>=', $from)
-                ->where('movement_type', 'OUT')
-                ->select(DB::raw($expr . ' as ym'), DB::raw('SUM(ABS(qty_change)) as total'))
-                ->groupBy('ym')
-                ->orderBy('ym')
-                ->pluck('total', 'ym');
-
-            $categories = [];
-            $inSeries = [];
-            $outSeries = [];
-            for ($i = 0; $i < $monthsBack; $i++) {
-                $ym = $from->copy()->addMonths($i)->format('Y-m');
-                $categories[] = $ym;
-                $inSeries[] = (int) ($inMonthly[$ym] ?? 0);
-                $outSeries[] = (int) ($outMonthly[$ym] ?? 0);
-            }
-
-            $data['charts'] = [
-                'stockByLocation' => [
-                    'labels' => $stockByLocation->pluck('location')->map(fn($v) => $v ?? 'Unknown')->values(),
-                    'series' => $stockByLocation->pluck('total')->map(fn($v) => (int) $v)->values(),
-                ],
-                'stockByCategory' => [
-                    'categories' => $stockByCategory->pluck('category')->values(),
-                    'series' => $stockByCategory->pluck('total')->map(fn($v) => (int) $v)->values(),
-                ],
-                'monthlyMovements' => [
-                    'categories' => $categories,
-                    'inSeries' => $inSeries,
-                    'outSeries' => $outSeries,
-                ],
-            ];
-        }
-
-        if ($permissions['uniform']['recent'] ?? false) {
-            $data['recent'] = UniformIssue::query()
-                ->with(['item', 'issuedToEmployee', 'issuedTo'])
-                ->orderByDesc('issued_at')
-                ->limit(10)
-                ->get();
         }
 
         return $data;
@@ -375,13 +277,131 @@ class AdminController extends Controller
         ];
     }
 
+    private function buildUniformsDashboardData(): array
+    {
+        $from = now()->subDays(30);
+
+        $totalOnHand = (int) UniformLotStock::query()->sum('stock_on_hand');
+
+        $allocations30d = (int) UniformAllocation::query()
+            ->where('allocated_at', '>=', $from)
+            ->count();
+
+        $allocatedQty30d = (int) UniformAllocationItem::query()
+            ->join('m_igi_uniform_allocations as ua', 'ua.id', '=', 'm_igi_uniform_allocation_items.uniform_allocation_id')
+            ->where('ua.allocated_at', '>=', $from)
+            ->sum('m_igi_uniform_allocation_items.qty');
+
+        $dailyRows = UniformAllocationItem::query()
+            ->join('m_igi_uniform_allocations as ua', 'ua.id', '=', 'm_igi_uniform_allocation_items.uniform_allocation_id')
+            ->where('ua.allocated_at', '>=', $from->copy()->startOfDay())
+            ->selectRaw('DATE(ua.allocated_at) as day, SUM(m_igi_uniform_allocation_items.qty) as qty')
+            ->groupByRaw('DATE(ua.allocated_at)')
+            ->orderBy('day')
+            ->get();
+
+        $qtyByDay = [];
+        foreach ($dailyRows as $r) {
+            $day = (string) ($r->day ?? '');
+            if ($day !== '') {
+                $qtyByDay[$day] = (int) ($r->qty ?? 0);
+            }
+        }
+
+        $dailyCategories = [];
+        $dailySeries = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $d = now()->subDays($i)->startOfDay();
+            $key = $d->toDateString();
+            $dailyCategories[] = $d->format('d-m');
+            $dailySeries[] = (int) ($qtyByDay[$key] ?? 0);
+        }
+
+        $recentAllocations = UniformAllocation::query()
+            ->with(['employee:id,no_id,name'])
+            ->orderByDesc('allocated_at')
+            ->orderByDesc('id')
+            ->limit(10)
+            ->get(['id', 'allocation_no', 'employee_id', 'allocated_at']);
+
+        $recentItems = collect();
+        $recentIds = $recentAllocations->pluck('id')->filter()->values();
+        if ($recentIds->isNotEmpty()) {
+            $recentItems = UniformAllocationItem::query()
+                ->leftJoin('m_igi_uniform_variants as uv', 'uv.id', '=', 'm_igi_uniform_allocation_items.uniform_variant_id')
+                ->leftJoin('m_igi_uniforms as u_from_variant', 'u_from_variant.id', '=', 'uv.uniform_id')
+                ->leftJoin('m_igi_uniforms as u_direct', 'u_direct.id', '=', 'm_igi_uniform_allocation_items.uniform_id')
+                ->whereIn('m_igi_uniform_allocation_items.uniform_allocation_id', $recentIds)
+                ->get([
+                    'm_igi_uniform_allocation_items.uniform_allocation_id',
+                    'm_igi_uniform_allocation_items.qty',
+                    'uv.size as size',
+                    DB::raw('COALESCE(u_direct.name, u_from_variant.name) as uniform_name'),
+                    DB::raw('COALESCE(u_direct.code, u_from_variant.code) as uniform_code'),
+                ]);
+        }
+
+        $itemsByAllocation = $recentItems->groupBy('uniform_allocation_id');
+        $recent = $recentAllocations->map(function ($allocation) use ($itemsByAllocation) {
+            $items = $itemsByAllocation->get($allocation->id, collect());
+
+            $lines = $items
+                ->map(function ($row) {
+                    $name = (string) ($row->uniform_name ?? '-');
+                    $code = (string) ($row->uniform_code ?? '');
+                    $size = (string) ($row->size ?? '');
+                    $qty = (int) ($row->qty ?? 0);
+
+                    $label = trim($name);
+                    if ($code !== '') {
+                        $label .= ' (' . $code . ')';
+                    }
+
+                    if (trim($size) === '') {
+                        return trim($label . ' x' . $qty);
+                    }
+
+                    return trim($label . ' - ' . $size . ' x' . $qty);
+                })
+                ->filter()
+                ->values();
+
+            return [
+                'allocation_no' => $allocation->allocation_no,
+                'allocated_at' => $allocation->allocated_at,
+                'employee_no_id' => $allocation->employee?->no_id,
+                'employee_name' => $allocation->employee?->name,
+                'items_lines' => $lines,
+                'total_qty' => (int) $items->sum('qty'),
+            ];
+        });
+
+        return [
+            'kpi' => [
+                'total_uniforms' => (int) Uniform::query()->count(),
+                'total_variants' => (int) UniformVariant::query()->count(),
+                'total_lots' => (int) UniformLot::query()->count(),
+                'total_entitlements' => (int) UniformEntitlement::query()->count(),
+                'total_on_hand' => $totalOnHand,
+                'allocations_30d' => $allocations30d,
+                'allocated_qty_30d' => $allocatedQty30d,
+            ],
+            'charts' => [
+                'allocatedDaily30d' => [
+                    'categories' => $dailyCategories,
+                    'series' => $dailySeries,
+                ],
+            ],
+            'recentAllocations' => $recent,
+        ];
+    }
+
     public function dashboard(Request $request)
     {
         $permissions = $this->resolveDashboardPermissions(Auth::user()?->dashboard_permissions);
         $tab = (string) $request->query('tab', '');
 
         $asset = $this->buildAssetDashboardData($permissions);
-        $uniform = $this->buildUniformDashboardData($permissions);
 
         // Employee summary is always available for admin dashboard view.
         $employee = $this->buildEmployeeDashboardData();
@@ -400,10 +420,23 @@ class AdminController extends Controller
         $canSeeRestricted = $user && (($user->role?->role_name ?? null) === 'Super Admin' || MenuAccess::can($user, 'documents_restricted', 'read'));
         $documents = $showDocuments ? $this->buildDocumentsDashboardData($canSeeRestricted) : null;
 
+        $uniforms = null;
+        if ($user && (
+            MenuAccess::can($user, 'uniforms_stock', 'read') ||
+            MenuAccess::can($user, 'uniforms_distribution', 'read') ||
+            MenuAccess::can($user, 'uniforms_reports', 'read') ||
+            MenuAccess::can($user, 'uniforms_master', 'read') ||
+            MenuAccess::can($user, 'uniforms_variants', 'read') ||
+            MenuAccess::can($user, 'uniforms_lots', 'read') ||
+            MenuAccess::can($user, 'uniforms_entitlements', 'read')
+        )) {
+            $uniforms = $this->buildUniformsDashboardData();
+        }
+
         // Apply per-user tab access overrides (if configured).
         $tabOverrides = $user && is_array($user->dashboard_tabs) ? array_values($user->dashboard_tabs) : null;
         if (is_array($tabOverrides)) {
-            $allowedKeys = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+            $allowedKeys = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
             $tabOverrides = array_values(array_intersect($tabOverrides, $allowedKeys));
         }
 
@@ -412,22 +445,18 @@ class AdminController extends Controller
             !empty($permissions['asset']['charts']) ||
             !empty($permissions['asset']['recent'])
         );
-        $showUniform = !empty($permissions['uniform']) && (
-            !empty($permissions['uniform']['kpi']) ||
-            !empty($permissions['uniform']['charts']) ||
-            !empty($permissions['uniform']['recent'])
-        );
         $showStamps = (bool) $stamps;
+        $showUniforms = (bool) $uniforms;
         $showEmployee = !empty($employee) && !empty($employee['kpi']);
         $showDocs = (bool) $showDocuments;
 
-        $tabOrder = ['asset', 'uniform', 'stamps', 'documents', 'employee'];
+        $tabOrder = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
         $tabs = [];
         foreach ($tabOrder as $key) {
             $available = match ($key) {
                 'asset' => $showAsset,
-                'uniform' => $showUniform,
                 'stamps' => $showStamps,
+                'uniforms' => $showUniforms,
                 'documents' => $showDocs,
                 'employee' => $showEmployee,
                 default => false,
@@ -446,17 +475,12 @@ class AdminController extends Controller
 
         $tab = $activeTab;
 
-        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'uniform', 'employee', 'showDocuments', 'documents', 'stamps'));
+        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'employee', 'showDocuments', 'documents', 'stamps', 'uniforms'));
     }
 
     public function dashboardAssets()
     {
         return redirect()->route('admin.dashboard', ['tab' => 'asset']);
-    }
-
-    public function dashboardUniforms()
-    {
-        return redirect()->route('admin.dashboard', ['tab' => 'uniform']);
     }
 
     public function dashboardStamps()

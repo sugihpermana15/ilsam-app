@@ -18,12 +18,6 @@ use App\Http\Controllers\Admin\DeletedUserController;
 use App\Http\Controllers\Admin\EmployeeController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\PositionController;
-use App\Http\Controllers\Admin\UniformController;
-use App\Http\Controllers\Admin\UniformItemNameController;
-use App\Http\Controllers\Admin\UniformCategoryController;
-use App\Http\Controllers\Admin\UniformColorController;
-use App\Http\Controllers\Admin\UniformUomController;
-use App\Http\Controllers\Admin\UniformSizeController;
 use App\Http\Controllers\Admin\AssetController;
 use App\Http\Controllers\Admin\AssetCategoryController;
 use App\Http\Controllers\Admin\AssetLocationController;
@@ -48,7 +42,15 @@ use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Admin\Stamp\StampDashboardController;
 use App\Http\Controllers\Admin\Stamp\StampMasterController;
 use App\Http\Controllers\Admin\Stamp\StampReportController;
+use App\Http\Controllers\Admin\Stamp\StampRequestController;
 use App\Http\Controllers\Admin\Stamp\StampTransactionController;
+use App\Http\Controllers\Admin\Uniform\EntitlementMasterController as UniformEntitlementMasterController;
+use App\Http\Controllers\Admin\Uniform\LotMasterController as UniformLotMasterController;
+use App\Http\Controllers\Admin\Uniform\MasterController as UniformMasterController;
+use App\Http\Controllers\Admin\Uniform\DistributionController as UniformDistributionController;
+use App\Http\Controllers\Admin\Uniform\ReportController as UniformReportController;
+use App\Http\Controllers\Admin\Uniform\StockController as UniformStockController;
+use App\Http\Controllers\Admin\Uniform\VariantMasterController as UniformVariantMasterController;
 use App\Http\Middleware\EnsureAuthenticated;
 use App\Http\Middleware\EnsureGuest;
 
@@ -170,7 +172,6 @@ Route::prefix('admin')->middleware([
 ])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->middleware('menu:admin_dashboard')->name('admin.dashboard');
     Route::get('/dashboard/assets', [AdminController::class, 'dashboardAssets'])->middleware('menu:admin_dashboard')->name('admin.dashboard.assets');
-    Route::get('/dashboard/uniforms', [AdminController::class, 'dashboardUniforms'])->middleware('menu:admin_dashboard')->name('admin.dashboard.uniforms');
     Route::get('/dashboard/stamps', [AdminController::class, 'dashboardStamps'])->middleware('menu:admin_dashboard')->name('admin.dashboard.stamps');
 
     // Manajemen Materai
@@ -182,15 +183,24 @@ Route::prefix('admin')->middleware([
         Route::get('master/datatable', [StampMasterController::class, 'datatable'])->middleware('menu:stamps_master')->name('master.datatable');
         Route::get('master/{stamp}/json', [StampMasterController::class, 'json'])->middleware('menu:stamps_master')->name('master.json');
         Route::get('master/create', [StampMasterController::class, 'create'])->middleware('menu:stamps_master')->name('master.create');
-        Route::post('master', [StampMasterController::class, 'store'])->middleware('menu:stamps_master')->name('master.store');
+        Route::post('master', [StampMasterController::class, 'store'])->middleware('menu:stamps_master,create')->name('master.store');
         Route::get('master/{stamp}/edit', [StampMasterController::class, 'edit'])->middleware('menu:stamps_master')->name('master.edit');
-        Route::put('master/{stamp}', [StampMasterController::class, 'update'])->middleware('menu:stamps_master')->name('master.update');
-        Route::patch('master/{stamp}/toggle', [StampMasterController::class, 'toggle'])->middleware('menu:stamps_master')->name('master.toggle');
+        Route::put('master/{stamp}', [StampMasterController::class, 'update'])->middleware('menu:stamps_master,update')->name('master.update');
+        Route::patch('master/{stamp}/toggle', [StampMasterController::class, 'toggle'])->middleware('menu:stamps_master,update')->name('master.toggle');
 
         Route::get('transactions', [StampTransactionController::class, 'index'])->middleware('menu:stamps_transactions')->name('transactions.index');
         Route::get('transactions/datatable', [StampTransactionController::class, 'datatable'])->middleware('menu:stamps_transactions')->name('transactions.datatable');
-        Route::post('transactions/in', [StampTransactionController::class, 'storeIn'])->middleware('menu:stamps_transactions')->name('transactions.store_in');
-        Route::post('transactions/out', [StampTransactionController::class, 'storeOut'])->middleware('menu:stamps_transactions')->name('transactions.store_out');
+        Route::post('transactions/in', [StampTransactionController::class, 'storeIn'])->middleware('menu:stamps_transactions,create')->name('transactions.store_in');
+        Route::post('transactions/out', [StampTransactionController::class, 'storeOut'])->middleware('menu:stamps_transactions,create')->name('transactions.store_out');
+
+        // Workflow: Permintaan OUT -> Validasi -> Serah Terima (stok berkurang saat serah terima)
+        Route::get('requests', [StampRequestController::class, 'myIndex'])->middleware('menu:stamps_requests')->name('requests.index');
+        Route::post('requests', [StampRequestController::class, 'store'])->middleware('menu:stamps_requests,create')->name('requests.store');
+
+        Route::get('validation', [StampRequestController::class, 'validationIndex'])->middleware('menu:stamps_validation')->name('validation.index');
+        Route::post('validation/{stampRequest}/approve', [StampRequestController::class, 'approve'])->middleware('menu:stamps_validation,update')->name('validation.approve');
+        Route::post('validation/{stampRequest}/reject', [StampRequestController::class, 'reject'])->middleware('menu:stamps_validation,update')->name('validation.reject');
+        Route::post('validation/{stampRequest}/handover', [StampRequestController::class, 'handover'])->middleware('menu:stamps_validation,update')->name('validation.handover');
 
         Route::get('report.pdf', [StampReportController::class, 'pdf'])->middleware('menu:stamps_transactions')->name('report.pdf');
     });
@@ -242,36 +252,6 @@ Route::prefix('admin')->middleware([
     Route::put('/positions/{position}', [PositionController::class, 'update'])->middleware('menu:positions')->name('admin.positions.update');
     Route::delete('/positions/{position}', [PositionController::class, 'destroy'])->middleware('menu:positions')->name('admin.positions.destroy');
 
-    // Master Data: Uniform Sizes
-    Route::get('/uniform-sizes', [UniformSizeController::class, 'index'])->middleware('menu:uniform_sizes')->name('admin.uniform_sizes.index');
-    Route::post('/uniform-sizes', [UniformSizeController::class, 'store'])->middleware('menu:uniform_sizes')->name('admin.uniform_sizes.store');
-    Route::put('/uniform-sizes/{size}', [UniformSizeController::class, 'update'])->middleware('menu:uniform_sizes')->name('admin.uniform_sizes.update');
-    Route::post('/uniform-sizes/{size}/toggle', [UniformSizeController::class, 'toggle'])->middleware('menu:uniform_sizes,update')->name('admin.uniform_sizes.toggle');
-
-    // Master Data: Uniform Item Names
-    Route::get('/uniform-item-names', [UniformItemNameController::class, 'index'])->middleware('menu:uniform_item_names')->name('admin.uniform_item_names.index');
-    Route::post('/uniform-item-names', [UniformItemNameController::class, 'store'])->middleware('menu:uniform_item_names')->name('admin.uniform_item_names.store');
-    Route::put('/uniform-item-names/{itemName}', [UniformItemNameController::class, 'update'])->middleware('menu:uniform_item_names')->name('admin.uniform_item_names.update');
-    Route::post('/uniform-item-names/{itemName}/toggle', [UniformItemNameController::class, 'toggle'])->middleware('menu:uniform_item_names,update')->name('admin.uniform_item_names.toggle');
-
-    // Master Data: Uniform Categories
-    Route::get('/uniform-categories', [UniformCategoryController::class, 'index'])->middleware('menu:uniform_categories')->name('admin.uniform_categories.index');
-    Route::post('/uniform-categories', [UniformCategoryController::class, 'store'])->middleware('menu:uniform_categories')->name('admin.uniform_categories.store');
-    Route::put('/uniform-categories/{category}', [UniformCategoryController::class, 'update'])->middleware('menu:uniform_categories')->name('admin.uniform_categories.update');
-    Route::post('/uniform-categories/{category}/toggle', [UniformCategoryController::class, 'toggle'])->middleware('menu:uniform_categories,update')->name('admin.uniform_categories.toggle');
-
-    // Master Data: Uniform Colors
-    Route::get('/uniform-colors', [UniformColorController::class, 'index'])->middleware('menu:uniform_colors')->name('admin.uniform_colors.index');
-    Route::post('/uniform-colors', [UniformColorController::class, 'store'])->middleware('menu:uniform_colors')->name('admin.uniform_colors.store');
-    Route::put('/uniform-colors/{color}', [UniformColorController::class, 'update'])->middleware('menu:uniform_colors')->name('admin.uniform_colors.update');
-    Route::post('/uniform-colors/{color}/toggle', [UniformColorController::class, 'toggle'])->middleware('menu:uniform_colors,update')->name('admin.uniform_colors.toggle');
-
-    // Master Data: Uniform UOM
-    Route::get('/uniform-uoms', [UniformUomController::class, 'index'])->middleware('menu:uniform_uoms')->name('admin.uniform_uoms.index');
-    Route::post('/uniform-uoms', [UniformUomController::class, 'store'])->middleware('menu:uniform_uoms')->name('admin.uniform_uoms.store');
-    Route::put('/uniform-uoms/{uom}', [UniformUomController::class, 'update'])->middleware('menu:uniform_uoms')->name('admin.uniform_uoms.update');
-    Route::post('/uniform-uoms/{uom}/toggle', [UniformUomController::class, 'toggle'])->middleware('menu:uniform_uoms,update')->name('admin.uniform_uoms.toggle');
-
     // Master Data: Daily Task Types
     Route::get('/daily-task-types', [DailyTaskTypeController::class, 'index'])->middleware('menu:daily_task_types')->name('admin.daily_task_types.index');
     Route::post('/daily-task-types', [DailyTaskTypeController::class, 'store'])->middleware('menu:daily_task_types')->name('admin.daily_task_types.store');
@@ -288,6 +268,54 @@ Route::prefix('admin')->middleware([
     Route::get('/daily-task-statuses', [DailyTaskStatusController::class, 'index'])->middleware('menu:daily_task_statuses')->name('admin.daily_task_statuses.index');
     Route::put('/daily-task-statuses/{status}', [DailyTaskStatusController::class, 'update'])->middleware('menu:daily_task_statuses')->name('admin.daily_task_statuses.update');
     Route::post('/daily-task-statuses/{status}/toggle', [DailyTaskStatusController::class, 'toggle'])->middleware('menu:daily_task_statuses,update')->name('admin.daily_task_statuses.toggle');
+
+    // Uniforms (Seragam Karyawan)
+    Route::prefix('uniforms')->name('admin.uniforms.')->group(function () {
+        Route::get('master', [UniformMasterController::class, 'index'])->middleware('menu:uniforms_master')->name('master.index');
+        Route::get('master/datatable', [UniformMasterController::class, 'datatable'])->middleware('menu:uniforms_master')->name('master.datatable');
+        Route::get('master/{uniform}/json', [UniformMasterController::class, 'json'])->middleware('menu:uniforms_master')->name('master.json');
+        Route::post('master', [UniformMasterController::class, 'store'])->middleware('menu:uniforms_master,create')->name('master.store');
+        Route::put('master/{uniform}', [UniformMasterController::class, 'update'])->middleware('menu:uniforms_master,update')->name('master.update');
+        Route::patch('master/{uniform}/toggle', [UniformMasterController::class, 'toggle'])->middleware('menu:uniforms_master,update')->name('master.toggle');
+
+        Route::get('variants', [UniformVariantMasterController::class, 'index'])->middleware('menu:uniforms_variants')->name('variants.index');
+        Route::get('variants/datatable', [UniformVariantMasterController::class, 'datatable'])->middleware('menu:uniforms_variants')->name('variants.datatable');
+        Route::get('variants/{variant}/json', [UniformVariantMasterController::class, 'json'])->middleware('menu:uniforms_variants')->name('variants.json');
+        Route::post('variants', [UniformVariantMasterController::class, 'store'])->middleware('menu:uniforms_variants,create')->name('variants.store');
+        Route::put('variants/{variant}', [UniformVariantMasterController::class, 'update'])->middleware('menu:uniforms_variants,update')->name('variants.update');
+        Route::patch('variants/{variant}/toggle', [UniformVariantMasterController::class, 'toggle'])->middleware('menu:uniforms_variants,update')->name('variants.toggle');
+
+        Route::get('lots', [UniformLotMasterController::class, 'index'])->middleware('menu:uniforms_lots')->name('lots.index');
+        Route::get('lots/datatable', [UniformLotMasterController::class, 'datatable'])->middleware('menu:uniforms_lots')->name('lots.datatable');
+        Route::get('lots/{lot}/json', [UniformLotMasterController::class, 'json'])->middleware('menu:uniforms_lots')->name('lots.json');
+        Route::post('lots', [UniformLotMasterController::class, 'store'])->middleware('menu:uniforms_lots,create')->name('lots.store');
+        Route::put('lots/{lot}', [UniformLotMasterController::class, 'update'])->middleware('menu:uniforms_lots,update')->name('lots.update');
+
+        Route::get('entitlements', [UniformEntitlementMasterController::class, 'index'])->middleware('menu:uniforms_entitlements')->name('entitlements.index');
+        Route::get('entitlements/datatable', [UniformEntitlementMasterController::class, 'datatable'])->middleware('menu:uniforms_entitlements')->name('entitlements.datatable');
+        Route::get('entitlements/{entitlement}/json', [UniformEntitlementMasterController::class, 'json'])->middleware('menu:uniforms_entitlements')->name('entitlements.json');
+        Route::post('entitlements', [UniformEntitlementMasterController::class, 'store'])->middleware('menu:uniforms_entitlements,create')->name('entitlements.store');
+        Route::put('entitlements/{entitlement}', [UniformEntitlementMasterController::class, 'update'])->middleware('menu:uniforms_entitlements,update')->name('entitlements.update');
+
+        Route::get('stock', [UniformStockController::class, 'index'])->middleware('menu:uniforms_stock')->name('stock.index');
+        Route::get('stock/datatable', [UniformStockController::class, 'datatable'])->middleware('menu:uniforms_stock')->name('stock.datatable');
+        Route::post('stock/in', [UniformStockController::class, 'stockIn'])->middleware('menu:uniforms_stock,create')->name('stock.in');
+
+        Route::get('distributions', [UniformDistributionController::class, 'index'])->middleware('menu:uniforms_distribution')->name('distributions.index');
+        Route::get('distributions/datatable', [UniformDistributionController::class, 'datatable'])->middleware('menu:uniforms_distribution')->name('distributions.datatable');
+        Route::get('distributions/assigned-employees', [UniformDistributionController::class, 'assignedEmployees'])->middleware('menu:uniforms_distribution')->name('distributions.assigned-employees');
+        Route::get('distributions/assigned-uniforms', [UniformDistributionController::class, 'assignedUniforms'])->middleware('menu:uniforms_distribution')->name('distributions.assigned-uniforms');
+        Route::get('distributions/uniform-variants', [UniformDistributionController::class, 'uniformVariants'])->middleware('menu:uniforms_distribution')->name('distributions.uniform-variants');
+        Route::get('distributions/dashboard', [UniformDistributionController::class, 'dashboard'])->middleware('menu:uniforms_distribution')->name('distributions.dashboard');
+        Route::get('distributions/dashboard/datatable', [UniformDistributionController::class, 'dashboardDatatable'])->middleware('menu:uniforms_distribution')->name('distributions.dashboard.datatable');
+        Route::post('distributions', [UniformDistributionController::class, 'store'])->middleware('menu:uniforms_distribution,create')->name('distributions.store');
+
+        Route::get('reports/pivot', [UniformReportController::class, 'pivotIndex'])->middleware('menu:uniforms_reports')->name('reports.pivot.index');
+        Route::get('reports/pivot/datatable', [UniformReportController::class, 'pivotDatatable'])->middleware('menu:uniforms_reports')->name('reports.pivot.datatable');
+
+        Route::get('reports/lots', [UniformReportController::class, 'lotIndex'])->middleware('menu:uniforms_reports')->name('reports.lots.index');
+        Route::get('reports/lots/datatable', [UniformReportController::class, 'lotDatatable'])->middleware('menu:uniforms_reports')->name('reports.lots.datatable');
+    });
 
     // Career Management
     Route::get('/careers', [AdminCareerController::class, 'index'])->middleware('menu:career')->name('admin.careers.index');
@@ -348,12 +376,6 @@ Route::prefix('admin')->middleware([
     Route::get('/assets/{id}', [AssetController::class, 'show'])->middleware('menu:assets_data')->name('admin.assets.show');
     Route::get('/assets/barcode/{code}', [AssetController::class, 'barcodeImage'])->middleware('menu:assets_data')->name('admin.assets.barcode');
     Route::get('/assets/{id}/print-barcode', [AssetController::class, 'printBarcode'])->middleware('menu:assets_data')->name('admin.assets.printBarcode');
-
-    // Uniforms (read-only)
-    Route::get('/uniforms/master', [UniformController::class, 'master'])->middleware('menu:uniforms_master')->name('admin.uniforms.master');
-    Route::get('/uniforms/stock', [UniformController::class, 'stock'])->middleware('menu:uniforms_stock')->name('admin.uniforms.stock');
-    Route::get('/uniforms/distribution', [UniformController::class, 'distribution'])->middleware('menu:uniforms_distribution')->name('admin.uniforms.distribution');
-    Route::get('/uniforms/history', [UniformController::class, 'history'])->middleware('menu:uniforms_history')->name('admin.uniforms.history');
 
     // Daily Tasks (read-only)
     Route::get('/daily-tasks', [\App\Http\Controllers\Admin\DailyTaskController::class, 'index'])->middleware('menu:daily_tasks')->name('admin.daily_tasks.index');
@@ -496,34 +518,6 @@ Route::prefix('admin')->middleware([
     Route::post('/asset-vendors', [AssetVendorController::class, 'store'])->middleware('menu:asset_vendors')->name('admin.asset_vendors.store');
     Route::put('/asset-vendors/{vendor}', [AssetVendorController::class, 'update'])->middleware('menu:asset_vendors')->name('admin.asset_vendors.update');
     Route::post('/asset-vendors/{vendor}/toggle', [AssetVendorController::class, 'toggle'])->middleware('menu:asset_vendors,update')->name('admin.asset_vendors.toggle');
-
-    // Uniform Stock Management (write actions)
-    Route::post('/uniforms/master', [UniformController::class, 'storeItem'])->middleware('menu:uniforms_master')->name('admin.uniforms.items.store');
-    Route::put('/uniforms/master/{id}', [UniformController::class, 'updateItem'])->middleware('menu:uniforms_master')->name('admin.uniforms.items.update');
-    Route::post('/uniforms/master/{id}/toggle', [UniformController::class, 'toggleItemActive'])->middleware('menu:uniforms_master,update')->name('admin.uniforms.items.toggle');
-
-    Route::post('/uniforms/stock/in', [UniformController::class, 'stockIn'])->middleware('menu:uniforms_stock')->name('admin.uniforms.stock.in');
-
-    Route::post('/uniforms/distribution/issue', [UniformController::class, 'issue'])->middleware('menu:uniforms_distribution')->name('admin.uniforms.distribution.issue');
-    Route::post('/uniforms/issues/{issue}/return', [UniformController::class, 'returnIssue'])->middleware('menu:uniforms_distribution,update')->name('admin.uniforms.issues.return');
-    Route::post('/uniforms/issues/{issue}/replace', [UniformController::class, 'replaceIssue'])->middleware('menu:uniforms_distribution,update')->name('admin.uniforms.issues.replace');
-
-    Route::get('/uniforms/adjustments', [UniformController::class, 'adjustments'])->middleware('menu:uniforms_stock')->name('admin.uniforms.adjustments');
-    Route::post('/uniforms/adjustments', [UniformController::class, 'storeAdjustment'])->middleware('menu:uniforms_stock')->name('admin.uniforms.adjustments.store');
-    Route::post('/uniforms/adjustments/{adjustment}/approve', [UniformController::class, 'approveAdjustment'])->middleware('menu:uniforms_stock,update')->name('admin.uniforms.adjustments.approve');
-    Route::post('/uniforms/adjustments/{adjustment}/reject', [UniformController::class, 'rejectAdjustment'])->middleware('menu:uniforms_stock,update')->name('admin.uniforms.adjustments.reject');
-
-    Route::get('/uniforms/write-offs', [UniformController::class, 'writeOffs'])->middleware('menu:uniforms_stock')->name('admin.uniforms.writeoffs');
-    Route::post('/uniforms/write-offs', [UniformController::class, 'storeWriteOff'])->middleware('menu:uniforms_stock')->name('admin.uniforms.writeoffs.store');
-    Route::post('/uniforms/write-offs/{writeoff}/approve', [UniformController::class, 'approveWriteOff'])->middleware('menu:uniforms_stock,update')->name('admin.uniforms.writeoffs.approve');
-    Route::post('/uniforms/write-offs/{writeoff}/reject', [UniformController::class, 'rejectWriteOff'])->middleware('menu:uniforms_stock,update')->name('admin.uniforms.writeoffs.reject');
-
-    Route::get('/uniforms/lots', [UniformController::class, 'lots'])->middleware('menu:uniforms_stock')->name('admin.uniforms.lots');
-
-    Route::get('/uniforms/reconcile', [UniformController::class, 'reconcile'])->middleware('menu:uniforms_stock')->name('admin.uniforms.reconcile');
-    Route::post('/uniforms/reconcile/create-adjustment', [UniformController::class, 'reconcileCreateAdjustment'])->middleware('menu:uniforms_stock')->name('admin.uniforms.reconcile.adjustment');
-
-    Route::get('/uniforms/history', [UniformController::class, 'history'])->middleware('menu:uniforms_history')->name('admin.uniforms.history');
 
 });
 

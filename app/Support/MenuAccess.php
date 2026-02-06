@@ -114,6 +114,8 @@ final class MenuAccess
                 'stamps' => self::none(),
                 'stamps_master' => self::none(),
                 'stamps_transactions' => self::none(),
+                'stamps_requests' => self::readCreateUpdate(),
+                'stamps_validation' => self::none(),
 
                 // Daily Tasks
                 'daily_tasks' => self::readCreateUpdate(),
@@ -125,7 +127,6 @@ final class MenuAccess
 
                 // Groups
                 'assets' => self::none(),
-                'uniforms' => self::none(),
 
                 // Devices
                 'devices' => self::none(),
@@ -145,12 +146,6 @@ final class MenuAccess
                 'documents_archive' => self::none(),
                 'documents_restricted' => self::none(),
 
-                // Uniforms submenus
-                'uniforms_master' => self::none(),
-                'uniforms_stock' => self::none(),
-                'uniforms_distribution' => self::none(),
-                'uniforms_history' => self::none(),
-
                 'employees' => self::none(),
                 'employees_index' => self::none(),
                 'employees_deleted' => self::none(),
@@ -160,7 +155,6 @@ final class MenuAccess
                 'master_hr' => self::none(),
                 'master_assets' => self::none(),
                 'master_accounts' => self::none(),
-                'master_uniform' => self::none(),
                 'master_daily_task' => self::none(),
 
                 'master_data' => self::none(),
@@ -172,11 +166,6 @@ final class MenuAccess
                 'plant_sites' => self::none(),
                 'asset_uoms' => self::none(),
                 'asset_vendors' => self::none(),
-                'uniform_sizes' => self::none(),
-                'uniform_item_names' => self::none(),
-                'uniform_categories' => self::none(),
-                'uniform_colors' => self::none(),
-                'uniform_uoms' => self::none(),
                 'career' => self::none(),
                 'certificate' => self::none(),
                 'website_products' => self::none(),
@@ -187,6 +176,15 @@ final class MenuAccess
                 'settings_users' => self::none(),
                 'settings_history_user' => self::none(),
                 'settings_history_asset' => self::none(),
+
+                // Uniforms (Seragam Karyawan)
+                'uniforms_stock' => self::none(),
+                'uniforms_distribution' => self::none(),
+                'uniforms_reports' => self::none(),
+                'uniforms_master' => self::none(),
+                'uniforms_variants' => self::none(),
+                'uniforms_lots' => self::none(),
+                'uniforms_entitlements' => self::none(),
             ];
         }
 
@@ -200,6 +198,8 @@ final class MenuAccess
             'stamps' => self::all(),
             'stamps_master' => self::all(),
             'stamps_transactions' => self::all(),
+            'stamps_requests' => self::all(),
+            'stamps_validation' => self::all(),
 
             // Daily Tasks
             'daily_tasks' => self::all(),
@@ -211,7 +211,6 @@ final class MenuAccess
 
             // Groups
             'assets' => self::all(),
-            'uniforms' => self::all(),
 
             // Devices
             'devices' => self::all(),
@@ -231,12 +230,6 @@ final class MenuAccess
             'documents_archive' => self::all(),
             'documents_restricted' => self::readOnly(),
 
-            // Uniforms submenus
-            'uniforms_master' => self::all(),
-            'uniforms_stock' => self::all(),
-            'uniforms_distribution' => self::all(),
-            'uniforms_history' => self::all(),
-
             'employees' => self::all(),
             'employees_index' => self::all(),
             'employees_deleted' => self::all(),
@@ -246,7 +239,6 @@ final class MenuAccess
             'master_hr' => self::all(),
             'master_assets' => self::all(),
             'master_accounts' => self::all(),
-            'master_uniform' => self::all(),
             'master_daily_task' => self::all(),
 
             'master_data' => self::all(),
@@ -258,11 +250,6 @@ final class MenuAccess
             'plant_sites' => self::all(),
             'asset_uoms' => self::all(),
             'asset_vendors' => self::all(),
-            'uniform_sizes' => self::all(),
-            'uniform_item_names' => self::all(),
-            'uniform_categories' => self::all(),
-            'uniform_colors' => self::all(),
-            'uniform_uoms' => self::all(),
             'career' => self::all(),
             'certificate' => self::all(),
             'website_products' => self::all(),
@@ -273,6 +260,15 @@ final class MenuAccess
             'settings_users' => self::all(),
             'settings_history_user' => self::readOnly(),
             'settings_history_asset' => self::readOnly(),
+
+            // Uniforms (Seragam Karyawan)
+            'uniforms_stock' => self::all(),
+            'uniforms_distribution' => self::all(),
+            'uniforms_reports' => self::all(),
+            'uniforms_master' => self::all(),
+            'uniforms_variants' => self::all(),
+            'uniforms_lots' => self::all(),
+            'uniforms_entitlements' => self::all(),
         ];
 
         // Enforce view-only keys as read-only by default (even if configured otherwise).
@@ -302,7 +298,7 @@ final class MenuAccess
         // mirror the legacy permission into the new group keys.
         if (is_array($stored) && array_key_exists('master_data', $stored)) {
             $legacy = self::normalize($stored['master_data']);
-            foreach (['master_hr', 'master_assets', 'master_accounts', 'master_uniform', 'master_daily_task'] as $k) {
+            foreach (['master_hr', 'master_assets', 'master_accounts', 'master_daily_task'] as $k) {
                 if (!array_key_exists($k, $stored)) {
                     $effective[$k] = $legacy;
                 }

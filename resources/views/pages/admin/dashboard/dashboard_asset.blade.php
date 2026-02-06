@@ -31,9 +31,6 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0"> Asset Dashboard </h5>
             <div class="d-flex gap-2">
-              <a href="{{ route('admin.dashboard.uniforms') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="fas fa-chart-pie"></i> Uniform
-              </a>
               <a href="{{ route('admin.assets.index') }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-box"></i> Asset Management
               </a>
