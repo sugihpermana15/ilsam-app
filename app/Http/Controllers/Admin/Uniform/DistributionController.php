@@ -7,7 +7,6 @@ use App\Http\Requests\Uniform\DistributionStoreRequest;
 use App\Models\Employee;
 use App\Models\UniformAllocation;
 use App\Models\UniformAllocationItem;
-use App\Models\UniformEntitlement;
 use App\Models\UniformLot;
 use App\Models\UniformVariant;
 use App\Services\UniformDistributionOptionsService;

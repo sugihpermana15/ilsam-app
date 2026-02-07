@@ -161,7 +161,7 @@
                                 'admin.uniforms.distributions.index',
                                 'admin.uniforms.distributions.store',
                                 'admin.uniforms.reports.pivot.index',
-                                'admin.uniforms.reports.lots.index',
+                                'admin.uniforms.stock.lots.index',
                             ],
                             'children' => [
                                 ['title' => 'Master Uniform', 'route' => 'admin.uniforms.master.index', 'active_routes' => ['admin.uniforms.master.datatable', 'admin.uniforms.master.json', 'admin.uniforms.master.store', 'admin.uniforms.master.update', 'admin.uniforms.master.toggle'], 'permission_key' => 'uniforms_master'],
@@ -171,7 +171,7 @@
                                 ['title' => 'Stok', 'route' => 'admin.uniforms.stock.index', 'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'], 'default' => true, 'permission_key' => 'uniforms_stock'],
                                 ['title' => 'Distribusi', 'route' => 'admin.uniforms.distributions.index', 'active_routes' => ['admin.uniforms.distributions.datatable', 'admin.uniforms.distributions.store'], 'permission_key' => 'uniforms_distribution'],
                                 ['title' => 'Pivot Stok', 'route' => 'admin.uniforms.reports.pivot.index', 'active_routes' => ['admin.uniforms.reports.pivot.datatable'], 'permission_key' => 'uniforms_reports'],
-                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.reports.lots.index', 'active_routes' => ['admin.uniforms.reports.lots.datatable'], 'permission_key' => 'uniforms_reports'],
+                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.stock.lots.index', 'active_routes' => ['admin.uniforms.stock.lots.datatable'], 'permission_key' => 'uniforms_stock'],
                             ],
                         ],
                         [
@@ -515,7 +515,7 @@
                                 'admin.uniforms.distributions.index',
                                 'admin.uniforms.distributions.store',
                                 'admin.uniforms.reports.pivot.index',
-                                'admin.uniforms.reports.lots.index',
+                                'admin.uniforms.stock.lots.index',
                             ],
                             'children' => [
                                 ['title' => 'Master Uniform', 'route' => 'admin.uniforms.master.index', 'active_routes' => ['admin.uniforms.master.datatable', 'admin.uniforms.master.json', 'admin.uniforms.master.store', 'admin.uniforms.master.update', 'admin.uniforms.master.toggle'], 'permission_key' => 'uniforms_master'],
@@ -525,7 +525,7 @@
                                 ['title' => 'Stok', 'route' => 'admin.uniforms.stock.index', 'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'], 'default' => true, 'permission_key' => 'uniforms_stock'],
                                 ['title' => 'Distribusi', 'route' => 'admin.uniforms.distributions.index', 'active_routes' => ['admin.uniforms.distributions.datatable', 'admin.uniforms.distributions.store'], 'permission_key' => 'uniforms_distribution'],
                                 ['title' => 'Pivot Stok', 'route' => 'admin.uniforms.reports.pivot.index', 'active_routes' => ['admin.uniforms.reports.pivot.datatable'], 'permission_key' => 'uniforms_reports'],
-                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.reports.lots.index', 'active_routes' => ['admin.uniforms.reports.lots.datatable'], 'permission_key' => 'uniforms_reports'],
+                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.stock.lots.index', 'active_routes' => ['admin.uniforms.stock.lots.datatable'], 'permission_key' => 'uniforms_stock'],
                             ],
                         ],
                         [

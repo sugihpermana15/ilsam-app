@@ -1862,6 +1862,15 @@
                 $('#' + prefix + '_menu_settings_history_user').prop('checked', hasRead(permissions.settings_history_user));
                 $('#' + prefix + '_menu_settings_history_asset').prop('checked', hasRead(permissions.settings_history_asset));
 
+                // Uniforms (Seragam Karyawan)
+                $('#' + prefix + '_menu_uniforms_stock').prop('checked', hasRead(permissions.uniforms_stock));
+                $('#' + prefix + '_menu_uniforms_distribution').prop('checked', hasRead(permissions.uniforms_distribution));
+                $('#' + prefix + '_menu_uniforms_reports').prop('checked', hasRead(permissions.uniforms_reports));
+                $('#' + prefix + '_menu_uniforms_entitlements').prop('checked', hasRead(permissions.uniforms_entitlements));
+                $('#' + prefix + '_menu_uniforms_master').prop('checked', hasRead(permissions.uniforms_master));
+                $('#' + prefix + '_menu_uniforms_variants').prop('checked', hasRead(permissions.uniforms_variants));
+                $('#' + prefix + '_menu_uniforms_lots').prop('checked', hasRead(permissions.uniforms_lots));
+
                 // Action toggles (injected)
                 const keys = [
                     'user_dashboard', 'admin_dashboard',
@@ -1875,6 +1884,8 @@
                     'career', 'certificate',
                     'website_settings', 'website_products', 'website_home_sections', 'website_contact_page',
                     'settings', 'settings_users', 'settings_history_user', 'settings_history_asset',
+                    // Uniforms (Seragam Karyawan)
+                    'uniforms_stock', 'uniforms_distribution', 'uniforms_reports', 'uniforms_entitlements', 'uniforms_master', 'uniforms_variants', 'uniforms_lots',
                 ];
                 keys.forEach((k) => {
                     $('#' + prefix + '_menu_' + k + '_create').prop('checked', hasCreate(permissions[k]));

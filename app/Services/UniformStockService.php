@@ -25,6 +25,76 @@ class UniformStockService
     }
 
     /**
+     * Adjust stock_on_hand for a specific lot stock.
+     *
+     * This does NOT rewrite history. Instead, it creates a compensating movement (IN/OUT)
+     * so the audit trail remains consistent.
+     */
+    public function adjustLotStockOnHand(int $lotStockId, int $newStockOnHand, mixed $occurredAt = null, ?string $notes = null): UniformStockMovement
+    {
+        if ($lotStockId <= 0) {
+            throw new RuntimeException('Lot stock tidak valid.');
+        }
+        if ($newStockOnHand < 0) {
+            throw new RuntimeException('Stock on hand tidak boleh kurang dari 0.');
+        }
+        if ($notes === null || trim($notes) === '') {
+            throw new RuntimeException('Catatan penyesuaian wajib diisi.');
+        }
+
+        $userId = Auth::id();
+        if ($userId === null) {
+            throw new RuntimeException('User belum login.');
+        }
+
+        $occurredAt = $occurredAt ?? now();
+
+        return DB::transaction(function () use ($lotStockId, $newStockOnHand, $occurredAt, $notes, $userId) {
+            /** @var UniformLotStock|null $lotStock */
+            $lotStock = UniformLotStock::query()->whereKey($lotStockId)->lockForUpdate()->first();
+            if ($lotStock === null) {
+                throw (new ModelNotFoundException())->setModel(UniformLotStock::class, [$lotStockId]);
+            }
+
+            $before = (int) $lotStock->stock_on_hand;
+            $after = (int) $newStockOnHand;
+
+            if ($before === $after) {
+                throw new RuntimeException('Tidak ada perubahan stok.');
+            }
+
+            $delta = $after - $before;
+            $movementType = $delta > 0 ? 'IN' : 'OUT';
+            $qty = (int) abs($delta);
+
+            $movementNo = $this->trxNoGenerator->next(
+                'uniform_movement',
+                'UF',
+                $occurredAt instanceof Carbon ? $occurredAt : Carbon::parse((string) $occurredAt)
+            );
+
+            /** @var UniformStockMovement $movement */
+            $movement = UniformStockMovement::query()->create([
+                'movement_no' => $movementNo,
+                'movement_type' => $movementType,
+                'occurred_at' => $occurredAt,
+                'uniform_variant_id' => (int) $lotStock->uniform_variant_id,
+                'uniform_lot_id' => (int) $lotStock->uniform_lot_id,
+                'qty' => $qty,
+                'stock_on_hand_after' => $after,
+                'reference_type' => 'stock_adjustment',
+                'reference_id' => (int) $lotStock->getKey(),
+                'notes' => $notes,
+                'created_by' => (int) $userId,
+            ]);
+
+            $lotStock->update(['stock_on_hand' => $after]);
+
+            return $movement;
+        });
+    }
+
+    /**
      * Stock IN to a lot (mandatory).
      *
      * @param array{

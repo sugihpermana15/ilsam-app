@@ -51,7 +51,7 @@
                         <a class="btn btn-outline-primary btn-sm" href="{{ route('admin.uniforms.reports.pivot.index') }}">
                             Laporan Pivot
                         </a>
-                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.uniforms.reports.lots.index') }}">
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.uniforms.stock.lots.index') }}">
                             Stok per LOT
                         </a>
                     </div>
@@ -71,6 +71,7 @@
                                     <th>Item</th>
                                     <th>Ukuran</th>
                                     <th class="text-end">Total Stok</th>
+                                    <th style="width: 90px">Aksi</th>
                                 </tr>
                             </thead>
                         </table>
@@ -207,6 +208,7 @@
     <script>
         $(document).ready(function() {
             const dtUrl = @json(route('admin.uniforms.stock.datatable'));
+            const lotsIndexUrlTemplate = @json(route('admin.uniforms.stock.lots.index', ['uniform_variant_id' => '__VARIANT__']));
 
             function lotCodeFromReceivedAt(datetimeLocalVal) {
                 if (!datetimeLocalVal) return '';
@@ -296,6 +298,17 @@
                         className: 'text-end',
                         render: function(data) {
                             return Number(data || 0).toLocaleString('id-ID');
+                        }
+                    },
+                    {
+                        data: 'variant_id',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            const vid = Number(data || 0);
+                            if (!vid) return '';
+                            const url = String(lotsIndexUrlTemplate).replace('__VARIANT__', encodeURIComponent(String(vid)));
+                            return `<a class="btn btn-outline-secondary btn-sm" href="${url}">LOT</a>`;
                         }
                     },
                 ],

@@ -130,6 +130,9 @@ class ReportController extends Controller
             ->leftJoin('m_igi_uniforms', 'm_igi_uniform_variants.uniform_id', '=', 'm_igi_uniforms.id')
             ->leftJoin('m_igi_uniform_lots', 'm_igi_uniform_lot_stocks.uniform_lot_id', '=', 'm_igi_uniform_lots.id')
             ->select([
+                'm_igi_uniform_lot_stocks.id as lot_stock_id',
+                'm_igi_uniform_lot_stocks.uniform_variant_id as uniform_variant_id',
+                'm_igi_uniform_lot_stocks.uniform_lot_id as uniform_lot_id',
                 'm_igi_uniforms.name as uniform_name',
                 'm_igi_uniform_variants.size as size',
                 'm_igi_uniform_lots.lot_code as lot_code',
@@ -158,6 +161,9 @@ class ReportController extends Controller
             ->get()
             ->map(function ($r) {
                 return [
+                    'lot_stock_id' => (int) ($r->lot_stock_id ?? 0),
+                    'uniform_variant_id' => (int) ($r->uniform_variant_id ?? 0),
+                    'uniform_lot_id' => (int) ($r->uniform_lot_id ?? 0),
                     'uniform_name' => (string) ($r->uniform_name ?? ''),
                     'size' => (string) ($r->size ?? ''),
                     'lot_code' => (string) ($r->lot_code ?? ''),

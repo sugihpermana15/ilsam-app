@@ -300,6 +300,11 @@ Route::prefix('admin')->middleware([
         Route::get('stock', [UniformStockController::class, 'index'])->middleware('menu:uniforms_stock')->name('stock.index');
         Route::get('stock/datatable', [UniformStockController::class, 'datatable'])->middleware('menu:uniforms_stock')->name('stock.datatable');
         Route::post('stock/in', [UniformStockController::class, 'stockIn'])->middleware('menu:uniforms_stock,create')->name('stock.in');
+        Route::get('stock/lots', [UniformStockController::class, 'lotIndex'])->middleware('menu:uniforms_stock')->name('stock.lots.index');
+        Route::get('stock/lots/datatable', [UniformStockController::class, 'lotDatatable'])->middleware('menu:uniforms_stock')->name('stock.lots.datatable');
+        Route::patch('stock/lot-stocks/{lotStock}', [UniformStockController::class, 'adjustLotStock'])
+            ->middleware('menu:uniforms_stock,update')
+            ->name('stock.lot-stocks.adjust');
 
         Route::get('distributions', [UniformDistributionController::class, 'index'])->middleware('menu:uniforms_distribution')->name('distributions.index');
         Route::get('distributions/datatable', [UniformDistributionController::class, 'datatable'])->middleware('menu:uniforms_distribution')->name('distributions.datatable');

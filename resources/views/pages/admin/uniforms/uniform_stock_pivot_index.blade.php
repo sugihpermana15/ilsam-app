@@ -18,7 +18,7 @@
                     <h5 class="card-title mb-0">Pivot Stok (Item x Ukuran)</h5>
                     <div class="d-flex gap-2 flex-wrap">
                         <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.uniforms.stock.index') }}">Stok</a>
-                        <a class="btn btn-outline-primary btn-sm" href="{{ route('admin.uniforms.reports.lots.index') }}">Stok per LOT</a>
+                        <a class="btn btn-outline-primary btn-sm" href="{{ route('admin.uniforms.stock.lots.index') }}">Stok per LOT</a>
                     </div>
                 </div>
                 <div class="card-body">

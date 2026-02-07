@@ -539,7 +539,7 @@
                         <a href="{{ route('admin.uniforms.reports.pivot.index') }}" class="btn btn-outline-secondary btn-sm">
                           <i class="fas fa-table"></i> Pivot
                         </a>
-                        <a href="{{ route('admin.uniforms.reports.lots.index') }}" class="btn btn-outline-secondary btn-sm">
+                        <a href="{{ route('admin.uniforms.stock.lots.index') }}" class="btn btn-outline-secondary btn-sm">
                           <i class="fas fa-layer-group"></i> Lots
                         </a>
                       @endif

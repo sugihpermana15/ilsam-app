@@ -13,6 +13,7 @@
 @section('content')
     @php
         $canUpdateStock = \App\Support\MenuAccess::can(auth()->user(), 'uniforms_stock', 'update');
+        $variantId = (int) ($variantId ?? 0);
     @endphp
 
     <div class="row">
@@ -45,7 +46,7 @@
                 <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
                     <h5 class="card-title mb-0">Stok per LOT</h5>
                     <div class="d-flex gap-2 flex-wrap">
-                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.uniforms.stock.index') }}">Stok</a>
+                        <a class="btn btn-outline-secondary btn-sm" href="{{ route('admin.uniforms.stock.index') }}">Rekap Stok</a>
                         <a class="btn btn-outline-primary btn-sm" href="{{ route('admin.uniforms.reports.pivot.index') }}">Pivot</a>
                     </div>
                 </div>
@@ -166,9 +167,10 @@
 
     <script>
         $(document).ready(function() {
-            const dtUrl = @json(route('admin.uniforms.reports.lots.datatable'));
+            const dtUrl = @json(route('admin.uniforms.stock.lots.datatable'));
             const canUpdateStock = @json((bool) $canUpdateStock);
             const adjustUrlTemplate = @json(route('admin.uniforms.stock.lot-stocks.adjust', ['lotStock' => '__ID__']));
+            const filterVariantId = @json($variantId);
 
             if ($.fn.dataTable && $.fn.dataTable.isDataTable('#uniform-lot-stock-table')) {
                 $('#uniform-lot-stock-table').DataTable().destroy();
@@ -203,7 +205,14 @@
                     "<'row'<'col-sm-12 col-md-6 mb-3'l><'col-sm-12 col-md-6 mt-5'f>>" +
                     "<'table-responsive'tr>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                ajax: { url: dtUrl },
+                ajax: {
+                    url: dtUrl,
+                    data: function(d) {
+                        if (filterVariantId && Number(filterVariantId) > 0) {
+                            d.uniform_variant_id = Number(filterVariantId);
+                        }
+                    }
+                },
                 order: [[3, 'asc']],
                 columns: (function() {
                     const cols = [
