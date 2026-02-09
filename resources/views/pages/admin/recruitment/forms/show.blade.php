@@ -333,6 +333,37 @@
         $(document).ready(function() {
             const dtUrl = @json(route('admin.recruitment.forms.questions.datatable', $form->id));
 
+            async function copyTextToClipboard(text) {
+                const value = String(text || '');
+                if (!value) return false;
+
+                try {
+                    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function' && window.isSecureContext) {
+                        await navigator.clipboard.writeText(value);
+                        return true;
+                    }
+                } catch (e) {
+                    // fall through
+                }
+
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = value;
+                    ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed';
+                    ta.style.top = '-9999px';
+                    ta.style.left = '-9999px';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    ta.setSelectionRange(0, ta.value.length);
+                    const ok = document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    return !!ok;
+                } catch (e) {
+                    return false;
+                }
+            }
+
             function toggleOptionsWrap(type, wrap) {
                 const isMcq = (type || '') === 'multiple_choice';
                 if (wrap) wrap.classList.toggle('d-none', !isMcq);
@@ -340,12 +371,20 @@
 
             document.getElementById('btnCopyPublicLink')?.addEventListener('click', async function() {
                 const url = this.getAttribute('data-url') || '';
-                try {
-                    await navigator.clipboard.writeText(url);
+
+                const ok = await copyTextToClipboard(url);
+                if (ok) {
                     Swal.fire({ icon: 'success', title: @json(__('common.success')), text: 'Link berhasil disalin.', timer: 1200, showConfirmButton: false });
-                } catch (err) {
-                    Swal.fire({ icon: 'error', title: @json(__('common.error')), text: 'Gagal menyalin link.', timer: 1600, showConfirmButton: false });
+                    return;
                 }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: @json(__('common.error')),
+                    text: 'Browser tidak mengizinkan menyalin otomatis. Silakan blok/copy manual dari kolom Link Publik.',
+                    timer: 2800,
+                    showConfirmButton: false
+                });
             });
 
             const addType = document.getElementById('add_q_type');
