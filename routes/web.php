@@ -51,6 +51,10 @@ use App\Http\Controllers\Admin\Uniform\DistributionController as UniformDistribu
 use App\Http\Controllers\Admin\Uniform\ReportController as UniformReportController;
 use App\Http\Controllers\Admin\Uniform\StockController as UniformStockController;
 use App\Http\Controllers\Admin\Uniform\VariantMasterController as UniformVariantMasterController;
+use App\Http\Controllers\Admin\Recruitment\RecruitmentCandidateController as AdminRecruitmentCandidateController;
+use App\Http\Controllers\Admin\Recruitment\RecruitmentFormController as AdminRecruitmentFormController;
+use App\Http\Controllers\Admin\Recruitment\RecruitmentQuestionController as AdminRecruitmentQuestionController;
+use App\Http\Controllers\RecruitmentPublicController;
 use App\Http\Middleware\EnsureAuthenticated;
 use App\Http\Middleware\EnsureGuest;
 
@@ -123,6 +127,16 @@ Route::get('/career/apply/{job?}', [CareerController::class, 'applyForm'])->name
 Route::post('/career/apply', [CareerController::class, 'submitApplication'])
     ->middleware('throttle:5,1')
     ->name('career.apply.submit');
+
+// Rekrutmen (public, no login)
+Route::prefix('recruitment')->name('recruitment.')->group(function () {
+    Route::get('/test/{submissionToken}', [RecruitmentPublicController::class, 'showTest'])->name('test.show');
+    Route::post('/test/{submissionToken}', [RecruitmentPublicController::class, 'submitTest'])->name('test.submit');
+    Route::get('/done/{submissionToken}', [RecruitmentPublicController::class, 'done'])->name('done');
+
+    Route::get('/{token}', [RecruitmentPublicController::class, 'showForm'])->name('form.show');
+    Route::post('/{token}', [RecruitmentPublicController::class, 'submitProfile'])->name('form.submit');
+});
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact/send', [ContactController::class, 'send'])
     ->middleware('throttle:10,1')
@@ -207,6 +221,31 @@ Route::prefix('admin')->middleware([
 
     // Everything else in /admin stays restricted to Super Admin/Admin.
     Route::middleware('role:Super Admin,Admin')->group(function () {
+
+    // Recruitment (Form Kandidat & Tes Pengetahuan)
+    Route::prefix('recruitment')->name('admin.recruitment.')->group(function () {
+        // Forms
+        Route::get('forms', [AdminRecruitmentFormController::class, 'index'])->middleware('menu:recruitment')->name('forms.index');
+        Route::get('forms/datatable', [AdminRecruitmentFormController::class, 'datatable'])->middleware('menu:recruitment')->name('forms.datatable');
+        Route::post('forms', [AdminRecruitmentFormController::class, 'store'])->middleware('menu:recruitment,create')->name('forms.store');
+        Route::get('forms/{form}', [AdminRecruitmentFormController::class, 'show'])->middleware('menu:recruitment')->name('forms.show');
+        Route::put('forms/{form}', [AdminRecruitmentFormController::class, 'update'])->middleware('menu:recruitment,update')->name('forms.update');
+        Route::delete('forms/{form}', [AdminRecruitmentFormController::class, 'destroy'])->middleware('menu:recruitment,delete')->name('forms.destroy');
+
+        // Questions
+        Route::get('forms/{formId}/questions/datatable', [AdminRecruitmentQuestionController::class, 'datatable'])->middleware('menu:recruitment')->name('forms.questions.datatable');
+        Route::post('questions', [AdminRecruitmentQuestionController::class, 'store'])->middleware('menu:recruitment,create')->name('questions.store');
+        Route::put('questions/{question}', [AdminRecruitmentQuestionController::class, 'update'])->middleware('menu:recruitment,update')->name('questions.update');
+        Route::delete('questions/{question}', [AdminRecruitmentQuestionController::class, 'destroy'])->middleware('menu:recruitment,delete')->name('questions.destroy');
+
+        // Candidates
+        Route::get('candidates', [AdminRecruitmentCandidateController::class, 'index'])->middleware('menu:recruitment')->name('candidates.index');
+        Route::get('candidates/datatable', [AdminRecruitmentCandidateController::class, 'datatable'])->middleware('menu:recruitment')->name('candidates.datatable');
+        Route::get('candidates/{submission}', [AdminRecruitmentCandidateController::class, 'show'])->middleware('menu:recruitment')->name('candidates.show');
+        Route::get('candidates/{submission}/export/pdf', [AdminRecruitmentCandidateController::class, 'exportPdf'])->middleware('menu:recruitment')->name('candidates.export.pdf');
+        Route::get('candidates/{submission}/export/excel', [AdminRecruitmentCandidateController::class, 'exportExcel'])->middleware('menu:recruitment')->name('candidates.export.excel');
+        Route::get('candidates/files/{file}/download', [AdminRecruitmentCandidateController::class, 'downloadFile'])->middleware('menu:recruitment')->name('candidates.files.download');
+    });
 
     // Device (Computer) Management
     Route::get('/devices', [DeviceController::class, 'index'])->middleware('menu:devices')->name('admin.devices.index');

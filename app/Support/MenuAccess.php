@@ -128,6 +128,9 @@ final class MenuAccess
                 // Groups
                 'assets' => self::none(),
 
+                // Recruitment
+                'recruitment' => self::none(),
+
                 // Devices
                 'devices' => self::none(),
 
@@ -211,6 +214,9 @@ final class MenuAccess
 
             // Groups
             'assets' => self::all(),
+
+            // Recruitment
+            'recruitment' => self::all(),
 
             // Devices
             'devices' => self::all(),
