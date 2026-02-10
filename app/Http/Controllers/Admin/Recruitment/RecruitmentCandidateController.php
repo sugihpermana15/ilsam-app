@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Admin\Recruitment;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\Recruitment\RecruitmentCandidateScoreUpdateRequest;
 use App\Models\RecruitmentForm;
 use App\Models\RecruitmentFormSubmission;
 use App\Models\RecruitmentFormSubmissionFile;
+use App\Models\RecruitmentFormSubmissionAnswer;
 use App\Services\RecruitmentSubmissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class RecruitmentCandidateController extends Controller
@@ -48,7 +52,7 @@ class RecruitmentCandidateController extends Controller
                 $q->from('recruitment_form_submission_answers as a')
                     ->join('recruitment_form_questions as q', 'q.id', '=', 'a.recruitment_form_question_id')
                     ->whereColumn('a.recruitment_form_submission_id', 'recruitment_form_submissions.id')
-                    ->selectRaw('COALESCE(SUM(q.points), 0)');
+                    ->selectRaw('COALESCE(SUM(a.points_earned), 0)');
             }, 'test_points_earned')
             ->with('form:id,title,position_name');
 
@@ -117,6 +121,60 @@ class RecruitmentCandidateController extends Controller
         return view('pages.admin.recruitment.candidates.show', [
             'submission' => $submission,
         ]);
+    }
+
+    public function updateScores(RecruitmentCandidateScoreUpdateRequest $request, RecruitmentFormSubmission $submission): RedirectResponse
+    {
+        $submission->loadMissing([
+            'form.questions',
+            'answers',
+        ]);
+
+        $scores = $request->validated()['scores'] ?? [];
+        if (!is_array($scores)) {
+            $scores = [];
+        }
+
+        $questions = $submission->form?->questions ?? collect();
+        $answersByQ = $submission->answers->keyBy('recruitment_form_question_id');
+
+        DB::transaction(function () use ($scores, $questions, $answersByQ, $submission) {
+            foreach ($scores as $questionId => $scoreRaw) {
+                $qid = (int) $questionId;
+                $q = $questions->firstWhere('id', $qid);
+                if (!$q) {
+                    continue;
+                }
+
+                $type = (string) $q->type;
+                if ($type === 'multiple_choice') {
+                    continue;
+                }
+
+                if ($scoreRaw === null || $scoreRaw === '') {
+                    continue;
+                }
+
+                $score = (int) $scoreRaw;
+                $max = (int) ($q->points ?? 0);
+                $score = max(0, min($score, $max));
+
+                /** @var RecruitmentFormSubmissionAnswer|null $ans */
+                $ans = $answersByQ->get($qid);
+                if (!$ans) {
+                    continue;
+                }
+
+                $ans->update([
+                    'points_earned' => $score,
+                    'is_correct' => null,
+                ]);
+            }
+        });
+
+        return redirect()
+            ->route('admin.recruitment.candidates.show', $submission->getKey())
+            ->with('success', 'Nilai jawaban berhasil disimpan.');
     }
 
     public function downloadFile(RecruitmentFormSubmissionFile $file): mixed

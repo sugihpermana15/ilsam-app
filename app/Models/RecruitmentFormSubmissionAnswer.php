@@ -14,7 +14,17 @@ class RecruitmentFormSubmissionAnswer extends Model
         'recruitment_form_question_id',
         'recruitment_form_question_option_id',
         'answer_text',
+        'is_correct',
+        'points_earned',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_correct' => 'boolean',
+            'points_earned' => 'integer',
+        ];
+    }
 
     public function submission(): BelongsTo
     {

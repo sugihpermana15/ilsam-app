@@ -129,7 +129,7 @@ final class MenuAccess
                 'assets' => self::none(),
 
                 // Recruitment
-                'recruitment' => self::none(),
+                'recruitment' => self::readCreateUpdate(),
 
                 // Devices
                 'devices' => self::none(),

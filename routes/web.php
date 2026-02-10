@@ -242,6 +242,7 @@ Route::prefix('admin')->middleware([
         Route::get('candidates', [AdminRecruitmentCandidateController::class, 'index'])->middleware('menu:recruitment')->name('candidates.index');
         Route::get('candidates/datatable', [AdminRecruitmentCandidateController::class, 'datatable'])->middleware('menu:recruitment')->name('candidates.datatable');
         Route::get('candidates/{submission}', [AdminRecruitmentCandidateController::class, 'show'])->middleware('menu:recruitment')->name('candidates.show');
+        Route::put('candidates/{submission}/scores', [AdminRecruitmentCandidateController::class, 'updateScores'])->middleware('menu:recruitment,update')->name('candidates.scores.update');
         Route::get('candidates/{submission}/export/pdf', [AdminRecruitmentCandidateController::class, 'exportPdf'])->middleware('menu:recruitment')->name('candidates.export.pdf');
         Route::get('candidates/{submission}/export/excel', [AdminRecruitmentCandidateController::class, 'exportExcel'])->middleware('menu:recruitment')->name('candidates.export.excel');
         Route::get('candidates/files/{file}/download', [AdminRecruitmentCandidateController::class, 'downloadFile'])->middleware('menu:recruitment')->name('candidates.files.download');

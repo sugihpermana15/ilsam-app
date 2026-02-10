@@ -153,14 +153,30 @@ class RecruitmentSubmissionService
                 $answerText = Arr::get($row, 'answer_text');
                 $answerText = $answerText !== null ? (string) $answerText : null;
 
+                $isCorrect = null;
+                $pointsEarned = 0;
+
                 if ($type === RecruitmentQuestionType::MULTIPLE_CHOICE) {
                     if ($optionId !== null && !$question->options->contains('id', $optionId)) {
                         throw new RuntimeException('Pilihan jawaban tidak valid.');
                     }
                     $answerText = null;
+
+                    if ($optionId !== null) {
+                        $selected = $question->options->firstWhere('id', $optionId);
+                        $isCorrect = $selected ? (bool) ($selected->is_correct ?? false) : false;
+                        $pointsEarned = $isCorrect ? (int) ($question->points ?? 0) : 0;
+                    } else {
+                        $isCorrect = false;
+                        $pointsEarned = 0;
+                    }
                 } else {
                     $optionId = null;
                     $answerText = $answerText !== null ? trim($answerText) : null;
+
+                    // Short text & essay are not auto-graded.
+                    $isCorrect = null;
+                    $pointsEarned = 0;
                 }
 
                 RecruitmentFormSubmissionAnswer::query()->updateOrCreate([
@@ -169,6 +185,8 @@ class RecruitmentSubmissionService
                 ], [
                     'recruitment_form_question_option_id' => $optionId,
                     'answer_text' => $answerText,
+                    'is_correct' => $isCorrect,
+                    'points_earned' => $pointsEarned,
                 ]);
             }
 

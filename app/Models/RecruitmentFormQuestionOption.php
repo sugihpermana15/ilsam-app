@@ -14,12 +14,14 @@ class RecruitmentFormQuestionOption extends Model
         'recruitment_form_question_id',
         'option_text',
         'sort_order',
+        'is_correct',
     ];
 
     protected function casts(): array
     {
         return [
             'sort_order' => 'integer',
+            'is_correct' => 'boolean',
         ];
     }
 

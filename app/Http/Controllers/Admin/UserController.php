@@ -127,6 +127,9 @@ class UserController extends Controller
       // Daily Tasks
       'daily_tasks' => $permFor('daily_tasks'),
 
+      // Recruitment
+      'recruitment' => $permFor('recruitment'),
+
       // Devices
       'devices' => $permFor('devices'),
 

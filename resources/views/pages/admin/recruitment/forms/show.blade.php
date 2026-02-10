@@ -235,6 +235,12 @@
                                 <label class="form-label">Opsi (satu baris = satu opsi)</label>
                                 <textarea name="options_text" class="form-control" rows="4" placeholder="Contoh:\nA\nB\nC\nD">{{ old('options_text') }}</textarea>
                             </div>
+
+                            <div class="col-12" id="add_q_correct_wrap">
+                                <label class="form-label">Jawaban Benar (nomor opsi)</label>
+                                <input type="number" name="correct_option" class="form-control" value="{{ old('correct_option') }}" min="1" placeholder="Contoh: 1 (opsi baris pertama)">
+                                <div class="form-text">Wajib untuk Pilihan Ganda. Nomor mengikuti urutan opsi di atas.</div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -304,6 +310,12 @@
                                 <label class="form-label">Opsi (satu baris = satu opsi)</label>
                                 <textarea name="options_text" class="form-control" rows="4" id="edit_q_options"></textarea>
                             </div>
+
+                            <div class="col-12" id="edit_q_correct_wrap">
+                                <label class="form-label">Jawaban Benar (nomor opsi)</label>
+                                <input type="number" name="correct_option" class="form-control" id="edit_q_correct" min="1" placeholder="Contoh: 1">
+                                <div class="form-text">Wajib untuk Pilihan Ganda. Nomor mengikuti urutan opsi di atas.</div>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -369,6 +381,11 @@
                 if (wrap) wrap.classList.toggle('d-none', !isMcq);
             }
 
+            function toggleCorrectWrap(type, wrap) {
+                const isMcq = (type || '') === 'multiple_choice';
+                if (wrap) wrap.classList.toggle('d-none', !isMcq);
+            }
+
             document.getElementById('btnCopyPublicLink')?.addEventListener('click', async function() {
                 const url = this.getAttribute('data-url') || '';
 
@@ -389,15 +406,24 @@
 
             const addType = document.getElementById('add_q_type');
             const addWrap = document.getElementById('add_q_options_wrap');
+            const addCorrectWrap = document.getElementById('add_q_correct_wrap');
             if (addType) {
-                addType.addEventListener('change', () => toggleOptionsWrap(addType.value, addWrap));
+                addType.addEventListener('change', () => {
+                    toggleOptionsWrap(addType.value, addWrap);
+                    toggleCorrectWrap(addType.value, addCorrectWrap);
+                });
                 toggleOptionsWrap(addType.value, addWrap);
+                toggleCorrectWrap(addType.value, addCorrectWrap);
             }
 
             const editType = document.getElementById('edit_q_type');
             const editWrap = document.getElementById('edit_q_options_wrap');
+            const editCorrectWrap = document.getElementById('edit_q_correct_wrap');
             if (editType) {
-                editType.addEventListener('change', () => toggleOptionsWrap(editType.value, editWrap));
+                editType.addEventListener('change', () => {
+                    toggleOptionsWrap(editType.value, editWrap);
+                    toggleCorrectWrap(editType.value, editCorrectWrap);
+                });
             }
 
             const table = $('#recruitment-questions-table').DataTable({
@@ -496,8 +522,10 @@
                     document.getElementById('edit_q_text').value = row.question_text || '';
                     document.getElementById('edit_q_required').checked = !!row.is_required;
                     document.getElementById('edit_q_options').value = Array.isArray(row.options) ? row.options.join('\n') : '';
+                    document.getElementById('edit_q_correct').value = row.correct_option_index ?? '';
 
                     toggleOptionsWrap(document.getElementById('edit_q_type').value, editWrap);
+                    toggleCorrectWrap(document.getElementById('edit_q_type').value, editCorrectWrap);
 
                     new bootstrap.Modal(document.getElementById('editQuestionModal')).show();
                     return;

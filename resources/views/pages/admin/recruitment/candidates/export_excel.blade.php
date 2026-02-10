@@ -13,7 +13,7 @@
         @php
             $totalPoints = (int) (($submission->form?->questions?->sum('points')) ?? 0);
             $earnedPoints = (int) ($submission->answers->sum(function ($a) {
-                return (int) ($a->question?->points ?? 0);
+                return (int) ($a->points_earned ?? 0);
             }));
         @endphp
         <tr><td>Nama</td><td>{{ $submission->full_name }}</td></tr>

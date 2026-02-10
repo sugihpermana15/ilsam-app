@@ -80,7 +80,11 @@ class RecruitmentFormAdminService
                 'points' => (int) Arr::get($data, 'points', 0),
             ]);
 
-            $this->syncOptions($q, Arr::get($data, 'options', []));
+            $this->syncOptions(
+                $q,
+                Arr::get($data, 'options', []),
+                Arr::get($data, 'correct_option') !== null ? (int) Arr::get($data, 'correct_option') : null,
+            );
 
             return $q;
         });
@@ -112,7 +116,11 @@ class RecruitmentFormAdminService
                 'points' => (int) Arr::get($data, 'points', 0),
             ]);
 
-            $this->syncOptions($question, Arr::get($data, 'options', []));
+            $this->syncOptions(
+                $question,
+                Arr::get($data, 'options', []),
+                Arr::get($data, 'correct_option') !== null ? (int) Arr::get($data, 'correct_option') : null,
+            );
 
             return $question;
         });
@@ -126,7 +134,7 @@ class RecruitmentFormAdminService
     }
 
     /** @param array<int, string|null> $options */
-    private function syncOptions(RecruitmentFormQuestion $question, array $options): void
+    private function syncOptions(RecruitmentFormQuestion $question, array $options, ?int $correctOptionIndex): void
     {
         $question->loadMissing('options');
 
@@ -151,6 +159,7 @@ class RecruitmentFormAdminService
                 'recruitment_form_question_id' => (int) $question->getKey(),
                 'option_text' => (string) $text,
                 'sort_order' => (int) $i,
+                'is_correct' => $correctOptionIndex !== null && ((int) $i + 1) === $correctOptionIndex,
             ]);
         }
     }

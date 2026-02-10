@@ -26,7 +26,7 @@
                     @php
                         $totalPoints = (int) (($submission->form?->questions?->sum('points')) ?? 0);
                         $earnedPoints = (int) ($submission->answers->sum(function ($a) {
-                            return (int) ($a->question?->points ?? 0);
+                            return (int) ($a->points_earned ?? 0);
                         }));
                     @endphp
                     <div class="row g-3">
@@ -101,6 +101,24 @@
                     <hr class="my-4" />
 
                     <div class="fw-semibold mb-2">Jawaban Tes</div>
+
+                    @if (session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('admin.recruitment.candidates.scores.update', $submission->id) }}">
+                        @csrf
+                        @method('PUT')
                     <div class="table-responsive">
                         <table class="table table-sm table-bordered">
                             <thead>
@@ -128,7 +146,38 @@
                                     @endphp
                                     <tr>
                                         <td>{!! nl2br(e($q->question_text)) !!}</td>
-                                        <td>{!! nl2br(e($val)) !!}</td>
+                                        <td>
+                                            <div>{!! nl2br(e($val)) !!}</div>
+
+                                            @if(!$ans)
+                                                <span class="badge bg-secondary-subtle text-secondary">BELUM DIJAWAB</span>
+                                            @elseif($q->type === 'multiple_choice')
+                                                @if($ans->is_correct === true)
+                                                    <span class="badge bg-success-subtle text-success">BENAR</span>
+                                                @elseif($ans->is_correct === false)
+                                                    <span class="badge bg-danger-subtle text-danger">SALAH</span>
+                                                @else
+                                                    <span class="badge bg-secondary-subtle text-secondary">BELUM DINILAI</span>
+                                                @endif
+                                            @else
+                                                <div class="d-flex align-items-center gap-2 flex-wrap mt-2">
+                                                    <span class="badge bg-secondary-subtle text-secondary">BELUM DINILAI</span>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="text-muted small">Nilai</span>
+                                                        <input
+                                                            type="number"
+                                                            class="form-control form-control-sm"
+                                                            style="width: 110px"
+                                                            name="scores[{{ $q->id }}]"
+                                                            min="0"
+                                                            max="{{ (int) ($q->points ?? 0) }}"
+                                                            value="{{ old('scores.' . $q->id, (int) ($ans->points_earned ?? 0)) }}"
+                                                        >
+                                                        <span class="text-muted small">/ {{ (int) ($q->points ?? 0) }}</span>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr>
@@ -138,6 +187,11 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-sm btn-primary">Simpan Nilai</button>
+                    </div>
+                    </form>
 
                 </div>
             </div>

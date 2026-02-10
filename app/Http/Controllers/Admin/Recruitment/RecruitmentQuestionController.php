@@ -76,6 +76,15 @@ class RecruitmentQuestionController extends Controller
             ->take($length)
             ->get()
             ->map(function (RecruitmentFormQuestion $q) {
+                $sortedOptions = $q->options->sortBy('sort_order')->values();
+                $correctIndex = null;
+                foreach ($sortedOptions as $idx => $opt) {
+                    if ((bool) ($opt->is_correct ?? false)) {
+                        $correctIndex = $idx + 1; // 1-based for UI
+                        break;
+                    }
+                }
+
                 return [
                     'id' => (int) $q->getKey(),
                     'type' => (string) $q->type,
@@ -84,7 +93,8 @@ class RecruitmentQuestionController extends Controller
                     'is_required' => (bool) $q->is_required,
                     'sort_order' => (int) $q->sort_order,
                     'points' => (int) $q->points,
-                    'options' => $q->options->sortBy('sort_order')->pluck('option_text')->values()->all(),
+                    'options' => $sortedOptions->pluck('option_text')->values()->all(),
+                    'correct_option_index' => $correctIndex,
                     'actions' => [
                         'update_url' => route('admin.recruitment.questions.update', $q->getKey()),
                         'delete_url' => route('admin.recruitment.questions.destroy', $q->getKey()),
