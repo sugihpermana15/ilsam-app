@@ -61,8 +61,7 @@
                   <th>{{ __('assets.fields.asset_code') }}</th>
                   <th>{{ __('assets.fields.asset_name') }}</th>
                   <th>{{ __('assets.fields.category') }}</th>
-                  <th>{{ __('assets.fields.qty') }}</th>
-                  <th>{{ __('assets.fields.uom') }}</th>
+                  
                   <th>{{ __('assets.fields.deleted_at') }}</th>
                   <th>{{ __('assets.fields.deleted_by') }}</th>
                   <th>{{ __('assets.history_delete.table.action') }}</th>
@@ -75,8 +74,7 @@
                   <td>{{ $asset->asset_code }}</td>
                   <td>{{ $asset->asset_name }}</td>
                   <td>{{ $asset->asset_category }}</td>
-                  <td>{{ $asset->qty ?? '-' }}</td>
-                  <td>{{ $asset->satuan ?? '-' }}</td>
+                  
                   <td>{{ $asset->deleted_at ? \Carbon\Carbon::parse($asset->deleted_at)->format('d-m-Y H:i') : '-' }}
                   </td>
                   <td>

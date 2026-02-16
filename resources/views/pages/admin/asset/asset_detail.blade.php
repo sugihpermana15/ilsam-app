@@ -49,9 +49,30 @@
         $lastUpdated = $asset->last_updated ? \Carbon\Carbon::parse($asset->last_updated)->format('d-m-Y H:i') : '-';
 
         $price = $asset->price !== null ? 'Rp. ' . number_format($asset->price, 0, ',', '.') : '-';
-        $qtyText = ($asset->qty !== null && $asset->qty !== '') ? $asset->qty : '-';
-        $qtyUom = $qtyText !== '-' ? ($qtyText . ' ' . ($asset->satuan ?: '')) : '-';
-        $qtyUom = trim($qtyUom) ?: '-';
+
+        $deviceAge = '-';
+        if (!empty($asset->purchase_date)) {
+            try {
+                $pd = \Carbon\Carbon::parse($asset->purchase_date)->startOfDay();
+                $now = now()->startOfDay();
+                if ($pd->lessThanOrEqualTo($now)) {
+                    $months = $pd->diffInMonths($now);
+                    $years = intdiv($months, 12);
+                    $remMonths = $months % 12;
+                    if ($years > 0 && $remMonths > 0) {
+                        $deviceAge = $years . ' th ' . $remMonths . ' bln';
+                    } elseif ($years > 0) {
+                        $deviceAge = $years . ' th';
+                    } elseif ($remMonths > 0) {
+                        $deviceAge = $remMonths . ' bln';
+                    } else {
+                        $deviceAge = $pd->diffInDays($now) . ' hr';
+                    }
+                }
+            } catch (\Throwable $e) {
+                $deviceAge = '-';
+            }
+        }
 
         $statusRaw = (string) ($asset->asset_status ?? '');
         $statusBadge = match ($statusRaw) {
@@ -172,8 +193,12 @@
                             <div class="fw-semibold">{{ $asset->asset_location ?: '-' }}</div>
                         </div>
                         <div class="col-md-6">
-                            <div class="text-muted small">{{ __('assets.summary.qty') }}</div>
-                            <div class="fw-semibold">{{ $qtyUom }}</div>
+                            <div class="text-muted small">{{ __('assets.summary.location_detail') }}</div>
+                            <div class="fw-semibold">{{ $asset->asset_location_detail ?: '-' }}</div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-muted small">{{ __('assets.summary.device_age') }}</div>
+                            <div class="fw-semibold">{{ $deviceAge }}</div>
                         </div>
                         <div class="col-md-6">
                             <div class="text-muted small">{{ __('assets.summary.price') }}</div>

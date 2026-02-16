@@ -165,8 +165,10 @@
                   <th>{{ __('assets.fields.serial_number') }}</th>
                   <th>{{ __('assets.fields.category') }}</th>
                   <th>{{ __('assets.fields.location') }}</th>
+                  <th>{{ __('assets.fields.location_detail') }}</th>
                   <th>{{ __('assets.fields.pic') }}</th>
                   <th>{{ __('assets.fields.purchase_date') }}</th>
+                  <th>{{ __('assets.fields.device_age') }}</th>
                   <th>{{ __('assets.fields.price') }}</th>
                   <th>{{ __('assets.fields.condition') }}</th>
                   <th>{{ __('assets.fields.ownership_status') }}</th>
@@ -249,6 +251,14 @@
                   </div>
 
                   <div class="col-md-6">
+                    <label class="form-label">{{ __('assets.fields.location_detail') }}</label>
+                    <input type="text" class="form-control @error('asset_location_detail') is-invalid @enderror" name="asset_location_detail" value="{{ old('asset_location_detail') }}" placeholder="Main Office / Produksi (Resin/Toner) / Kode area">
+                    @error('asset_location_detail')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
+
+                  <div class="col-md-6">
                     <label class="form-label">{{ __('assets.fields.brand_type_model') }}</label>
                     <input type="text" class="form-control" name="brand_type_model" value="{{ old('brand_type_model') }}">
                   </div>
@@ -275,28 +285,6 @@
                     @error('price')
                       <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">{{ __('assets.fields.qty') }}</label>
-                    <input type="number" class="form-control @error('qty') is-invalid @enderror" name="qty" min="0" placeholder="0" value="{{ old('qty') }}">
-                    @error('qty')
-                      <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">{{ __('assets.fields.uom') }}</label>
-                    <select class="form-select js-select2-modal @error('satuan') is-invalid @enderror" name="satuan">
-                      <option value="">{{ __('assets.pt.select_uom') }}</option>
-                      @foreach(($assetUoms ?? collect()) as $u)
-                        <option value="{{ $u->name }}" {{ old('satuan') == $u->name ? 'selected' : '' }}>{{ $u->name }}</option>
-                      @endforeach
-                    </select>
-                    @error('satuan')
-                      <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                    <small class="text-muted">{{ __('assets.pt.manage_uom_prefix') }} <a href="{{ route('admin.asset_uoms.index') }}">{{ __('menu.master_data') }}</a>.</small>
                   </div>
 
                   <div class="col-md-6">
@@ -491,20 +479,12 @@
                     </select>
                   </div>
 
-                  <div class="col-md-4">
-                    <label class="form-label">{{ __('assets.fields.qty') }}</label>
-                    <input type="number" class="form-control" name="qty" id="edit-qty" min="0">
+                  <div class="col-md-6">
+                    <label class="form-label">{{ __('assets.fields.location_detail') }}</label>
+                    <input type="text" class="form-control" name="asset_location_detail" id="edit-asset-location-detail" placeholder="Main Office / Produksi (Resin/Toner) / Kode area">
                   </div>
-                  <div class="col-md-4">
-                    <label class="form-label">{{ __('assets.fields.uom') }}</label>
-                    <select class="form-select js-select2-modal" name="satuan" id="edit-satuan">
-                      <option value="">{{ __('assets.pt.select_uom') }}</option>
-                      @foreach(($assetUoms ?? collect()) as $u)
-                        <option value="{{ $u->name }}">{{ $u->name }}</option>
-                      @endforeach
-                    </select>
-                  </div>
-                  <div class="col-md-4">
+
+                  <div class="col-md-6">
                     <label class="form-label">{{ __('assets.fields.vendor') }}</label>
                     <select class="form-select js-select2-modal" name="vendor_supplier" id="edit-vendor">
                       <option value="">{{ __('assets.pt.select_vendor') }}</option>
@@ -794,8 +774,10 @@
           { data: 'serial_number', defaultContent: '-' },
           { data: 'asset_category', defaultContent: '-' },
           { data: 'asset_location', defaultContent: '-' },
+          { data: 'asset_location_detail', defaultContent: '-' },
           { data: 'person_in_charge', defaultContent: '-' },
           { data: 'purchase_date', defaultContent: '-' },
+          { data: 'device_age', defaultContent: '-' },
           { data: 'price', defaultContent: '-' },
           { data: 'asset_condition', defaultContent: '-' },
           { data: 'ownership_status', defaultContent: '-' },
@@ -1010,12 +992,12 @@
 
           $('#edit-asset-code').val(data.asset_code || '');
           $('#edit-asset-name').val(data.asset_name || '');
-          $('#edit-qty').val(data.qty ?? '');
           $('#edit-purchase-date').val(data.purchase_date || '');
           $('#edit-price').val(data.price ?? '');
           $('#edit-brand').val(data.brand_type_model || '');
           $('#edit-serial').val(data.serial_number || '');
           $('#edit-invoice').val(data.invoice_number || '');
+          $('#edit-asset-location-detail').val(data.asset_location_detail || '');
           $('#edit-start-use-date').val(data.start_use_date || '');
           $('#edit-description').val(data.description || '');
           $('#edit-notes').val(data.notes || '');
@@ -1027,7 +1009,6 @@
 
           setSelectValueWithFallback('#edit-asset-category', data.asset_category, data.asset_category);
           setSelectValueWithFallback('#edit-asset-location', data.asset_location, data.asset_location);
-          setSelectValueWithFallback('#edit-satuan', data.satuan, data.satuan);
           setSelectValueWithFallback('#edit-vendor', data.vendor_supplier, data.vendor_supplier);
           setSelectValueWithFallback('#edit-department-id', data.department_id, data.department);
           setSelectValueWithFallback('#edit-pic-id', data.person_in_charge_employee_id, data.person_in_charge);

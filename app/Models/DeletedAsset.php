@@ -25,6 +25,7 @@ class DeletedAsset extends Model
     'vendor_supplier',
     'invoice_number',
     'asset_location',
+    'asset_location_detail',
     'department',
     'person_in_charge',
     'ownership_status',

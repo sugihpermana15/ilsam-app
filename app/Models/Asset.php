@@ -27,6 +27,7 @@ class Asset extends Model
     'vendor_supplier',
     'invoice_number',
     'asset_location',
+    'asset_location_detail',
     'department',
     'department_id',
     'person_in_charge',

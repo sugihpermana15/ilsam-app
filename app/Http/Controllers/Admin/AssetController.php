@@ -19,7 +19,6 @@ use Dompdf\Options;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 use Milon\Barcode\DNS1D;
 
@@ -312,7 +311,8 @@ class AssetController extends Controller
     try {
       // Generate barcode using milon/barcode library
       $barcode = new DNS1D();
-      $barcodeBase64 = $barcode->getBarcodePNG($code, 'C128', 2, 60, [0, 0, 0], false);
+      // Use a higher resolution to improve scan reliability (especially after printing)
+      $barcodeBase64 = $barcode->getBarcodePNG($code, 'C128', 3, 120, [0, 0, 0], false);
 
       // Check if result is base64 encoded
       if (!empty($barcodeBase64)) {
@@ -322,16 +322,20 @@ class AssetController extends Controller
           $barcodeBase64 = explode(',', $barcodeBase64)[1] ?? $barcodeBase64;
         }
 
-        // Decode base64 to binary
+        // Decode base64 to binary (tolerate non-strict base64; some environments may insert whitespace)
         $barcodeImage = base64_decode($barcodeBase64, true);
-
         if ($barcodeImage === false) {
+          $barcodeImage = base64_decode($barcodeBase64, false);
+        }
+
+        if ($barcodeImage === false || $barcodeImage === '') {
           throw new \Exception('Failed to decode barcode base64');
         }
 
         return response($barcodeImage, 200)
           ->header('Content-Type', 'image/png')
-          ->header('Cache-Control', 'public, max-age=3600');
+          ->header('Content-Disposition', 'inline; filename="barcode-' . preg_replace('/[^A-Za-z0-9._-]+/', '_', (string) $code) . '.png"')
+          ->header('Cache-Control', 'private, max-age=3600');
       } else {
         throw new \Exception('Barcode generation returned empty result');
       }
@@ -414,6 +418,7 @@ class AssetController extends Controller
           ->orWhere('serial_number', 'like', $like)
           ->orWhere('asset_category', 'like', $like)
           ->orWhere('asset_location', 'like', $like)
+          ->orWhere('asset_location_detail', 'like', $like)
           ->orWhere('person_in_charge', 'like', $like)
           ->orWhere('ownership_status', 'like', $like)
           ->orWhere('asset_status', 'like', $like)
@@ -434,11 +439,10 @@ class AssetController extends Controller
       'serial_number' => 'serial_number',
       'asset_category' => 'asset_category',
       'asset_location' => 'asset_location',
+      'asset_location_detail' => 'asset_location_detail',
       'person_in_charge' => 'person_in_charge',
       'purchase_date' => 'purchase_date',
       'price' => 'price',
-      'qty' => 'qty',
-      'satuan' => 'satuan',
       'asset_condition' => 'asset_condition',
       'ownership_status' => 'ownership_status',
       'asset_status' => 'asset_status',
@@ -462,11 +466,10 @@ class AssetController extends Controller
         'serial_number',
         'asset_category',
         'asset_location',
+        'asset_location_detail',
         'person_in_charge',
         'purchase_date',
         'price',
-        'qty',
-        'satuan',
         'asset_condition',
         'ownership_status',
         'asset_status',
@@ -480,6 +483,31 @@ class AssetController extends Controller
           ? 'Rp. ' . number_format((float) $asset->price, 0, ',', '.')
           : '-';
 
+        $deviceAge = '-';
+        if (!empty($asset->purchase_date)) {
+          try {
+            $pd = Carbon::parse($asset->purchase_date)->startOfDay();
+            $now = now()->startOfDay();
+            if ($pd->lessThanOrEqualTo($now)) {
+              $months = $pd->diffInMonths($now);
+              $years = intdiv($months, 12);
+              $remMonths = $months % 12;
+              if ($years > 0 && $remMonths > 0) {
+                $deviceAge = $years . ' th ' . $remMonths . ' bln';
+              } elseif ($years > 0) {
+                $deviceAge = $years . ' th';
+              } elseif ($remMonths > 0) {
+                $deviceAge = $remMonths . ' bln';
+              } else {
+                $days = $pd->diffInDays($now);
+                $deviceAge = $days . ' hr';
+              }
+            }
+          } catch (\Throwable $e) {
+            $deviceAge = '-';
+          }
+        }
+
         return [
           'id' => $asset->id,
           'asset_code' => $asset->asset_code,
@@ -487,11 +515,11 @@ class AssetController extends Controller
           'serial_number' => $asset->serial_number,
           'asset_category' => $asset->asset_category,
           'asset_location' => $asset->asset_location,
+          'asset_location_detail' => $asset->asset_location_detail,
           'person_in_charge' => $asset->person_in_charge,
           'purchase_date' => $purchaseDate,
+          'device_age' => $deviceAge,
           'price' => $priceDisplay,
-          'qty' => $asset->qty,
-          'satuan' => $asset->satuan,
           'asset_condition' => $asset->asset_condition,
           'ownership_status' => $asset->ownership_status,
           'asset_status' => $asset->asset_status,
@@ -560,6 +588,7 @@ class AssetController extends Controller
           ->orWhere('serial_number', 'like', $like)
           ->orWhere('asset_category', 'like', $like)
           ->orWhere('asset_location', 'like', $like)
+          ->orWhere('asset_location_detail', 'like', $like)
           ->orWhere('person_in_charge', 'like', $like)
           ->orWhere('ownership_status', 'like', $like)
           ->orWhere('asset_status', 'like', $like)
@@ -581,6 +610,7 @@ class AssetController extends Controller
         'serial_number',
         'asset_category',
         'asset_location',
+      'asset_location_detail',
         'person_in_charge',
         'purchase_date',
         'price',
@@ -591,6 +621,30 @@ class AssetController extends Controller
         'last_updated',
       ])
       ->map(function (Asset $asset) {
+        $deviceAge = '-';
+        if (!empty($asset->purchase_date)) {
+          try {
+            $pd = Carbon::parse($asset->purchase_date)->startOfDay();
+            $now = now()->startOfDay();
+            if ($pd->lessThanOrEqualTo($now)) {
+              $months = $pd->diffInMonths($now);
+              $years = intdiv($months, 12);
+              $remMonths = $months % 12;
+              if ($years > 0 && $remMonths > 0) {
+                $deviceAge = $years . ' th ' . $remMonths . ' bln';
+              } elseif ($years > 0) {
+                $deviceAge = $years . ' th';
+              } elseif ($remMonths > 0) {
+                $deviceAge = $remMonths . ' bln';
+              } else {
+                $deviceAge = $pd->diffInDays($now) . ' hr';
+              }
+            }
+          } catch (\Throwable $e) {
+            $deviceAge = '-';
+          }
+        }
+
         return [
           'id' => $asset->id,
           'asset_code' => (string) ($asset->asset_code ?? ''),
@@ -598,8 +652,10 @@ class AssetController extends Controller
           'serial_number' => (string) ($asset->serial_number ?? ''),
           'asset_category' => (string) ($asset->asset_category ?? ''),
           'asset_location' => (string) ($asset->asset_location ?? ''),
+          'asset_location_detail' => (string) ($asset->asset_location_detail ?? ''),
           'person_in_charge' => (string) ($asset->person_in_charge ?? ''),
           'purchase_date' => $asset->purchase_date ? Carbon::parse($asset->purchase_date)->format('d-m-Y') : '-',
+          'device_age' => $deviceAge,
           'price' => $asset->price !== null ? ('Rp. ' . number_format((float) $asset->price, 0, ',', '.')) : '-',
           'asset_condition' => (string) ($asset->asset_condition ?? ''),
           'ownership_status' => (string) ($asset->ownership_status ?? ''),
@@ -779,7 +835,7 @@ class AssetController extends Controller
   public function store(Request $request)
   {
     // Ensure empty select values don't break validation (some setups may not convert '' to null)
-    foreach (['satuan', 'vendor_supplier', 'department_id', 'person_in_charge_employee_id'] as $key) {
+    foreach (['vendor_supplier', 'department_id', 'person_in_charge_employee_id'] as $key) {
       if ($request->has($key) && $request->input($key) === '') {
         $request->merge([$key => null]);
       }
@@ -798,13 +854,6 @@ class AssetController extends Controller
       'description' => 'nullable',
       'purchase_date' => 'nullable|date',
       'price' => 'nullable|numeric',
-      'qty' => 'nullable|integer|min:0',
-      'satuan' => [
-        'nullable',
-        'string',
-        'max:50',
-        Rule::exists('m_igi_asset_uoms', 'name')->where(fn($q) => $q->where('is_active', true)),
-      ],
       'vendor_supplier' => [
         'nullable',
         'string',
@@ -817,6 +866,7 @@ class AssetController extends Controller
         'string',
         Rule::exists('m_igi_asset_locations', 'name')->where(fn($q) => $q->where('is_active', true)),
       ],
+      'asset_location_detail' => ['nullable', 'string', 'max:255'],
       'department_id' => ['nullable', 'integer', Rule::exists('m_igi_departments', 'id')],
       'person_in_charge_employee_id' => ['nullable', 'integer', Rule::exists('m_igi_employees', 'id')],
       'department' => ['nullable', 'string', 'max:255'],
@@ -848,10 +898,13 @@ class AssetController extends Controller
     }
 
     // Normalize empty strings from select fields
-    foreach (['satuan', 'vendor_supplier', 'department', 'person_in_charge'] as $key) {
+    foreach (['vendor_supplier', 'department', 'person_in_charge'] as $key) {
       if (array_key_exists($key, $validated) && trim((string) $validated[$key]) === '') {
         $validated[$key] = null;
       }
+    }
+    if (array_key_exists('asset_location_detail', $validated) && trim((string) $validated['asset_location_detail']) === '') {
+      $validated['asset_location_detail'] = null;
     }
     // Handle file uploads
     foreach (['image_1', 'image_2', 'image_3'] as $imgField) {
@@ -913,8 +966,7 @@ class AssetController extends Controller
       'asset_name' => $asset->asset_name,
       'asset_category' => $asset->asset_category,
       'asset_location' => $asset->asset_location,
-      'qty' => $asset->qty,
-      'satuan' => $asset->satuan,
+      'asset_location_detail' => $asset->asset_location_detail,
       'vendor_supplier' => $asset->vendor_supplier,
       'invoice_number' => $asset->invoice_number,
       'brand_type_model' => $asset->brand_type_model,
@@ -946,7 +998,7 @@ class AssetController extends Controller
   {
     $asset = Asset::findOrFail($id);
 
-    foreach (['satuan', 'vendor_supplier', 'department_id', 'person_in_charge_employee_id'] as $key) {
+    foreach (['vendor_supplier', 'department_id', 'person_in_charge_employee_id'] as $key) {
       if ($request->has($key) && $request->input($key) === '') {
         $request->merge([$key => null]);
       }
@@ -965,13 +1017,6 @@ class AssetController extends Controller
       'description' => 'nullable',
       'purchase_date' => 'nullable|date',
       'price' => 'nullable|numeric',
-      'qty' => 'nullable|integer|min:0',
-      'satuan' => [
-        'nullable',
-        'string',
-        'max:50',
-        Rule::exists('m_igi_asset_uoms', 'name')->where(fn($q) => $q->where('is_active', true)),
-      ],
       'vendor_supplier' => [
         'nullable',
         'string',
@@ -984,6 +1029,7 @@ class AssetController extends Controller
         'string',
         Rule::exists('m_igi_asset_locations', 'name')->where(fn($q) => $q->where('is_active', true)),
       ],
+      'asset_location_detail' => ['nullable', 'string', 'max:255'],
       'department_id' => ['nullable', 'integer', Rule::exists('m_igi_departments', 'id')],
       'person_in_charge_employee_id' => ['nullable', 'integer', Rule::exists('m_igi_employees', 'id')],
       'department' => ['nullable', 'string', 'max:255'],
@@ -1014,10 +1060,13 @@ class AssetController extends Controller
       }
     }
 
-    foreach (['satuan', 'vendor_supplier', 'department', 'person_in_charge'] as $key) {
+    foreach (['vendor_supplier', 'department', 'person_in_charge'] as $key) {
       if (array_key_exists($key, $validated) && trim((string) $validated[$key]) === '') {
         $validated[$key] = null;
       }
+    }
+    if (array_key_exists('asset_location_detail', $validated) && trim((string) $validated['asset_location_detail']) === '') {
+      $validated['asset_location_detail'] = null;
     }
     // Handle file uploads
     foreach (['image_1', 'image_2', 'image_3'] as $imgField) {

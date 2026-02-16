@@ -89,8 +89,10 @@
         <th style="width: 13%">Serial</th>
         <th class="nowrap" style="width: 6%">Category</th>
         <th class="nowrap" style="width: 6%">Location</th>
+        <th class="nowrap" style="width: 7%">Area</th>
         <th style="width: 11%">PIC</th>
         <th class="nowrap" style="width: 7%">Purchase</th>
+        <th class="nowrap" style="width: 6%">Age</th>
         <th style="width: 8%">Price</th>
         <th class="nowrap" style="width: 6%">Condition</th>
         <th class="nowrap" style="width: 6%">Ownership</th>
@@ -108,8 +110,10 @@
           <td>{{ $a['serial_number'] !== '' ? $a['serial_number'] : '-' }}</td>
           <td class="nowrap">{{ $a['asset_category'] !== '' ? $a['asset_category'] : '-' }}</td>
           <td class="nowrap">{{ $a['asset_location'] !== '' ? $a['asset_location'] : '-' }}</td>
+          <td class="nowrap">{{ ($a['asset_location_detail'] ?? '') !== '' ? $a['asset_location_detail'] : '-' }}</td>
           <td class="cell-pic">{{ $a['person_in_charge'] !== '' ? $a['person_in_charge'] : '-' }}</td>
           <td class="nowrap">{{ $a['purchase_date'] ?? '-' }}</td>
+          <td class="nowrap">{{ $a['device_age'] ?? '-' }}</td>
           <td class="cell-price">{{ $a['price'] ?? '-' }}</td>
           <td class="nowrap">{{ $a['asset_condition'] !== '' ? $a['asset_condition'] : '-' }}</td>
           <td class="nowrap">{{ $a['ownership_status'] !== '' ? $a['ownership_status'] : '-' }}</td>
@@ -119,7 +123,7 @@
         </tr>
       @empty
         <tr>
-          <td colspan="14" class="muted">Tidak ada data.</td>
+          <td colspan="16" class="muted">Tidak ada data.</td>
         </tr>
       @endforelse
     </tbody>
