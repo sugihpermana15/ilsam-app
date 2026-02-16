@@ -1113,23 +1113,8 @@ class AssetController extends Controller
       }
     }
 
-    // Generate asset_code otomatis hanya jika kategori/lokasi berubah
-
-    // start_use_date boleh diubah untuk stok tanpa mengubah kode.
-    $shouldRegenerateCode =
-      ($asset->asset_category !== ($validated['asset_category'] ?? null)) ||
-      ($asset->asset_location !== ($validated['asset_location'] ?? null));
-
-    if ($shouldRegenerateCode) {
-      $validated['asset_code'] = $this->generateUniqueAssetCode(
-        $validated['asset_category'],
-        $validated['asset_location'],
-        $validated['start_use_date'] ?? ($asset->start_use_date ?? null),
-        $validated['purchase_date'] ?? ($asset->purchase_date ?? null),
-      );
-    } else {
-      unset($validated['asset_code']);
-    }
+    // Never change asset_code on update; keep the original number stable.
+    unset($validated['asset_code']);
 
     $validated['last_updated'] = now();
     $asset->update($validated);
