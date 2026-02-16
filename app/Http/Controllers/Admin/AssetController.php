@@ -28,12 +28,20 @@ class AssetController extends Controller
   private function nextAssetSequence(string $assetCategory): int
   {
     $extractSeq = static function (?string $code): ?int {
-      if (empty($code)) {
+      if ($code === null) {
         return null;
       }
-      if (!preg_match('/-(\d{6})$/', $code, $m)) {
+
+      $code = trim($code);
+      if ($code === '') {
         return null;
       }
+
+      // Support legacy sequences that may not be zero-padded to 6 digits
+      if (!preg_match('/-(\d{1,6})$/', $code, $m)) {
+        return null;
+      }
+
       return (int) $m[1];
     };
 
@@ -73,6 +81,46 @@ class AssetController extends Controller
     }
 
     return $max + 1;
+  }
+
+  private function generateUniqueAssetCode(
+    string $assetCategory,
+    string $assetLocation,
+    ?string $startUseDate,
+    ?string $purchaseDate
+  ): string {
+    $catMap = [
+      'IT' => 'IT',
+      'Vehicle' => 'VH',
+      'Machine' => 'MC',
+      'Furniture' => 'FR',
+      'Other' => 'OT',
+    ];
+    $locMap = [
+      'Jababeka' => '01',
+      'Karawang' => '02',
+    ];
+
+    $catPrefix = AssetCategory::query()->where('code', $assetCategory)->value('asset_code_prefix');
+    $locPrefix = AssetLocation::query()->where('name', $assetLocation)->value('asset_code_prefix');
+    $cat = $catPrefix ?: ($catMap[$assetCategory] ?? 'XX');
+    $loc = $locPrefix ?: ($locMap[$assetLocation] ?? '00');
+
+    $dateSource = $startUseDate ?? ($purchaseDate ?? now()->toDateString());
+    $date = date('Ymd', strtotime($dateSource));
+
+    $seq = $this->nextAssetSequence($assetCategory);
+    for ($i = 0; $i < 500; $i++) {
+      $urut = str_pad($seq + $i, 6, '0', STR_PAD_LEFT);
+      $assetCode = "IGI-$cat-$loc-$date-$urut";
+
+      $exists = Asset::withTrashed()->where('asset_code', $assetCode)->exists();
+      if (!$exists) {
+        return $assetCode;
+      }
+    }
+
+    throw new \RuntimeException('Failed to generate a unique asset code.');
   }
 
   public function transfer(Request $request)
@@ -916,29 +964,13 @@ class AssetController extends Controller
       }
     }
 
-    // Generate asset_code otomatis
-    $catMap = [
-      'IT' => 'IT',
-      'Vehicle' => 'VH',
-      'Machine' => 'MC',
-      'Furniture' => 'FR',
-      'Other' => 'OT',
-    ];
-    $locMap = [
-      'Jababeka' => '01',
-      'Karawang' => '02',
-    ];
-    $catPrefix = AssetCategory::query()->where('code', $validated['asset_category'])->value('asset_code_prefix');
-    $locPrefix = AssetLocation::query()->where('name', $validated['asset_location'])->value('asset_code_prefix');
-    $cat = $catPrefix ?: ($catMap[$validated['asset_category']] ?? 'XX');
-    $loc = $locPrefix ?: ($locMap[$validated['asset_location']] ?? '00');
-    $dateSource = $validated['start_use_date'] ?? ($validated['purchase_date'] ?? now()->toDateString());
-    $date = date('Ymd', strtotime($dateSource));
-    // Hitung urutan per kategori berdasarkan nomor terakhir (max) + 1
-    $nextSeq = $this->nextAssetSequence($validated['asset_category']);
-    $urut = str_pad($nextSeq, 6, '0', STR_PAD_LEFT);
-    $asset_code = "IGI-$cat-$loc-$date-$urut";
-    $validated['asset_code'] = $asset_code;
+    // Generate asset_code otomatis (uniqueness-safe)
+    $validated['asset_code'] = $this->generateUniqueAssetCode(
+      $validated['asset_category'],
+      $validated['asset_location'],
+      $validated['start_use_date'] ?? null,
+      $validated['purchase_date'] ?? null,
+    );
     $validated['input_date'] = now();
     $validated['last_updated'] = now();
     Asset::create($validated);
@@ -1081,18 +1113,7 @@ class AssetController extends Controller
       }
     }
 
-    // Generate asset_code otomatis hanya jika kategori/lokasi/tanggal berubah
-    $catMap = [
-      'IT' => 'IT',
-      'Vehicle' => 'VH',
-      'Machine' => 'MC',
-      'Furniture' => 'FR',
-      'Other' => 'OT',
-    ];
-    $locMap = [
-      'Jababeka' => '01',
-      'Karawang' => '02',
-    ];
+    // Generate asset_code otomatis hanya jika kategori/lokasi berubah
 
     // start_use_date boleh diubah untuk stok tanpa mengubah kode.
     $shouldRegenerateCode =
@@ -1100,17 +1121,12 @@ class AssetController extends Controller
       ($asset->asset_location !== ($validated['asset_location'] ?? null));
 
     if ($shouldRegenerateCode) {
-      $catPrefix = AssetCategory::query()->where('code', $validated['asset_category'])->value('asset_code_prefix');
-      $locPrefix = AssetLocation::query()->where('name', $validated['asset_location'])->value('asset_code_prefix');
-      $cat = $catPrefix ?: ($catMap[$validated['asset_category']] ?? 'XX');
-      $loc = $locPrefix ?: ($locMap[$validated['asset_location']] ?? '00');
-      $dateSource = $validated['start_use_date'] ?? ($asset->start_use_date ?? ($validated['purchase_date'] ?? ($asset->purchase_date ?? now()->toDateString())));
-      $date = date('Ymd', strtotime($dateSource));
-
-      $nextSeq = $this->nextAssetSequence($validated['asset_category']);
-      $urut = str_pad($nextSeq, 6, '0', STR_PAD_LEFT);
-      $asset_code = "IGI-$cat-$loc-$date-$urut";
-      $validated['asset_code'] = $asset_code;
+      $validated['asset_code'] = $this->generateUniqueAssetCode(
+        $validated['asset_category'],
+        $validated['asset_location'],
+        $validated['start_use_date'] ?? ($asset->start_use_date ?? null),
+        $validated['purchase_date'] ?? ($asset->purchase_date ?? null),
+      );
     } else {
       unset($validated['asset_code']);
     }
