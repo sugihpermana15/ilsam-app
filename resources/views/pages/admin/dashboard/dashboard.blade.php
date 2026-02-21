@@ -884,6 +884,22 @@
                           <div class="card-body position-relative z-1">
                             <div class="d-flex justify-content-between align-items-center">
                               <div>
+                                <div class="text-muted">Resign</div>
+                                <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['resign'] ?? 0) }}</div>
+                              </div>
+                              <div class="text-danger fs-3"><i class="fas fa-user-slash"></i></div>
+                            </div>
+                          </div>
+                          <img src="{{ asset('assets/img/dashboard/academy-bg3.png') }}" alt=""
+                            class="position-absolute bottom-0 end-0 h-100 w-100 object-fit-cover kpi-bg-img">
+                        </div>
+                      </div>
+
+                      <div class="col">
+                        <div class="card overflow-hidden h-100 kpi-card">
+                          <div class="card-body position-relative z-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div>
                                 <div class="text-muted">PKWT (Aktif)</div>
                                 <div class="fs-4 fw-semibold">{{ number_format($employee['kpi']['active_pkwt'] ?? 0) }}</div>
                               </div>

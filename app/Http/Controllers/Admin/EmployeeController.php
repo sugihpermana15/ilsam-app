@@ -12,7 +12,6 @@ use App\Models\EmployeeSequence;
 use App\Models\Position;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -59,6 +58,7 @@ class EmployeeController extends Controller
       'department_id' => $employee->department_id,
       'position_id' => $employee->position_id,
       'employment_status' => $employee->employment_status,
+      'resign_date' => optional($employee->resign_date)->format('Y-m-d'),
       'join_date' => optional($employee->join_date)->format('Y-m-d'),
       'photo' => $employee->photo,
     ];
@@ -194,6 +194,7 @@ class EmployeeController extends Controller
           'department_id' => $validated['department_id'],
           'position_id' => $validated['position_id'],
           'employment_status' => $validated['employment_status'] ?? null,
+          'resign_date' => $validated['resign_date'] ?? null,
           'join_date' => $validated['join_date'],
           'photo' => $photoPath,
         ]);
@@ -249,6 +250,10 @@ class EmployeeController extends Controller
 
         if (array_key_exists('employment_status', $validated)) {
           $updates['employment_status'] = $validated['employment_status'];
+        }
+
+        if (array_key_exists('resign_date', $validated)) {
+          $updates['resign_date'] = $validated['resign_date'];
         }
 
         $removePhoto = !empty($validated['remove_photo']);

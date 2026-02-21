@@ -25,12 +25,14 @@ class Employee extends Model
     'department_id',
     'position_id',
     'employment_status',
+    'resign_date',
     'join_date',
     'photo',
   ];
 
   protected $casts = [
     'birth_date' => 'date',
+    'resign_date' => 'date',
     'join_date' => 'date',
     'deleted_at' => 'datetime',
   ];

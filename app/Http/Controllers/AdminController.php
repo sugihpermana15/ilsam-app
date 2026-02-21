@@ -177,6 +177,10 @@ class AdminController extends Controller
 
         $inactiveEmployees = max(0, $totalEmployees - $activeEmployees);
 
+        $resignEmployees = Employee::query()
+            ->where('employment_status', 'Resign')
+            ->count();
+
         $activePkwt = Employee::query()->where('employment_status', 'PKWT')->count();
         $activePkwtt = Employee::query()->where('employment_status', 'PKWTT')->count();
 
@@ -196,6 +200,7 @@ class AdminController extends Controller
                 'total' => $totalEmployees,
                 'active' => $activeEmployees,
                 'inactive' => $inactiveEmployees,
+                'resign' => $resignEmployees,
                 'active_pkwt' => $activePkwt,
                 'active_pkwtt' => $activePkwtt,
                 'joined_30d' => $joined30d,

@@ -116,6 +116,7 @@
                         data-department-id="{{ $employee->department_id }}"
                         data-position-id="{{ $employee->position_id }}"
                         data-employment-status="{{ $employee->employment_status }}"
+                        data-resign-date="{{ optional($employee->resign_date)->format('Y-m-d') }}"
                         data-address="{{ $employee->address }}"
                         data-phone="{{ $employee->phone }}"
                         data-email="{{ $employee->email }}"
@@ -217,6 +218,11 @@
                   <option value="Resign" @selected(old('employment_status') === 'Resign')>Resign</option>
                   <option value="Keluar" @selected(old('employment_status') === 'Keluar')>Keluar</option>
                 </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Tanggal Resign/Keluar</label>
+                <input type="date" name="resign_date" class="form-control" value="{{ old('resign_date') }}">
               </div>
 
               <div class="col-12">
@@ -347,6 +353,11 @@
                   <option value="Resign" @selected(old('employment_status', $editEmployee?->employment_status) === 'Resign')>Resign</option>
                   <option value="Keluar" @selected(old('employment_status', $editEmployee?->employment_status) === 'Keluar')>Keluar</option>
                 </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Tanggal Resign/Keluar</label>
+                <input type="date" name="resign_date" class="form-control" id="edit_resign_date" value="{{ old('resign_date', optional($editEmployee?->resign_date)->format('Y-m-d')) }}">
               </div>
 
               <div class="col-12">
@@ -495,6 +506,8 @@
         document.getElementById('edit_position_id').value = btn.dataset.positionId || '';
         const employmentStatus = document.getElementById('edit_employment_status');
         if (employmentStatus) employmentStatus.value = btn.dataset.employmentStatus || '';
+        const resignDate = document.getElementById('edit_resign_date');
+        if (resignDate) resignDate.value = btn.dataset.resignDate || '';
         document.getElementById('edit_address').value = btn.dataset.address || '';
         document.getElementById('edit_phone').value = btn.dataset.phone || '';
         document.getElementById('edit_email').value = btn.dataset.email || '';
