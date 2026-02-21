@@ -513,7 +513,7 @@
                                                                             id="add_menu_employees" name="menu_employees"
                                                                             value="1">
                                                                         <label class="form-check-label"
-                                                                            for="add_menu_employees">Master Karyawan <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_employees"></span></label>
+                                                                            for="add_menu_employees">{{ __('menu.employees_master') }} <span class="badge bg-light text-dark ms-2 menu-counter" id="add_menu_counter_employees"></span></label>
                                                                     </div>
                                                                     <div class="ms-3">
                                                                         <div class="form-check">

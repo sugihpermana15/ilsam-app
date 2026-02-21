@@ -21,7 +21,7 @@ return [
         'out' => 'Aset Keluar',
     ],
 
-    'employees_master' => 'Master Karyawan',
+    'employees_master' => 'Manajemen Karyawan',
     'employees' => [
         'employees' => 'Karyawan',
         'deleted' => 'Terhapus',

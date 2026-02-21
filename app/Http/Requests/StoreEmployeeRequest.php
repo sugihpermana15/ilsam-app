@@ -22,7 +22,7 @@ class StoreEmployeeRequest extends FormRequest
       'email' => ['nullable', 'email', 'max:255', 'unique:m_igi_employees,email'],
       'department_id' => ['required', 'integer', 'exists:m_igi_departments,id'],
       'position_id' => ['required', 'integer', 'exists:m_igi_positions,id'],
-      'employment_status' => ['nullable', 'in:PKWT,PKWTT'],
+      'employment_status' => ['nullable', 'in:PKWT,PKWTT,Resign,Keluar'],
       'join_date' => ['required', 'date'],
       'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
     ];

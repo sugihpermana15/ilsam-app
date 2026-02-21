@@ -200,7 +200,7 @@
                         <input type="text" class="form-control" value="{{ $currentEmployee->name }}{{ $currentEmployee->no_id ? ' (' . $currentEmployee->no_id . ')' : '' }}" disabled />
                       @else
                         <div class="alert alert-warning mb-2">
-                          Akun user belum terhubung ke master karyawan. Task akan fallback ke user.
+                          Akun user belum terhubung ke data karyawan. Task akan fallback ke user.
                         </div>
                         <input type="hidden" name="assigned_to" value="{{ auth()->id() }}" />
                         <input type="text" class="form-control" value="{{ auth()->user()->name }}" disabled />

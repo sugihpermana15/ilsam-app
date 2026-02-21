@@ -64,6 +64,7 @@
                 'Aset Keluar' => __('menu.assets.out'),
 
                 'Master Karyawan' => __('menu.employees_master'),
+                'Manajemen Karyawan' => __('menu.employees_master'),
                 'Employees' => __('menu.employees.employees'),
                 'Deleted' => __('menu.employees.deleted'),
                 'Audit Log' => __('menu.employees.audit_log'),
@@ -257,7 +258,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Master Karyawan',
+                            'title' => __('menu.employees_master'),
                             'icon' => 'fas fa-users',
                             'permission_key' => 'employees',
                             'active_routes' => [
@@ -553,7 +554,7 @@
                             ],
                         ],
                         [
-                            'title' => 'Master Karyawan',
+                            'title' => __('menu.employees_master'),
                             'icon' => 'fas fa-users',
                             'permission_key' => 'employees',
                             'active_routes' => [

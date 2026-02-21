@@ -170,8 +170,12 @@ class AdminController extends Controller
     private function buildEmployeeDashboardData(): array
     {
         $totalEmployees = Employee::withTrashed()->count();
-        $activeEmployees = Employee::query()->count();
-        $inactiveEmployees = Employee::onlyTrashed()->count();
+
+        $activeEmployees = Employee::query()
+            ->whereIn('employment_status', ['PKWT', 'PKWTT'])
+            ->count();
+
+        $inactiveEmployees = max(0, $totalEmployees - $activeEmployees);
 
         $activePkwt = Employee::query()->where('employment_status', 'PKWT')->count();
         $activePkwtt = Employee::query()->where('employment_status', 'PKWTT')->count();

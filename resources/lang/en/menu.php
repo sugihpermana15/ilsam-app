@@ -21,7 +21,7 @@ return [
         'out' => 'Assets Out',
     ],
 
-    'employees_master' => 'Employee Master',
+    'employees_master' => 'Employee Management',
     'employees' => [
         'employees' => 'Employees',
         'deleted' => 'Deleted',

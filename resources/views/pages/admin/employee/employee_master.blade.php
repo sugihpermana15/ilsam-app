@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'Master Karyawan | IGI')
+@section('title', 'Manajemen Karyawan | IGI')
 
-@section('title-sub', 'Data Master Karyawan')
-@section('pagetitle', 'Master Karyawan')
+@section('title-sub', 'Manajemen Karyawan')
+@section('pagetitle', 'Manajemen Karyawan')
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -33,9 +33,9 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Data Master Karyawan</h5>
+          <h5 class="card-title mb-0">Manajemen Karyawan</h5>
           <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal" {{ $canCreate ? '' : 'disabled' }} title="{{ $canCreate ? '' : 'Tidak punya akses tambah' }}">
-            <i class="fas fa-plus"></i> Add Employee
+            <i class="fas fa-plus"></i> Tambah Karyawan
           </button>
         </div>
 
@@ -148,7 +148,7 @@
           @csrf
           <input type="hidden" name="modal_context" value="create">
           <div class="modal-header">
-            <h5 class="modal-title">Add Employee</h5>
+            <h5 class="modal-title">Tambah Karyawan</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -209,11 +209,13 @@
               </div>
 
               <div class="col-md-12">
-                <label class="form-label">Status (PKWT/PKWTT)</label>
+                <label class="form-label">Status Kepegawaian</label>
                 <select name="employment_status" class="form-select">
                   <option value="">- Optional -</option>
                   <option value="PKWT" @selected(old('employment_status') === 'PKWT')>PKWT</option>
                   <option value="PKWTT" @selected(old('employment_status') === 'PKWTT')>PKWTT</option>
+                  <option value="Resign" @selected(old('employment_status') === 'Resign')>Resign</option>
+                  <option value="Keluar" @selected(old('employment_status') === 'Keluar')>Keluar</option>
                 </select>
               </div>
 
@@ -267,7 +269,7 @@
           <input type="hidden" name="employee_id" id="edit_employee_id" value="{{ old('employee_id', $editEmployee?->id) }}">
 
           <div class="modal-header">
-            <h5 class="modal-title">Edit Employee</h5>
+            <h5 class="modal-title">Ubah Karyawan</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -337,11 +339,13 @@
               </div>
 
               <div class="col-md-12">
-                <label class="form-label">Status (PKWT/PKWTT)</label>
+                <label class="form-label">Status Kepegawaian</label>
                 <select name="employment_status" class="form-select" id="edit_employment_status">
                   <option value="">- Optional -</option>
                   <option value="PKWT" @selected(old('employment_status', $editEmployee?->employment_status) === 'PKWT')>PKWT</option>
                   <option value="PKWTT" @selected(old('employment_status', $editEmployee?->employment_status) === 'PKWTT')>PKWTT</option>
+                  <option value="Resign" @selected(old('employment_status', $editEmployee?->employment_status) === 'Resign')>Resign</option>
+                  <option value="Keluar" @selected(old('employment_status', $editEmployee?->employment_status) === 'Keluar')>Keluar</option>
                 </select>
               </div>
 
@@ -460,12 +464,12 @@
         e.preventDefault();
         const form = this;
         Swal.fire({
-          title: 'Delete employee?',
-          text: 'This action cannot be undone.',
+          title: 'Hapus karyawan?',
+          text: 'Tindakan ini tidak dapat dibatalkan.',
           icon: 'warning',
           showCancelButton: true,
-          confirmButtonText: 'Yes, delete',
-          cancelButtonText: 'Cancel',
+          confirmButtonText: 'Ya, hapus',
+          cancelButtonText: 'Batal',
         }).then((result) => {
           if (result.isConfirmed) {
             form.submit();
