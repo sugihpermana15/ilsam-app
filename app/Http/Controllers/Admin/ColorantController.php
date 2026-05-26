@@ -28,8 +28,8 @@ class ColorantController extends Controller
             'color' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'bg_color' => 'nullable|string|max:20',
-            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
         ]);
 
         if ($request->hasFile('image1')) {
@@ -56,8 +56,8 @@ class ColorantController extends Controller
             'color' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'bg_color' => 'nullable|string|max:20',
-            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image1' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
+            'image2' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:3072',
         ]);
 
         if ($request->hasFile('image1')) {

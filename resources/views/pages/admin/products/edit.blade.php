@@ -12,6 +12,17 @@
                 <h5 class="card-title mb-0">Edit Colorant</h5>
             </div>
             <div class="card-body">
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Terdapat Kesalahan!</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 <form action="{{ route('admin.colorants.update', $colorant) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
