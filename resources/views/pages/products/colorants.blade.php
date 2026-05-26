@@ -131,13 +131,12 @@
 
         .product-images {
             display: flex;
-            border-bottom: 4px solid #1e3a8a;
             background: #f1f5f9;
         }
 
         .product-image-container {
             width: 50%;
-            padding: 20px;
+            padding: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -149,7 +148,7 @@
 
         .product-image-container img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
             border-radius: 8px;
             mix-blend-mode: multiply;
@@ -459,11 +458,27 @@
     {{-- Product Grid --}}
     <div class="row g-4" id="productGrid">
         @forelse ($colorants ?? collect() as $item)
-            <div class="col-12 col-md-6 col-lg-4 product-item" data-code="{{ strtolower($item->name) }}"
+            @php
+                $bgColor = $item->bg_color ?? '#1e3a8a';
+                $hex = str_replace('#', '', $bgColor);
+                if (strlen($hex) === 3) {
+                    $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
+                    $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
+                    $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+                } else {
+                    $r = hexdec(substr($hex, 0, 2));
+                    $g = hexdec(substr($hex, 2, 2));
+                    $b = hexdec(substr($hex, 4, 2));
+                }
+                $lum = (0.299 * $r + 0.587 * $g + 0.114 * $b) / 255;
+                $textColor = $lum > 0.5 ? '#000000' : '#ffffff';
+            @endphp
+            <div class="col-12 col-md-6 col-lg-3 product-item" data-code="{{ strtolower($item->name) }}"
                 data-color="{{ strtolower($item->color) }}" data-category="{{ $item->category }}">
 
                 <div class="product-card position-relative">
-                    <div class="category-badge" style="background-color: {{ $item->bg_color ?? '#1e3a8a' }};">
+                    <div class="category-badge"
+                        style="background-color: {{ $bgColor }}; color: {{ $textColor }};">
                         {{ $item->category }}
                     </div>
 
@@ -471,7 +486,7 @@
                         <div class="product-image-container">
                             @if ($item->image1)
                                 <img src="{{ asset('storage/' . $item->image1) }}" alt="{{ $item->name }} bottle"
-                                    loading="lazy">
+                                    loading="lazy" style="cursor: zoom-in;" onclick="showImageModal(this.src, '{{ addslashes($item->name) }}')">
                             @else
                                 <div class="text-muted small">No Image</div>
                             @endif
@@ -479,14 +494,15 @@
                         <div class="product-image-container">
                             @if ($item->image2)
                                 <img src="{{ asset('storage/' . $item->image2) }}" alt="{{ $item->name }} liquid"
-                                    loading="lazy">
+                                    loading="lazy" style="cursor: zoom-in;" onclick="showImageModal(this.src, '{{ addslashes($item->name) }}')">
                             @else
                                 <div class="text-muted small">No Image</div>
                             @endif
                         </div>
                     </div>
 
-                    <div class="product-code" style="background-color: {{ $item->bg_color ?? '#1e3a8a' }};">
+                    <div class="product-code"
+                        style="background-color: {{ $bgColor }}; color: {{ $textColor }};">
                         {{ $item->name }}
                     </div>
 
@@ -509,13 +525,28 @@
 
     {{-- No Results State (JS toggled) --}}
     <div id="noResults" class="empty-state hidden mt-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-search mb-3"
-            viewBox="0 0 16 16">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
+            class="bi bi-search mb-3" viewBox="0 0 16 16">
             <path
                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
         </svg>
         <h4>{{ __('website.catalog.search.no_results') }}</h4>
         <p class="text-muted mb-0">{!! __('website.catalog.search.no_results_desc') !!}</p>
+    </div>
+
+    {{-- Image Modal --}}
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+                <div class="modal-header bg-light border-0 px-4 py-3 align-items-center">
+                    <h5 class="modal-title fw-bold text-dark fs-5" id="modalTitle">Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="box-shadow: none;"></button>
+                </div>
+                <div class="modal-body text-center p-4 bg-white">
+                    <img src="" id="modalImage" class="img-fluid" alt="Preview" style="max-height: 70vh; object-fit: contain;">
+                </div>
+            </div>
+        </div>
     </div>
 
 @endsection
@@ -527,6 +558,13 @@
             const categoryFilter = document.getElementById('categoryFilter');
             const productItems = document.querySelectorAll('.product-item');
             const noResults = document.getElementById('noResults');
+
+            window.showImageModal = function(src, title) {
+                document.getElementById('modalImage').src = src;
+                document.getElementById('modalTitle').textContent = title || 'Preview';
+                var myModal = new bootstrap.Modal(document.getElementById('imageModal'));
+                myModal.show();
+            };
 
             function filterProducts() {
                 const searchTerm = searchInput.value.toLowerCase().trim();
