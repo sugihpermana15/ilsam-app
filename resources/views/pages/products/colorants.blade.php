@@ -329,19 +329,18 @@
 @section('products_content')
 
     <div class="catalog-header">
-        <h2>ILSAM PRODUCT CATALOG</h2>
-        <p class="mb-5">Professional chemical colorants engineered for PU, PVC, and Printing applications. Find the perfect color for
-            your industrial needs.</p>
+        <h2>{{ __('website.catalog.title') }}</h2>
+        <p class="mb-5">{{ __('website.catalog.desc') }}</p>
     </div>
 
     {{-- Premium Category Info Cards --}}
     <div class="category-cards-grid">
         <!-- Card 1: COLORANTS -->
         <div class="category-info-card">
-            <div class="card-header">COLORANTS</div>
+            <div class="card-header">{{ __('website.catalog.colorants.title') }}</div>
             <div class="card-body">
                 <div class="info-block">
-                    <div class="info-block-title">For Leather & Synthetic Leather PU</div>
+                    <div class="info-block-title">{{ __('website.catalog.colorants.leather_pu') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">SW</span>
                         <span class="badge-code">SU</span>
@@ -349,21 +348,21 @@
                     </div>
                 </div>
                 <div class="info-block">
-                    <div class="info-block-title">For Synthetic Leather PVC</div>
+                    <div class="info-block-title">{{ __('website.catalog.colorants.leather_pvc') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">SV</span>
                         <span class="badge-code">SFV</span>
                     </div>
                 </div>
                 <div class="info-block">
-                    <div class="info-block-title">For Printing</div>
+                    <div class="info-block-title">{{ __('website.catalog.colorants.printing') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">SP</span>
                         <span class="badge-code">SG</span>
                     </div>
                 </div>
                 <div class="info-block">
-                    <div class="info-block-title">For Water-based</div>
+                    <div class="info-block-title">{{ __('website.catalog.colorants.water_based') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">SUW</span>
                     </div>
@@ -373,10 +372,10 @@
 
         <!-- Card 2: SURFACE COATING AGENTS -->
         <div class="category-info-card">
-            <div class="card-header">SURFACE COATING AGENTS</div>
+            <div class="card-header">{{ __('website.catalog.surface_coating.title') }}</div>
             <div class="card-body">
                 <div class="info-block">
-                    <div class="info-block-title">Solution-type Surface Coating Agent for Leather and Synthetic Leather PU and PVC</div>
+                    <div class="info-block-title">{{ __('website.catalog.surface_coating.solution_type') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">SUS</span>
                     </div>
@@ -386,10 +385,10 @@
 
         <!-- Card 3: ADDITIVE COATING -->
         <div class="category-info-card">
-            <div class="card-header">ADDITIVE COATING</div>
+            <div class="card-header">{{ __('website.catalog.additive_coating.title') }}</div>
             <div class="card-body">
                 <div class="info-block">
-                    <div class="info-block-title">Supplementary agent for promoting quality and curing PU and PVC</div>
+                    <div class="info-block-title">{{ __('website.catalog.additive_coating.supplementary') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">SC</span>
                         <span class="badge-code">SS</span>
@@ -401,10 +400,10 @@
 
         <!-- Card 4: PU RESIN -->
         <div class="category-info-card">
-            <div class="card-header">PU RESIN</div>
+            <div class="card-header">{{ __('website.catalog.pu_resin.title') }}</div>
             <div class="card-body">
                 <div class="info-block">
-                    <div class="info-block-title">Skin and Adhesive For Leather and Synthetic Leather PU</div>
+                    <div class="info-block-title">{{ __('website.catalog.pu_resin.skin_adhesive') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">ISU</span>
                         <span class="badge-code">ISA</span>
@@ -418,7 +417,7 @@
                     </div>
                 </div>
                 <div class="info-block">
-                    <div class="info-block-title">Polyester for production Resin PU</div>
+                    <div class="info-block-title">{{ __('website.catalog.pu_resin.polyester') }}</div>
                     <div class="info-block-badges">
                         <span class="badge-code">EB</span>
                         <span class="badge-code">B</span>
@@ -433,7 +432,7 @@
     <div class="filter-bar">
         <div class="row g-3">
             <div class="col-md-8">
-                <label for="searchInput" class="filter-label">Pencarian Produk</label>
+                <label for="searchInput" class="filter-label">{{ __('website.catalog.search.product_search') }}</label>
                 <div class="custom-search-wrapper">
                     <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor" stroke-width="2">
@@ -441,13 +440,13 @@
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input type="text" id="searchInput" class="custom-search-input"
-                        placeholder="Cari berdasarkan kode (misal: 736DF) atau warna (misal: BLACK)...">
+                        placeholder="{{ __('website.catalog.search.placeholder') }}">
                 </div>
             </div>
             <div class="col-md-4">
-                <label for="categoryFilter" class="filter-label">Kategori</label>
+                <label for="categoryFilter" class="filter-label">{{ __('website.catalog.search.category') }}</label>
                 <select id="categoryFilter" class="filter-select">
-                    <option value="all">Semua Kategori</option>
+                    <option value="all">{{ __('website.catalog.search.all_categories') }}</option>
                     <option value="COLORANTS">COLORANTS</option>
                     <option value="SURFACE COATING AGENTS">SURFACE COATING AGENTS</option>
                     <option value="ADDITIVE COATING">ADDITIVE COATING</option>

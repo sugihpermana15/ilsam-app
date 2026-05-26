@@ -182,33 +182,34 @@ return [
         ],
         'business_philosophy' => [
             'title' => 'Filosofi Manajemen',
-            'motto_title' => 'Moto Perusahaan',
+            'motto_title' => 'MOTTO PERUSAHAAN',
+            'motto_desc' => 'Hal-hal yang mencerminkan misi, nilai, identitas, atau antusiasme perusahaan bagi karyawan.',
             'motto' => [
                 'good_health' => [
-                    'title' => 'Kesehatan',
-                    'desc' => 'Kami mengutamakan keselamatan dan kesejahteraan sebagai dasar pertumbuhan yang berkelanjutan.',
+                    'title' => 'KESEHATAN (GOOD HEALTH)',
+                    'desc' => 'Pekerja memperoleh derajat kesehatan yang setinggi-tingginya, baik fisik, mental, maupun sosial, dengan mencegah dan mengobati penyakit atau masalah kesehatan yang disebabkan oleh pekerjaan dan lingkungan.',
                 ],
                 'loyalty' => [
-                    'title' => 'Loyalitas',
-                    'desc' => 'Kami menjaga komitmen dan membangun kepercayaan melalui integritas dan konsistensi.',
+                    'title' => 'LOYALITAS (LOYALTY)',
+                    'desc' => 'Tanggung jawab tinggi karyawan terhadap perusahaan sebagai bentuk apresiasi yang diberikan oleh perusahaan kepada karyawannya.',
                 ],
                 'justice' => [
-                    'title' => 'Keadilan',
-                    'desc' => 'Kami menjunjung keadilan dan transparansi dalam setiap keputusan dan kemitraan.',
+                    'title' => 'KEADILAN (JUSTICE)',
+                    'desc' => 'Persepsi karyawan mengenai keadilan di tempat kerja.',
                 ],
                 'morality' => [
-                    'title' => 'Moralitas',
-                    'desc' => 'Kami bertindak bertanggung jawab dan menjunjung standar etika dalam pekerjaan.',
+                    'title' => 'MORALITAS (MORALITY)',
+                    'desc' => 'Sikap individu dalam suatu kelompok terhadap lingkungan kerja mereka dan bekerja sama secara sukarela untuk mengerahkan kemampuan mereka demi mencapai tujuan organisasi.',
                 ],
             ],
             'aria' => 'Bagian hero filosofi manajemen',
-            'quote' => 'Bertumbuh bersama melalui kepercayaan dan inovasi',
-            'slogans_title' => 'Slogan Perusahaan',
+            'quote' => 'Tumbuh bersama melalui kepercayaan dan inovasi',
+            'slogans_title' => 'SLOGAN',
             'slogans' => [
-                '1' => 'Kualitas Utama',
-                '2' => 'Suplai Andal',
-                '3' => 'Layanan Berfokus Pelanggan',
-                '4' => 'Inovasi Berkelanjutan',
+                '1' => 'Katakan "Saya tahu" jika yakin, "Saya tidak tahu" jika tidak yakin.',
+                '2' => 'Selalu berpikir dan berinovasi dengan senyuman.',
+                '3' => 'Kami bertindak setelah melihat dari dekat, mendengarkan dengan saksama, dan memahami dengan jelas.',
+                '4' => 'Jadilah orang baik, tersenyumlah, dan nikmati hidup.',
             ],
         ],
     ],
@@ -478,6 +479,37 @@ return [
         'cta' => [
             'heading_fallback' => 'Butuh bantuan memilih grade yang tepat?',
             'text_fallback' => 'Sampaikan aplikasi target dan kebutuhan Anda. Tim kami akan merespons dengan rekomendasi langkah berikutnya.',
+        ],
+    ],
+
+    'catalog' => [
+        'title' => 'KATALOG PRODUK ILSAM',
+        'desc' => 'Pewarna kimia profesional yang dirancang khusus untuk aplikasi PU, PVC, dan Printing. Temukan warna yang tepat untuk kebutuhan industri Anda.',
+        'colorants' => [
+            'title' => 'PEWARNA (COLORANTS)',
+            'leather_pu' => 'Untuk Kulit & Kulit Sintetis PU',
+            'leather_pvc' => 'Untuk Kulit Sintetis PVC',
+            'printing' => 'Untuk Printing / Cetak',
+            'water_based' => 'Berbasis Air (Water-based)',
+        ],
+        'surface_coating' => [
+            'title' => 'AGEN PELAPIS PERMUKAAN',
+            'solution_type' => 'Agen Pelapis Permukaan tipe Solusi untuk Kulit dan Kulit Sintetis PU serta PVC',
+        ],
+        'additive_coating' => [
+            'title' => 'ADITIF PELAPIS',
+            'supplementary' => 'Agen tambahan untuk meningkatkan kualitas dan curing PU serta PVC',
+        ],
+        'pu_resin' => [
+            'title' => 'RESIN PU',
+            'skin_adhesive' => 'Skin dan Perekat Untuk Kulit serta Kulit Sintetis PU',
+            'polyester' => 'Poliester untuk produksi Resin PU',
+        ],
+        'search' => [
+            'product_search' => 'Pencarian Produk',
+            'placeholder' => 'Cari berdasarkan kode (misal: 736DF) atau warna (misal: BLACK)...',
+            'category' => 'Kategori',
+            'all_categories' => 'Semua Kategori',
         ],
     ],
 ];

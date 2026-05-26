@@ -224,33 +224,34 @@ return [
         ],
         'business_philosophy' => [
             'title' => 'Management Philosophy',
-            'motto_title' => 'Company Motto',
+            'motto_title' => 'COMPANY MOTTO',
+            'motto_desc' => "Things that reflect the company's mission, values, identity, or enthusiasm for employees.",
             'motto' => [
                 'good_health' => [
-                    'title' => 'Good Health',
-                    'desc' => 'We value safety and well-being as the foundation of sustainable growth.',
+                    'title' => 'GOOD HEALTH',
+                    'desc' => 'Workers obtain the highest degree of health, both physical, spiritual and social, by preventing and treating diseases or health problems caused by work and the environment.',
                 ],
                 'loyalty' => [
-                    'title' => 'Loyalty',
-                    'desc' => 'We honor commitments and build trust through integrity and consistency.',
+                    'title' => 'LOYALTY',
+                    'desc' => 'High responsibility of employees towards their company as a form of appreciation given by the company to its employees.',
                 ],
                 'justice' => [
-                    'title' => 'Justice',
-                    'desc' => 'We pursue fairness and transparency in all decisions and partnerships.',
+                    'title' => 'JUSTICE',
+                    'desc' => 'Employee perceptions about fairness at work.',
                 ],
                 'morality' => [
-                    'title' => 'Morality',
-                    'desc' => 'We act responsibly and uphold ethical standards in our work.',
+                    'title' => 'MORALITY',
+                    'desc' => 'The attitude of individuals in a group towards their work environment and working together voluntarily to mobilize their abilities to achieve organizational goals.',
                 ],
             ],
             'aria' => 'Management philosophy hero section',
             'quote' => 'Growing together through trust and innovation',
-            'slogans_title' => 'Company Slogans',
+            'slogans_title' => 'SLOGAN',
             'slogans' => [
-                '1' => 'Quality First',
-                '2' => 'Reliable Supply',
-                '3' => 'Customer-Centric Service',
-                '4' => 'Continuous Innovation',
+                '1' => 'Say "I know" when sure, "I don\'t know" when unsure.',
+                '2' => 'Always think and innovate with a smile.',
+                '3' => 'We act after looking closely, listening carefully and understanding clearly.',
+                '4' => 'Be good, smile and enjoy life.',
             ],
         ],
     ],
@@ -478,6 +479,37 @@ return [
         'cta' => [
             'heading_fallback' => 'Need help choosing the right grade?',
             'text_fallback' => 'Share your target application and requirements. Our team will respond with the next recommended steps.',
+        ],
+    ],
+
+    'catalog' => [
+        'title' => 'ILSAM PRODUCT CATALOG',
+        'desc' => 'Professional chemical colorants engineered for PU, PVC, and Printing applications. Find the perfect color for your industrial needs.',
+        'colorants' => [
+            'title' => 'COLORANTS',
+            'leather_pu' => 'For Leather & Synthetic Leather PU',
+            'leather_pvc' => 'For Synthetic Leather PVC',
+            'printing' => 'For Printing',
+            'water_based' => 'For Water-based',
+        ],
+        'surface_coating' => [
+            'title' => 'SURFACE COATING AGENTS',
+            'solution_type' => 'Solution-type Surface Coating Agent for Leather and Synthetic Leather PU and PVC',
+        ],
+        'additive_coating' => [
+            'title' => 'ADDITIVE COATING',
+            'supplementary' => 'Supplementary agent for promoting quality and curing PU and PVC',
+        ],
+        'pu_resin' => [
+            'title' => 'PU RESIN',
+            'skin_adhesive' => 'Skin and Adhesive For Leather and Synthetic Leather PU',
+            'polyester' => 'Polyester for production Resin PU',
+        ],
+        'search' => [
+            'product_search' => 'Product Search',
+            'placeholder' => 'Search by code (e.g. 736DF) or color (e.g. BLACK)...',
+            'category' => 'Category',
+            'all_categories' => 'All Categories',
         ],
     ],
 ];

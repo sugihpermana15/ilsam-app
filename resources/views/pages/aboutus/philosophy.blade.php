@@ -35,6 +35,7 @@
                 <div class="col-12">
                     <div class="section__title-wrapper text-center mb-60 mb-sm-40 mb-xs-35">
                         <h2 class="section__title title-animation text-capitalize rr-br-hidden-md" data-cursor="-opaque">{{ __('website.about.business_philosophy.motto_title') }}</h2>
+                        <p class="mt-20 text-muted fs-5">{{ __('website.about.business_philosophy.motto_desc') }}</p>
                     </div>
                 </div>
             </div>
@@ -48,7 +49,7 @@
                     <div class="working-process__item text-center mb-30 mt-30">
                         <div class="working-process__item-icon mb-40">
                             <div class="working-process__item-icon-img" aria-hidden="true">
-                                <i class="bi bi-activity"></i>
+                                <i class="fa-solid fa-circle-plus fa-2x"></i>
                             </div>
                         </div>
                         <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.good_health.title') }}</h4>
@@ -62,7 +63,7 @@
                     <div class="working-process__item text-center mb-30">
                         <div class="working-process__item-icon mb-40">
                             <div class="working-process__item-icon-img" aria-hidden="true">
-                                <i class="bi bi-hand-thumbs-up-fill"></i>
+                                <i class="fa-solid fa-handshake fa-2x"></i>
                             </div>
                         </div>
                         <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.loyalty.title') }}</h4>
@@ -76,7 +77,7 @@
                     <div class="working-process__item text-center mb-30 mt-30">
                         <div class="working-process__item-icon mb-40">
                             <div class="working-process__item-icon-img" aria-hidden="true">
-                                <i class="bi bi-bank2"></i>
+                                <i class="fa-solid fa-gavel fa-2x"></i>
                             </div>
                         </div>
                         <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.justice.title') }}</h4>
@@ -88,7 +89,7 @@
                     <div class="working-process__item text-center mb-30">
                         <div class="working-process__item-icon mb-40">
                             <div class="working-process__item-icon-img" aria-hidden="true">
-                                <i class="bi bi-shield-lock-fill"></i>
+                                <i class="fa-solid fa-hand-holding-heart fa-2x"></i>
                             </div>
                         </div>
                         <h4 class="title mb-10">{{ __('website.about.business_philosophy.motto.morality.title') }}</h4>
@@ -127,12 +128,24 @@
                 </div>
 
                 <div class="row justify-content-center">
-                    <div class="col-12 col-lg-8">
-                        <ul class="company-slogan__list company-slogan__list--center mb-0 wow fadeInUp" data-wow-delay=".15s">
-                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.1') }}</li>
-                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.2') }}</li>
-                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.3') }}</li>
-                            <li class="company-slogan__item">{{ __('website.about.business_philosophy.slogans.4') }}</li>
+                    <div class="col-12 col-lg-10">
+                        <ul class="company-slogan__list list-unstyled mb-0 wow fadeInUp" data-wow-delay=".15s">
+                            <li class="company-slogan__item p-4 mb-4 shadow-sm rounded-4 bg-white d-flex align-items-center" style="border-left: 5px solid var(--rr-theme-primary, #0056b3);">
+                                <i class="fa-solid fa-check-circle text-primary me-3 fs-3"></i>
+                                <span class="fs-5 fw-medium text-dark">{{ __('website.about.business_philosophy.slogans.1') }}</span>
+                            </li>
+                            <li class="company-slogan__item p-4 mb-4 shadow-sm rounded-4 bg-white d-flex align-items-center" style="border-left: 5px solid var(--rr-theme-primary, #0056b3);">
+                                <i class="fa-solid fa-check-circle text-primary me-3 fs-3"></i>
+                                <span class="fs-5 fw-medium text-dark">{{ __('website.about.business_philosophy.slogans.2') }}</span>
+                            </li>
+                            <li class="company-slogan__item p-4 mb-4 shadow-sm rounded-4 bg-white d-flex align-items-center" style="border-left: 5px solid var(--rr-theme-primary, #0056b3);">
+                                <i class="fa-solid fa-check-circle text-primary me-3 fs-3"></i>
+                                <span class="fs-5 fw-medium text-dark">{{ __('website.about.business_philosophy.slogans.3') }}</span>
+                            </li>
+                            <li class="company-slogan__item p-4 shadow-sm rounded-4 bg-white d-flex align-items-center" style="border-left: 5px solid var(--rr-theme-primary, #0056b3);">
+                                <i class="fa-solid fa-check-circle text-primary me-3 fs-3"></i>
+                                <span class="fs-5 fw-medium text-dark">{{ __('website.about.business_philosophy.slogans.4') }}</span>
+                            </li>
                         </ul>
                     </div>
                 </div>
