@@ -90,9 +90,6 @@ class TechnologyController extends Controller
     {
         $slugToRoute = [
             'colorants' => 'products.colorants',
-            'surface-coating-agents' => 'products.surface-coating-agents',
-            'additive-coating' => 'products.additive-coating',
-            'pu-resin' => 'products.pu-resin',
         ];
 
         $products = collect(WebsiteProducts::all())

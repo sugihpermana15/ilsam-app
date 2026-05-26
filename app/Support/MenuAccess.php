@@ -120,6 +120,9 @@ final class MenuAccess
                 // Daily Tasks
                 'daily_tasks' => self::readCreateUpdate(),
 
+                // Notes
+                'notes' => self::none(),
+
                 // Daily Tasks Masters
                 'daily_task_types' => self::none(),
                 'daily_task_priorities' => self::none(),
@@ -206,6 +209,9 @@ final class MenuAccess
 
             // Daily Tasks
             'daily_tasks' => self::all(),
+
+            // Notes
+            'notes' => self::all(),
 
             // Daily Tasks Masters
             'daily_task_types' => self::all(),

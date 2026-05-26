@@ -361,6 +361,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <script src="{{ asset('assets/js/lang-switch.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/magiccursor.js') }}"></script>
     <script src="{{ asset('assets/js/image-reveal-hover.js') }}"></script>
+    @stack('scripts')
 </body>
 
 </html>

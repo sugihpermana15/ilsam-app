@@ -16,6 +16,7 @@ use App\Http\Controllers\UserDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DeletedUserController;
 use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\NoteController;
 use App\Http\Controllers\Admin\DepartmentController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\AssetController;
@@ -84,9 +85,6 @@ Route::get('/sitemap.xml', function () {
         route('technology.certification-status'),
         route('products'),
         route('products.colorants'),
-        route('products.surface-coating-agents'),
-        route('products.additive-coating'),
-        route('products.pu-resin'),
         route('career'),
         route('contact'),
         route('privacy-policy'),
@@ -143,9 +141,9 @@ Route::post('/contact/send', [ContactController::class, 'send'])
     ->name('contact.send');
 Route::get('/products', [ProductsController::class, 'index'])->name('products');
 Route::get('/products/colorants', [ProductsController::class, 'colorants'])->name('products.colorants');
-Route::get('/products/surface-coating-agents', [ProductsController::class, 'surfaceCoatingAgents'])->name('products.surface-coating-agents');
-Route::get('/products/additive-coating', [ProductsController::class, 'additiveCoating'])->name('products.additive-coating');
-Route::get('/products/pu-resin', [ProductsController::class, 'puResin'])->name('products.pu-resin');
+Route::get('/products/chemical-colorants', [ProductsController::class, 'colorants'])->name('products.chemical-colorants');
+Route::get('/products/colorants/{slug}', [ProductsController::class, 'showColorant'])->name('products.colorants.show');
+
 Route::get('/technology', [TechnologyController::class, 'index'])->name('technology');
 Route::get('/technology/certification-status', [TechnologyController::class, 'certificationStatus'])->name('technology.certification-status');
 Route::get('/certificates/{certificate}/proof', [TechnologyController::class, 'certificateProof'])->name('certificates.proof');
@@ -280,6 +278,15 @@ Route::prefix('admin')->middleware([
     Route::put('/employees/{employee}', [EmployeeController::class, 'update'])->middleware('menu:employees_index')->name('admin.employees.update');
     Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy'])->middleware('menu:employees_index')->name('admin.employees.destroy');
 
+    // Notes (personal; owner-only via policy)
+    Route::get('/notes', [NoteController::class, 'index'])->middleware('menu:notes')->name('admin.notes.index');
+    Route::get('/notes/create', [NoteController::class, 'create'])->middleware('menu:notes,create')->name('admin.notes.create');
+    Route::post('/notes', [NoteController::class, 'store'])->middleware('menu:notes,create')->name('admin.notes.store');
+    Route::get('/notes/{note}', [NoteController::class, 'show'])->middleware('menu:notes')->name('admin.notes.show');
+    Route::get('/notes/{note}/edit', [NoteController::class, 'edit'])->middleware('menu:notes,update')->name('admin.notes.edit');
+    Route::put('/notes/{note}', [NoteController::class, 'update'])->middleware('menu:notes,update')->name('admin.notes.update');
+    Route::delete('/notes/{note}', [NoteController::class, 'destroy'])->middleware('menu:notes,delete')->name('admin.notes.destroy');
+
     // Master Department
     Route::get('/departments', [DepartmentController::class, 'index'])->middleware('menu:departments')->name('admin.departments.index');
     Route::post('/departments', [DepartmentController::class, 'store'])->middleware('menu:departments')->name('admin.departments.store');
@@ -365,6 +372,12 @@ Route::prefix('admin')->middleware([
     // Career Management
     Route::get('/careers', [AdminCareerController::class, 'index'])->middleware('menu:career')->name('admin.careers.index');
     Route::put('/careers/company', [AdminCareerController::class, 'updateCompany'])->middleware('menu:career')->name('admin.careers.company.update');
+
+
+    // Website: Colorants (Product Catalog)
+    Route::resource('/website/colorants', App\Http\Controllers\Admin\ColorantController::class, [
+        'as' => 'admin'
+    ])->middleware('menu:website_products');
 
     // Website: Products content
     Route::get('/website/products', [WebsiteProductController::class, 'index'])->middleware('menu:website_products')->name('admin.website_products.index');

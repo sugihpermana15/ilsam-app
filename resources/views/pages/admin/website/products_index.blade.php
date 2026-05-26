@@ -59,9 +59,6 @@
                     $slug = (string) ($p['slug'] ?? '');
                     $previewUrl = match ($slug) {
                       'colorants' => route('products.colorants'),
-                      'surface-coating-agents' => route('products.surface-coating-agents'),
-                      'additive-coating' => route('products.additive-coating'),
-                      'pu-resin' => route('products.pu-resin'),
                       default => route('products'),
                     };
                   @endphp

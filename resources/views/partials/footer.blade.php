@@ -63,7 +63,7 @@
     <div class="footer__main-wrapper footer__bottom-border">
       <div class="container">
         <div class="row mb-minus-50">
-          <div class="col-lg-4 col-6">
+          <div class="col-lg-4 col-md-6 mb-4">
             <div class="footer__widget footer__widget-item-1">
               <div class="footer__logo mb-35 mb-xs-30">
                 <a href="{{ route('home') }}">
@@ -78,7 +78,7 @@
             </div>
           </div>
 
-          <div class="col-lg-3 col-6">
+          <div class="col-lg-4 col-md-6">
             <div class="footer__widget footer__widget-item-2">
               <div class="footer__widget-title">
                 <h4>{{ __('website.footer.sections.pages') }}</h4>
@@ -95,24 +95,7 @@
             </div>
           </div>
 
-          <div class="col-lg-3 col-6">
-            <div class="footer__widget footer__widget-item-3">
-              <div class="footer__widget-title">
-                <h4>{{ __('website.footer.sections.products') }}</h4>
-              </div>
-
-              <div class="footer__link">
-                <ul>
-                  <li><a href="{{ route('products.colorants') }}">{{ __('website.nav.menu.products_items.chemical_colorants') }}</a></li>
-                  <li><a href="{{ route('products.surface-coating-agents') }}">{{ __('website.nav.menu.products_items.surface_coating_agents') }}</a></li>
-                  <li><a href="{{ route('products.additive-coating') }}">{{ __('website.nav.menu.products_items.additive_coating') }}</a></li>
-                  <li><a href="{{ route('products.pu-resin') }}">{{ __('website.nav.menu.products_items.pu_resin') }}</a></li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-2 col-6">
+          <div class="col-lg-4 col-md-6">
             <div class="footer__widget footer__widget-item-4">
               <div class="footer__widget-title">
                 <h4>{{ __('website.footer.sections.contact_us') }}</h4>

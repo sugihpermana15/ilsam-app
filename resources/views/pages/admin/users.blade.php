@@ -549,6 +549,14 @@
 
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_notes" name="menu_notes"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="add_menu_notes">Notes</label>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
                                                                             id="add_menu_recruitment" name="menu_recruitment"
                                                                             value="1">
                                                                         <label class="form-check-label"
@@ -1220,6 +1228,14 @@
 
                                                                     <div class="form-check">
                                                                         <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_notes" name="menu_notes"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="edit_menu_notes">Notes</label>
+                                                                    </div>
+
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
                                                                             id="edit_menu_recruitment" name="menu_recruitment"
                                                                             value="1">
                                                                         <label class="form-check-label"
@@ -1620,6 +1636,9 @@
                         // Daily Tasks
                         daily_tasks: { read: true, create: true, update: true, delete: false },
 
+                        // Notes
+                        notes: none,
+
                         // Recruitment
                         recruitment: { read: true, create: true, update: true, delete: false },
 
@@ -1701,6 +1720,9 @@
 
                     // Daily Tasks
                     daily_tasks: all,
+
+                    // Notes
+                    notes: all,
 
                     // Recruitment
                     recruitment: all,
@@ -1843,6 +1865,7 @@
                 $('#' + prefix + '_menu_stamps_validation').prop('checked', hasRead(permissions.stamps_validation));
 
                 $('#' + prefix + '_menu_daily_tasks').prop('checked', hasRead(permissions.daily_tasks));
+                $('#' + prefix + '_menu_notes').prop('checked', hasRead(permissions.notes));
                 $('#' + prefix + '_menu_recruitment').prop('checked', hasRead(permissions.recruitment));
                 $('#' + prefix + '_menu_devices').prop('checked', hasRead(permissions.devices));
                 $('#' + prefix + '_menu_assets').prop('checked', hasRead(permissions.assets));
@@ -1898,7 +1921,7 @@
                 const keys = [
                     'user_dashboard', 'admin_dashboard',
                     'stamps', 'stamps_master', 'stamps_transactions', 'stamps_requests', 'stamps_validation',
-                    'daily_tasks', 'recruitment', 'devices',
+                    'daily_tasks', 'notes', 'recruitment', 'devices',
                     'assets', 'assets_data', 'accounts_data', 'accounts_secrets', 'documents_archive', 'documents_restricted', 'assets_jababeka', 'assets_karawang', 'assets_in', 'assets_transfer',
                     'employees', 'employees_index', 'employees_deleted', 'employees_audit',
                     'master_hr', 'master_assets', 'master_accounts', 'master_daily_task',

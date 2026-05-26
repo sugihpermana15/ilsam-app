@@ -174,14 +174,8 @@
                       <li><a href="{{ route('philosophy') }}">{{ __('website.nav.menu.management_philosophy') }}</a></li>
                     </ul>
                   </li>
-                  <li class="has-dropdown">
+                  <li>
                     <a href="{{ route('products') }}">{{ __('website.nav.menu.products') }}</a>
-                    <ul class="submenu">
-                      <li><a href="{{ route('products.colorants') }}">{{ __('website.nav.menu.products_items.chemical_colorants') }}</a></li>
-                      <li><a href="{{ route('products.surface-coating-agents') }}">{{ __('website.nav.menu.products_items.surface_coating_agents') }}</a></li>
-                      <li><a href="{{ route('products.additive-coating') }}">{{ __('website.nav.menu.products_items.additive_coating') }}</a></li>
-                      <li><a href="{{ route('products.pu-resin') }}">{{ __('website.nav.menu.products_items.pu_resin') }}</a></li>
-                    </ul>
                   </li>
                   <li class="has-dropdown">
                     <a href="{{ route('technology') }}">{{ __('website.nav.menu.technology') }}</a>

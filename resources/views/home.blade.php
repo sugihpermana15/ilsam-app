@@ -343,7 +343,7 @@
               <i class="bi bi-brush" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.surface-coating-agents') }}">{{ $productsItemSurface }}</a>
+              <h4 class="title mb-15"><a href="{{ route('products') }}">{{ $productsItemSurface }}</a>
               </h4>
               <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
                 {{ $productsTeaserLine2 }}</p>
@@ -363,7 +363,7 @@
               <i class="bi bi-layers" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.additive-coating') }}">{{ $productsItemAdditive }}</a></h4>
+              <h4 class="title mb-15"><a href="{{ route('products') }}">{{ $productsItemAdditive }}</a></h4>
               <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
                 {{ $productsTeaserLine2 }}</p>
             </div>
@@ -382,7 +382,7 @@
               <i class="bi bi-droplet" aria-hidden="true"></i>
             </div>
             <div class="mt-auto">
-              <h4 class="title mb-15"><a href="{{ route('products.pu-resin') }}">{{ $productsItemPu }}</a></h4>
+              <h4 class="title mb-15"><a href="{{ route('products') }}">{{ $productsItemPu }}</a></h4>
               <p class="mb-0 rr-p-16">{{ $productsTeaserLine1 }} <br>
                 {{ $productsTeaserLine2 }}</p>
             </div>
