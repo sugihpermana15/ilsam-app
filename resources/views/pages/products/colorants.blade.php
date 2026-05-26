@@ -179,21 +179,68 @@
             background-color: #f8fafc;
             font-weight: 600;
             transition: all 0.2s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
+
         .pagination .page-item.active .page-link {
             background-color: #1e3a8a;
             color: white;
-            box-shadow: 0 4px 6px -1px rgba(30,58,138, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.2);
         }
+
         .pagination .page-item .page-link:hover {
             background-color: #e2e8f0;
             color: #1e3a8a;
         }
+
         .pagination .page-item.disabled .page-link {
             background-color: #f1f5f9;
             color: #cbd5e1;
             cursor: not-allowed;
+        }
+
+        /* ── Custom Dark Dropdown (Navbar Style) ────────────── */
+        .filter-btn {
+            background-color: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            color: #334155;
+            transition: all 0.2s;
+        }
+        .filter-btn:focus, .filter-btn[aria-expanded="true"] {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+        }
+        .custom-dark-dropdown {
+            background-color: #111111;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 0;
+            margin-top: 5px;
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        .custom-dark-dropdown .dropdown-item {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 15px;
+            padding: 10px 20px;
+            transition: all 0.3s;
+            position: relative;
+            background: transparent !important;
+        }
+        .custom-dark-dropdown .dropdown-item:hover,
+        .custom-dark-dropdown .dropdown-item.active {
+            color: #007aff;
+            padding-left: 28px;
+        }
+        .custom-dark-dropdown .dropdown-item:hover::before,
+        .custom-dark-dropdown .dropdown-item.active::before {
+            content: "—";
+            position: absolute;
+            left: 10px;
+            color: #007aff;
         }
 
         .product-type {
@@ -465,22 +512,30 @@
                         placeholder="{{ __('website.catalog.search.placeholder') }}">
                 </div>
             </div>
-            </div>
             <div class="col-md-4">
-                <label for="categoryFilter" class="filter-label">{{ __('website.catalog.search.category') }}</label>
-                <select id="categoryFilter" class="filter-select">
-                    <option value="all">{{ __('website.catalog.search.all_categories') }}</option>
-                    <option value="COLORANTS">COLORANTS</option>
-                    <option value="SURFACE COATING AGENTS">SURFACE COATING AGENTS</option>
-                    <option value="ADDITIVE COATING">ADDITIVE COATING</option>
-                    <option value="PU RESIN">PU RESIN</option>
-                </select>
+                <label class="filter-label">{{ __('website.catalog.search.category') }}</label>
+                <div class="dropdown">
+                    <button class="btn w-100 text-start d-flex justify-content-between align-items-center filter-btn" type="button" id="categoryDropdownBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span id="selectedCategoryText">{{ __('website.catalog.search.all_categories') }}</span>
+                        <i class="fa-solid fa-chevron-down ms-2" style="font-size: 12px; color: #94a3b8;"></i>
+                    </button>
+                    <ul class="dropdown-menu w-100 custom-dark-dropdown" aria-labelledby="categoryDropdownBtn">
+                        <li><a class="dropdown-item category-dropdown-item active" href="javascript:void(0)" data-value="all">{{ __('website.catalog.search.all_categories') }}</a></li>
+                        <li><a class="dropdown-item category-dropdown-item" href="javascript:void(0)" data-value="COLORANTS">COLORANTS</a></li>
+                        <li><a class="dropdown-item category-dropdown-item" href="javascript:void(0)" data-value="SURFACE COATING AGENTS">SURFACE COATING AGENTS</a></li>
+                        <li><a class="dropdown-item category-dropdown-item" href="javascript:void(0)" data-value="ADDITIVE COATING">ADDITIVE COATING</a></li>
+                        <li><a class="dropdown-item category-dropdown-item" href="javascript:void(0)" data-value="PU RESIN">PU RESIN</a></li>
+                    </ul>
+                </div>
+                <input type="hidden" id="categoryFilter" value="all">
             </div>
         </div>
-        <div class="row mt-3">
+        <div class="row mt-4 mb-2">
             <div class="col-12 d-flex justify-content-between align-items-center">
-                <div class="text-muted fw-medium" id="productCounter">
-                    Menampilkan total <span class="text-primary fw-bold">{{ count($colorants ?? []) }}</span> produk
+                <div class="product-counter text-muted fw-medium" id="productCounter"
+                    style="background: #f1f5f9; padding: 8px 16px; border-radius: 20px; font-weight: 600; color: #475569; font-size: 0.95rem; border: 1px solid #e2e8f0; display: inline-block;">
+                    <i class="bi bi-box-seam me-2 text-primary"></i> {{ __('website.catalog.search.showing_total') }} <span
+                        class="text-primary fw-bold mx-1">{{ count($colorants ?? []) }}</span> {{ __('website.catalog.search.products') }}
                 </div>
             </div>
         </div>
@@ -517,7 +572,8 @@
                         <div class="product-image-container">
                             @if ($item->image1)
                                 <img src="{{ asset('storage/' . $item->image1) }}" alt="{{ $item->name }} bottle"
-                                    loading="lazy" style="cursor: zoom-in;" onclick="showImageModal(this.src, '{{ addslashes($item->name) }}')">
+                                    loading="lazy" style="cursor: zoom-in;"
+                                    onclick="showImageModal(this.src, '{{ addslashes($item->name) }}')">
                             @else
                                 <div class="text-muted small">No Image</div>
                             @endif
@@ -525,7 +581,8 @@
                         <div class="product-image-container">
                             @if ($item->image2)
                                 <img src="{{ asset('storage/' . $item->image2) }}" alt="{{ $item->name }} liquid"
-                                    loading="lazy" style="cursor: zoom-in;" onclick="showImageModal(this.src, '{{ addslashes($item->name) }}')">
+                                    loading="lazy" style="cursor: zoom-in;"
+                                    onclick="showImageModal(this.src, '{{ addslashes($item->name) }}')">
                             @else
                                 <div class="text-muted small">No Image</div>
                             @endif
@@ -578,10 +635,12 @@
             <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
                 <div class="modal-header bg-light border-0 px-4 py-3 align-items-center">
                     <h5 class="modal-title fw-bold text-dark fs-5" id="modalTitle">Preview</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="box-shadow: none;"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+                        style="box-shadow: none;"></button>
                 </div>
                 <div class="modal-body text-center p-4 bg-white">
-                    <img src="" id="modalImage" class="img-fluid" alt="Preview" style="max-height: 70vh; object-fit: contain;">
+                    <img src="" id="modalImage" class="img-fluid" alt="Preview"
+                        style="max-height: 70vh; object-fit: contain;">
                 </div>
             </div>
         </div>
@@ -619,8 +678,14 @@
                 // Prev Button
                 const prevLi = document.createElement('li');
                 prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
-                prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)" aria-label="Previous">&laquo;</a>`;
-                prevLi.addEventListener('click', () => { if (currentPage > 1) { currentPage--; showPage(); }});
+                prevLi.innerHTML =
+                    `<a class="page-link" href="javascript:void(0)" aria-label="Previous">&laquo;</a>`;
+                prevLi.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        showPage();
+                    }
+                });
                 paginationControls.appendChild(prevLi);
 
                 // Page Numbers
@@ -628,7 +693,10 @@
                     const li = document.createElement('li');
                     li.className = `page-item ${i === currentPage ? 'active' : ''}`;
                     li.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
-                    li.addEventListener('click', () => { currentPage = i; showPage(); });
+                    li.addEventListener('click', () => {
+                        currentPage = i;
+                        showPage();
+                    });
                     paginationControls.appendChild(li);
                 }
 
@@ -636,7 +704,12 @@
                 const nextLi = document.createElement('li');
                 nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
                 nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)" aria-label="Next">&raquo;</a>`;
-                nextLi.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; showPage(); }});
+                nextLi.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        showPage();
+                    }
+                });
                 paginationControls.appendChild(nextLi);
             }
 
@@ -655,10 +728,11 @@
                 });
 
                 renderPagination();
-                
+
                 // Update counter text
                 if (productCounter) {
-                    productCounter.innerHTML = `Menampilkan total <span class="text-primary fw-bold">${visibleItems.length}</span> produk`;
+                    productCounter.innerHTML =
+                        `<i class="bi bi-box-seam me-2 text-primary"></i> {{ __('website.catalog.search.showing_total') }} <span class="text-primary fw-bold mx-1">${visibleItems.length}</span> {{ __('website.catalog.search.products') }}`;
                 }
             }
 
@@ -685,7 +759,8 @@
                 if (visibleItems.length === 0) {
                     if (noResults) noResults.classList.remove('hidden');
                     if (paginationControls) paginationControls.innerHTML = '';
-                    if (productCounter) productCounter.innerHTML = `Menampilkan total <span class="text-primary fw-bold">0</span> produk`;
+                    if (productCounter) productCounter.innerHTML =
+                        `<i class="bi bi-box-seam me-2 text-primary"></i> {{ __('website.catalog.search.showing_total') }} <span class="text-primary fw-bold mx-1">0</span> {{ __('website.catalog.search.products') }}`;
                 } else {
                     if (noResults) noResults.classList.add('hidden');
                     currentPage = 1;
@@ -693,11 +768,31 @@
                 }
             }
 
-            if (searchInput && categoryFilter) {
+            if (searchInput) {
                 searchInput.addEventListener('input', filterProducts);
-                categoryFilter.addEventListener('change', filterProducts);
             }
-            
+
+            // Handle custom category dropdown
+            const categoryItems = document.querySelectorAll('.category-dropdown-item');
+            const selectedCategoryText = document.getElementById('selectedCategoryText');
+
+            categoryItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update Active state
+                    categoryItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update button text and hidden input value
+                    selectedCategoryText.textContent = this.textContent;
+                    categoryFilter.value = this.getAttribute('data-value');
+
+                    // Trigger filter
+                    filterProducts();
+                });
+            });
+
             // Initialize on load
             showPage();
         });

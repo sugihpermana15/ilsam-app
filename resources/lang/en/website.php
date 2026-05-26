@@ -512,8 +512,10 @@ return [
             'all_categories' => 'All Categories',
             'empty_db' => 'No Product',
             'empty_db_desc' => 'Catalog data has not been entered into the system yet.',
-            'no_results' => 'Product not found',
-            'no_results_desc' => 'There are no products matching your keywords or search filters.<br>Please try different keywords.',
+            'no_results' => 'No Products Found',
+            'no_results_desc' => 'Try adjusting your search keywords or filter to find what you are looking for.',
+            'showing_total' => 'Showing total',
+            'products' => 'products',
         ],
     ],
 ];
