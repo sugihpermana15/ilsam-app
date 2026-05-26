@@ -159,18 +159,41 @@
             color: #ffffff;
             text-align: center;
             font-weight: 700;
-            font-size: 1.15rem;
-            padding: 12px;
-            letter-spacing: 0.05em;
+            padding: 15px;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
         }
 
         .product-details {
-            padding: 16px;
+            padding: 20px;
             text-align: center;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: #ffffff;
+        }
+
+        /* ── Pagination ──────────────────────────────── */
+        .pagination .page-item .page-link {
+            border-radius: 8px;
+            margin: 0 4px;
+            border: none;
+            color: #475569;
+            background-color: #f8fafc;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: #1e3a8a;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(30,58,138, 0.2);
+        }
+        .pagination .page-item .page-link:hover {
+            background-color: #e2e8f0;
+            color: #1e3a8a;
+        }
+        .pagination .page-item.disabled .page-link {
+            background-color: #f1f5f9;
+            color: #cbd5e1;
+            cursor: not-allowed;
         }
 
         .product-type {
@@ -442,6 +465,7 @@
                         placeholder="{{ __('website.catalog.search.placeholder') }}">
                 </div>
             </div>
+            </div>
             <div class="col-md-4">
                 <label for="categoryFilter" class="filter-label">{{ __('website.catalog.search.category') }}</label>
                 <select id="categoryFilter" class="filter-select">
@@ -451,6 +475,13 @@
                     <option value="ADDITIVE COATING">ADDITIVE COATING</option>
                     <option value="PU RESIN">PU RESIN</option>
                 </select>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 d-flex justify-content-between align-items-center">
+                <div class="text-muted fw-medium" id="productCounter">
+                    Menampilkan total <span class="text-primary fw-bold">{{ count($colorants ?? []) }}</span> produk
+                </div>
             </div>
         </div>
     </div>
@@ -523,6 +554,13 @@
         @endforelse
     </div>
 
+    {{-- Pagination Controls --}}
+    <nav aria-label="Product Pagination" class="mt-5 mb-4">
+        <ul class="pagination justify-content-center" id="paginationControls">
+            {{-- Injected via JS --}}
+        </ul>
+    </nav>
+
     {{-- No Results State (JS toggled) --}}
     <div id="noResults" class="empty-state hidden mt-4">
         <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor"
@@ -558,6 +596,12 @@
             const categoryFilter = document.getElementById('categoryFilter');
             const productItems = document.querySelectorAll('.product-item');
             const noResults = document.getElementById('noResults');
+            const productCounter = document.getElementById('productCounter');
+            const paginationControls = document.getElementById('paginationControls');
+
+            let visibleItems = Array.from(productItems);
+            let currentPage = 1;
+            const itemsPerPage = 12;
 
             window.showImageModal = function(src, title) {
                 document.getElementById('modalImage').src = src;
@@ -566,10 +610,62 @@
                 myModal.show();
             };
 
+            function renderPagination() {
+                paginationControls.innerHTML = '';
+                const totalPages = Math.ceil(visibleItems.length / itemsPerPage);
+
+                if (totalPages <= 1) return;
+
+                // Prev Button
+                const prevLi = document.createElement('li');
+                prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+                prevLi.innerHTML = `<a class="page-link" href="javascript:void(0)" aria-label="Previous">&laquo;</a>`;
+                prevLi.addEventListener('click', () => { if (currentPage > 1) { currentPage--; showPage(); }});
+                paginationControls.appendChild(prevLi);
+
+                // Page Numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement('li');
+                    li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                    li.innerHTML = `<a class="page-link" href="javascript:void(0)">${i}</a>`;
+                    li.addEventListener('click', () => { currentPage = i; showPage(); });
+                    paginationControls.appendChild(li);
+                }
+
+                // Next Button
+                const nextLi = document.createElement('li');
+                nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+                nextLi.innerHTML = `<a class="page-link" href="javascript:void(0)" aria-label="Next">&raquo;</a>`;
+                nextLi.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; showPage(); }});
+                paginationControls.appendChild(nextLi);
+            }
+
+            function showPage() {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+
+                // Hide all initially
+                productItems.forEach(item => item.classList.add('hidden'));
+
+                // Show only items for current page
+                visibleItems.forEach((item, index) => {
+                    if (index >= startIndex && index < endIndex) {
+                        item.classList.remove('hidden');
+                    }
+                });
+
+                renderPagination();
+                
+                // Update counter text
+                if (productCounter) {
+                    productCounter.innerHTML = `Menampilkan total <span class="text-primary fw-bold">${visibleItems.length}</span> produk`;
+                }
+            }
+
             function filterProducts() {
                 const searchTerm = searchInput.value.toLowerCase().trim();
                 const category = categoryFilter.value;
-                let visibleCount = 0;
+                visibleItems = [];
 
                 productItems.forEach(item => {
                     const code = (item.getAttribute('data-code') || '').toLowerCase();
@@ -580,17 +676,20 @@
                     const matchesCategory = category === 'all' || itemCategory === category;
 
                     if (matchesSearch && matchesCategory) {
-                        item.classList.remove('hidden');
-                        visibleCount++;
+                        visibleItems.push(item);
                     } else {
                         item.classList.add('hidden');
                     }
                 });
 
-                if (visibleCount === 0) {
+                if (visibleItems.length === 0) {
                     if (noResults) noResults.classList.remove('hidden');
+                    if (paginationControls) paginationControls.innerHTML = '';
+                    if (productCounter) productCounter.innerHTML = `Menampilkan total <span class="text-primary fw-bold">0</span> produk`;
                 } else {
                     if (noResults) noResults.classList.add('hidden');
+                    currentPage = 1;
+                    showPage();
                 }
             }
 
@@ -598,6 +697,9 @@
                 searchInput.addEventListener('input', filterProducts);
                 categoryFilter.addEventListener('change', filterProducts);
             }
+            
+            // Initialize on load
+            showPage();
         });
     </script>
 @endpush
