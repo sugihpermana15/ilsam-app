@@ -516,6 +516,8 @@ return [
             'no_results_desc' => 'Try adjusting your search keywords or filter to find what you are looking for.',
             'showing_total' => 'Showing total',
             'products' => 'products',
+            'zdhc_badge' => 'Our products are registered at <strong class="text-primary">MRSL LEVEL II</strong> in the ZDHC Gateway.',
+            'verify_now' => 'Verify Now',
         ],
     ],
 ];

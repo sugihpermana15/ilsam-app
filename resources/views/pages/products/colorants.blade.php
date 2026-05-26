@@ -322,18 +322,37 @@
             background: #ffffff;
             border-radius: 12px;
             border: 1px solid #e9ecef;
-            border-top: 4px solid #1e3a8a;
+            border-top: none; /* Make the gradient pseudo-element flush with the top */
             box-shadow: 0 10px 30px -5px rgba(30, 58, 138, 0.08);
-            overflow: hidden;
+            /* overflow: hidden removed to allow pseudo-element to cover borders */
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
+            padding-top: 4px; /* Space for the pseudo-element border */
+        }
+
+        .category-info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -1px; /* Extend over the left border */
+            right: -1px; /* Extend over the right border */
+            height: 4px;
+            background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            transition: all 0.3s ease;
+            z-index: 2;
         }
 
         .category-info-card:hover {
             transform: translateY(-8px);
             box-shadow: 0 20px 40px -10px rgba(30, 58, 138, 0.15);
-            border-top-color: #3b82f6;
+        }
+
+        .category-info-card:hover::before {
+            background: linear-gradient(90deg, #2563eb 0%, #0ea5e9 50%, #10b981 100%);
         }
 
         .category-info-card .card-header {
@@ -399,7 +418,21 @@
 
     <div class="catalog-header">
         <h2>{{ __('website.catalog.title') }}</h2>
-        <p class="mb-5">{{ __('website.catalog.desc') }}</p>
+        <p class="mb-4">{{ __('website.catalog.desc') }}</p>
+
+        <div class="d-inline-flex align-items-center justify-content-center bg-white px-3 py-2 rounded-pill shadow-sm border mb-5" style="transition: all 0.3s ease;">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-success bg-opacity-10 d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">
+                    <i class="fa-solid fa-leaf text-success" style="font-size: 0.9rem;"></i>
+                </div>
+                <span class="text-dark" style="font-size: 0.95rem;">
+                    {!! __('website.catalog.search.zdhc_badge') !!}
+                </span>
+            </div>
+            <a href="https://www.my-aip.com/ZDHCLogin/Login" target="_blank" rel="noopener noreferrer" class="ms-4 btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" style="font-size: 0.8rem; letter-spacing: 0.5px; border-width: 1.5px;">
+                {{ __('website.catalog.search.verify_now') }} <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size: 0.8em;"></i>
+            </a>
+        </div>
     </div>
 
     {{-- Premium Category Info Cards --}}
