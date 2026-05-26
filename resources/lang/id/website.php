@@ -510,6 +510,10 @@ return [
             'placeholder' => 'Cari berdasarkan kode (misal: 736DF) atau warna (misal: BLACK)...',
             'category' => 'Kategori',
             'all_categories' => 'Semua Kategori',
+            'empty_db' => 'Belum Ada Produk',
+            'empty_db_desc' => 'Data katalog belum dimasukkan oleh sistem.',
+            'no_results' => 'Produk tidak ditemukan',
+            'no_results_desc' => 'Tidak ada produk yang cocok dengan kata kunci atau filter pencarian Anda.<br>Silakan coba dengan kata kunci yang lain.',
         ],
     ],
 ];

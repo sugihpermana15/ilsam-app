@@ -510,6 +510,10 @@ return [
             'placeholder' => 'Search by code (e.g. 736DF) or color (e.g. BLACK)...',
             'category' => 'Category',
             'all_categories' => 'All Categories',
+            'empty_db' => 'No Product',
+            'empty_db_desc' => 'Catalog data has not been entered into the system yet.',
+            'no_results' => 'Product not found',
+            'no_results_desc' => 'There are no products matching your keywords or search filters.<br>Please try different keywords.',
         ],
     ],
 ];

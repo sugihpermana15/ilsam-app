@@ -510,6 +510,10 @@ return [
             'placeholder' => '코드(예: 736DF) 또는 색상(예: BLACK)으로 검색...',
             'category' => '카테고리',
             'all_categories' => '모든 카테고리',
+            'empty_db' => '제품 없음',
+            'empty_db_desc' => '카탈로그 데이터가 아직 시스템에 입력되지 않았습니다.',
+            'no_results' => '제품을 찾을 수 없음',
+            'no_results_desc' => '검색어 또는 검색 필터와 일치하는 제품이 없습니다.<br>다른 검색어로 다시 시도해 주세요.',
         ],
     ],
 ];

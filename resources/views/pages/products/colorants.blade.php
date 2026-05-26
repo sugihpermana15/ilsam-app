@@ -500,8 +500,8 @@
         @empty
             <div class="col-12">
                 <div class="empty-state">
-                    <h4 class="mb-2">No Product</h4>
-                    <p class="text-muted">Data katalog belum dimasukkan oleh sistem.</p>
+                    <h4 class="mb-2">{{ __('website.catalog.search.empty_db') }}</h4>
+                    <p class="text-muted">{{ __('website.catalog.search.empty_db_desc') }}</p>
                 </div>
             </div>
         @endforelse
@@ -514,9 +514,8 @@
             <path
                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
         </svg>
-        <h4>Produk tidak ditemukan</h4>
-        <p class="text-muted mb-0">Tidak ada produk yang cocok dengan kata kunci atau filter pencarian Anda.<br>Silakan coba
-            dengan kata kunci yang lain.</p>
+        <h4>{{ __('website.catalog.search.no_results') }}</h4>
+        <p class="text-muted mb-0">{!! __('website.catalog.search.no_results_desc') !!}</p>
     </div>
 
 @endsection
