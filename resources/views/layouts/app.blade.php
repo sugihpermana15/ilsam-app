@@ -92,6 +92,14 @@
         $ogLocale = $ogLocaleMap[$locale] ?? str_replace('-', '_', $locale);
     @endphp
 
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-PW6XPBKM');</script>
+    <!-- End Google Tag Manager -->
+
     <title>{{ $seoTitle }}</title>
     <link rel="shortcut icon" href="{{ $faviconUrl }}" type="image/x-icon">
 
@@ -129,6 +137,9 @@
     <meta name="twitter:description" content="{{ $seoDescription }}">
     <meta name="twitter:image" content="{{ $seoImage }}">
 
+    {{-- Google --}}
+    <meta name="google-site-verification" content="50GxGPpNfEGl9Hkcg8vXOuPTWxJV6yhnH_qgyDBQ6CQ" />
+
     <!-- Performance hints -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
@@ -148,6 +159,11 @@
                     'description' => $seoDescription,
                     'industry' => 'Chemical manufacturing',
                     'knowsAbout' => [
+                        'Pabrik Kimia',
+                        'Pewarna Industri',
+                        'Toner',
+                        'Resin',
+                        'Chemical colorants',
                         'Chemical colorants',
                         'Colorants for PU synthetic leather',
                         'Colorants for PVC synthetic leather',
@@ -247,14 +263,6 @@
     @endphp
     <script type="application/ld+json">{!! json_encode($schemaGraph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-55BLWVW5');</script>
-    <!-- End Google Tag Manager -->
-
     <!-- CSS here -->
     <link rel="stylesheet" href="{{ asset('assets/css/vendor/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/vendor/animate.min.css') }}">
@@ -275,7 +283,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <body>
 
     <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-55BLWVW5"
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PW6XPBKM"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
 

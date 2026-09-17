@@ -1,7 +1,7 @@
 <meta charset="utf-8" />
-<title>{{ title }} | Ilsam Admin & Dashboards </title>
+<title>{{ title }} | PT Ilsam Global Indonesia </title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta content="Admin & Dashboards Ilsam" name="description" />
+<meta content="PT Ilsam Global Indonesia" name="description" />
 <meta content="Ilsam" name="author" />
 
 <!-- layout setup -->
