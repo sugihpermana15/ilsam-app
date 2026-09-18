@@ -57,9 +57,9 @@
 
         $faviconUrl = $toAssetUrl(data_get($ws, 'brand.favicon'), 'assets/img/favicon.png');
 
-        $companyEmail = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
-        $companyPhone = data_get($ws, 'contact.phone_display', '+62 21 89830313');
-        $companyPhoneAlt = data_get($ws, 'contact.phone_display_alt', data_get($ws, 'contact.phone_display', '+62 21 89830314'));
+        $companyEmail = data_get($ws, 'contact.email', 'marketing@ilsam.co.id');
+        $companyPhone = data_get($ws, 'contact.phone_display', '+62 (267) 5200 313');
+        $companyPhoneAlt = data_get($ws, 'contact.phone_display_alt', data_get($ws, 'contact.phone_display', '+62 (267) 5200 313'));
         $companyMapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
         $hqWebsite = data_get($ws, 'top.website_url', 'https://www.ilsam.com');
 
@@ -101,7 +101,7 @@
     <!-- End Google Tag Manager -->
 
     <title>{{ $seoTitle }}</title>
-    <link rel="shortcut icon" href="{{ $faviconUrl }}" type="image/x-icon">
+    <link rel="icon" href="{{ $faviconUrl }}" type="image/x-icon">
 
     <!-- meta tags -->
     <meta charset="utf-8">
