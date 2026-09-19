@@ -45,6 +45,7 @@ use App\Http\Controllers\Admin\Stamp\StampMasterController;
 use App\Http\Controllers\Admin\Stamp\StampReportController;
 use App\Http\Controllers\Admin\Stamp\StampRequestController;
 use App\Http\Controllers\Admin\Stamp\StampTransactionController;
+use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\Uniform\EntitlementMasterController as UniformEntitlementMasterController;
 use App\Http\Controllers\Admin\Uniform\LotMasterController as UniformLotMasterController;
 use App\Http\Controllers\Admin\Uniform\MasterController as UniformMasterController;
@@ -216,6 +217,45 @@ Route::prefix('admin')->middleware([
 
         Route::get('report.pdf', [StampReportController::class, 'pdf'])->middleware('menu:stamps_transactions')->name('report.pdf');
     });
+
+    // Manajemen Stok ATK, Material, dan APD
+    Route::prefix('stock/{category}')
+        ->whereIn('category', ['atk', 'material', 'apd'])
+        ->name('admin.stock.')
+        ->middleware('menu:stock')
+        ->group(function () {
+            Route::get('master', [StockController::class, 'masterIndex'])->name('master.index');
+            Route::get('master/datatable', [StockController::class, 'masterDatatable'])->name('master.datatable');
+            Route::get('master/template', [StockController::class, 'masterTemplate'])->name('master.template');
+            Route::get('master/export', [StockController::class, 'masterExport'])->name('master.export');
+            Route::post('master/import', [StockController::class, 'masterImport'])->middleware('menu:stock,create')->name('master.import');
+            Route::get('master/{stockItem}/json', [StockController::class, 'masterJson'])->whereNumber('stockItem')->name('master.json');
+            Route::post('master', [StockController::class, 'masterStore'])->middleware('menu:stock,create')->name('master.store');
+            Route::put('master/{stockItem}', [StockController::class, 'masterUpdate'])->whereNumber('stockItem')->middleware('menu:stock,update')->name('master.update');
+            Route::patch('master/{stockItem}/toggle', [StockController::class, 'masterToggle'])->whereNumber('stockItem')->middleware('menu:stock,update')->name('master.toggle');
+            Route::delete('master/{stockItem}', [StockController::class, 'masterDestroy'])->whereNumber('stockItem')->middleware('menu:stock,delete')->name('master.destroy');
+
+            Route::get('restock', [StockController::class, 'restockIndex'])->name('restock.index');
+            Route::post('restock', [StockController::class, 'restockStore'])->middleware('menu:stock,create')->name('restock.store');
+
+            Route::get('request', [StockController::class, 'requestIndex'])->name('request.index');
+            Route::post('request', [StockController::class, 'requestStore'])->middleware('menu:stock,create')->name('request.store');
+
+            Route::get('transfer', [StockController::class, 'transferIndex'])->name('transfer.index');
+            Route::post('transfer', [StockController::class, 'transferStore'])->middleware('menu:stock,create')->name('transfer.store');
+            Route::patch('transfer/{transfer}/prepare', [StockController::class, 'transferPrepare'])->middleware('menu:stock,update')->name('transfer.prepare');
+            Route::patch('transfer/{transfer}/ship', [StockController::class, 'transferShip'])->middleware('menu:stock,update')->name('transfer.ship');
+            Route::patch('transfer/{transfer}/receive', [StockController::class, 'transferReceive'])->middleware('menu:stock,update')->name('transfer.receive');
+
+            Route::get('ledger', [StockController::class, 'ledgerIndex'])->name('ledger.index');
+            Route::get('ledger/datatable', [StockController::class, 'ledgerDatatable'])->name('ledger.datatable');
+            Route::get('ledger/export', [StockController::class, 'ledgerExport'])->name('ledger.export');
+            Route::get('report/print', [StockController::class, 'stockReport'])->name('report.print');
+            Route::get('report/pdf', fn (\Illuminate\Http\Request $request, StockController $controller) => $controller->stockReport($request, true))->name('report.pdf');
+        });
+
+    Route::get('stock-notifications', [StockController::class, 'notifications'])->name('admin.stock.notifications');
+    Route::patch('stock-notifications/{notification}/read', [StockController::class, 'notificationRead'])->name('admin.stock.notifications.read');
 
     // Everything else in /admin stays restricted to Super Admin/Admin.
     Route::middleware('role:Super Admin,Admin')->group(function () {

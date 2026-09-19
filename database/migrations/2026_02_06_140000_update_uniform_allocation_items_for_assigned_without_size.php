@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -8,6 +9,23 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (DB::connection()->getDriverName() === 'sqlite') {
+            Schema::table('m_igi_uniform_allocation_items', function (Blueprint $table) {
+                if (!Schema::hasColumn('m_igi_uniform_allocation_items', 'uniform_id')) {
+                    $table->foreignId('uniform_id')
+                        ->nullable()
+                        ->constrained('m_igi_uniforms')
+                        ->restrictOnDelete();
+                    $table->index('uniform_id', 'idx_alloc_uniform');
+                }
+
+                $table->foreignId('uniform_variant_id')->nullable()->change();
+                $table->foreignId('uniform_lot_id')->nullable()->change();
+            });
+
+            return;
+        }
+
         // Add uniform_id for ASSIGNED allocations (no size/lot) and allow variant/lot to be nullable.
         if (!Schema::hasColumn('m_igi_uniform_allocation_items', 'uniform_id')) {
             DB::statement('ALTER TABLE `m_igi_uniform_allocation_items` ADD COLUMN `uniform_id` bigint unsigned NULL AFTER `uniform_allocation_id`');

@@ -117,6 +117,9 @@ final class MenuAccess
                 'stamps_requests' => self::readCreateUpdate(),
                 'stamps_validation' => self::none(),
 
+                // Stock management
+                'stock' => self::none(),
+
                 // Daily Tasks
                 'daily_tasks' => self::readCreateUpdate(),
 
@@ -206,6 +209,9 @@ final class MenuAccess
             'stamps_transactions' => self::all(),
             'stamps_requests' => self::all(),
             'stamps_validation' => self::all(),
+
+            // Stock management
+            'stock' => self::all(),
 
             // Daily Tasks
             'daily_tasks' => self::all(),

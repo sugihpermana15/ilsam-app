@@ -3,7 +3,7 @@
     @php
         $headerHomeUrl = route('home');
         if (auth()->check()) {
-            $isUserRole = ((auth()->user()->role?->role_name ?? null) === 'Users') || ((int) auth()->user()->role_id === 3);
+            $isUserRole = (auth()->user()->role?->role_name ?? null) === 'Users' || (int) auth()->user()->role_id === 3;
             $headerHomeUrl = $isUserRole ? route('user.dashboard') : route('admin.dashboard');
         }
 
@@ -45,6 +45,65 @@
         /* Biar tidak mengganggu layout saat sidebar mode icon/minimize */
         [data-sidebar="icon"] .header-greeting {
             display: none !important;
+        }
+
+        .stock-notification-button {
+            position: relative;
+        }
+
+        .stock-notification-badge {
+            position: absolute;
+            top: -.25rem;
+            right: -.25rem;
+            display: none;
+            min-width: 1.125rem;
+            height: 1.125rem;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            background: #f04438;
+            color: #fff;
+            font-size: .625rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .stock-notification-badge.is-visible {
+            display: inline-flex;
+        }
+
+        .stock-notification-button.has-unread .fa-bell {
+            color: #f26b21;
+            animation: stock-notification-pulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes stock-notification-pulse {
+            50% {
+                transform: scale(1.16);
+            }
+        }
+
+        .stock-notification-toasts {
+            position: fixed;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 1080;
+            width: min(23rem, calc(100vw - 2rem));
+        }
+
+        .stock-notification-toast {
+            margin-top: .75rem;
+            border: 1px solid #d0d5dd;
+            border-left: 4px solid #f26b21;
+            border-radius: .375rem;
+            background: #fff;
+            box-shadow: 0 .75rem 1.5rem rgba(16, 24, 40, .16);
+            padding: .875rem 1rem;
+        }
+
+        .stock-notification-toast.is-low-stock {
+            border-left-color: #f79009;
         }
 
         /* Responsive: keep header/toggle accessible above sidebar overlay */
@@ -113,8 +172,8 @@
                     <button class="header-profile-btn btn gap-1 text-start" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false" aria-label="Profile">
                         <span class="header-btn btn position-relative">
-                            @if(auth()->check())
-                                <img src="{{ Avatar::create(auth()->user()->name ?? auth()->user()->username ?? 'User')->toBase64() }}"
+                            @if (auth()->check())
+                                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
                                     alt="Avatar Image" class="img-fluid rounded-circle">
                                 <span
                                     class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
@@ -132,8 +191,8 @@
                         <div class="p-3 border-bottom">
                             <div class="d-flex align-items-center gap-2">
                                 <div class="shrink-0">
-                                    @if(auth()->check())
-                                        <img src="{{ Avatar::create(auth()->user()->name ?? auth()->user()->username ?? 'User')->toBase64() }}"
+                                    @if (auth()->check())
+                                        <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
                                             alt="Avatar Image" class="avatar-md">
                                     @else
                                         <img src="{{ asset('assets/img/avatar/avatar-10.jpg') }}" alt="Avatar Image"
@@ -141,8 +200,9 @@
                                     @endif
                                 </div>
                                 <div class="min-w-0">
-                                    @if(auth()->check())
-                                        <div class="fw-semibold text-truncate">{{ auth()->user()->name ?? auth()->user()->username }}</div>
+                                    @if (auth()->check())
+                                        <div class="fw-semibold text-truncate">
+                                            {{ auth()->user()->name ?? auth()->user()->username }}</div>
                                         <div class="small text-muted text-truncate">{{ auth()->user()->email }}</div>
                                     @else
                                         <div class="fw-semibold">Guest</div>
@@ -153,7 +213,7 @@
                         </div>
 
                         <div class="p-2 border-bottom">
-                            @if(auth()->check())
+                            @if (auth()->check())
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="dropdown-item">
@@ -172,13 +232,14 @@
                             <h6 class="mb-0">{{ __('settings.choose_language') }}</h6>
                         </div>
                         <div class="p-2">
-                            @foreach($languageOptions as $code => $label)
+                            @foreach ($languageOptions as $code => $label)
                                 <form action="{{ route('language.update') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="locale" value="{{ $code }}">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center justify-content-between">
+                                    <button type="submit"
+                                        class="dropdown-item d-flex align-items-center justify-content-between">
                                         <span>{{ $label }}</span>
-                                        @if($currentLocale === $code)
+                                        @if ($currentLocale === $code)
                                             <i class="fas fa-check"></i>
                                         @endif
                                     </button>
@@ -197,13 +258,14 @@
                             <h6 class="mb-0">{{ __('settings.choose_language') }}</h6>
                         </div>
                         <div class="p-2">
-                            @foreach($languageOptions as $code => $label)
+                            @foreach ($languageOptions as $code => $label)
                                 <form action="{{ route('language.update') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="locale" value="{{ $code }}">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center justify-content-between">
+                                    <button type="submit"
+                                        class="dropdown-item d-flex align-items-center justify-content-between">
                                         <span>{{ $label }}</span>
-                                        @if($currentLocale === $code)
+                                        @if ($currentLocale === $code)
                                             <i class="fas fa-check"></i>
                                         @endif
                                     </button>
@@ -214,21 +276,117 @@
                 </div>
 
                 <div class="dropdown pe-dropdown-mega d-none d-md-block">
-                    <button class="btn header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button id="stockNotificationButton" class="stock-notification-button btn header-btn" type="button"
+                        data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifikasi stok">
                         <i class="fas fa-bell"></i>
+                        <span id="stockNotificationBadge" class="stock-notification-badge">0</span>
                     </button>
                     <div class="dropdown-menu dropdown-mega-md header-dropdown-menu pe-noti-dropdown-menu p-0">
                         <div class="p-3 border-bottom">
                             <h6 class="d-flex align-items-center mb-0">{{ __('common.notification') }} <span
+                                    id="stockNotificationCount"
                                     class="badge bg-secondary rounded-circle align-middle ms-1">0</span></h6>
                         </div>
-                        <div class="p-3">
+                        <div id="stockNotificationList" class="p-3">
                             <div class="text-center text-muted py-4">
                                 {{ __('common.no_notifications') }}
                             </div>
                         </div>
                     </div>
                 </div>
+                <div id="stockNotificationToasts" class="stock-notification-toasts" aria-live="polite"></div>
+                @if (auth()->check())
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const notificationsUrl = @json(route('admin.stock.notifications'));
+                            const readUrl = @json(url('/admin/stock-notifications'));
+                            const count = document.getElementById('stockNotificationCount');
+                            const badge = document.getElementById('stockNotificationBadge');
+                            const button = document.getElementById('stockNotificationButton');
+                            const list = document.getElementById('stockNotificationList');
+                            const toasts = document.getElementById('stockNotificationToasts');
+                            const seenStorageKey = 'stockNotificationLastSeenId';
+                            let initialized = sessionStorage.getItem(seenStorageKey) !== null;
+
+                            const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({
+                                '&': '&amp;',
+                                '<': '&lt;',
+                                '>': '&gt;',
+                                "'": '&#39;',
+                                '"': '&quot;'
+                            })[character]);
+
+                            const updateBadge = unread => {
+                                const label = unread > 99 ? '99+' : String(unread);
+                                if (count) count.textContent = label;
+                                if (badge) {
+                                    badge.textContent = label;
+                                    badge.classList.toggle('is-visible', unread > 0);
+                                }
+                                button?.classList.toggle('has-unread', unread > 0);
+                            };
+
+                            const showToast = notification => {
+                                if (!toasts) return;
+                                const toast = document.createElement('div');
+                                toast.className = `stock-notification-toast${notification.type === 'low_stock' ? ' is-low-stock' : ''}`;
+                                toast.innerHTML = `<div class="d-flex gap-2"><i class="fas ${notification.type === 'low_stock' ? 'fa-triangle-exclamation text-warning' : 'fa-truck-fast text-primary'} mt-1"></i><div><strong>${escapeHtml(notification.title)}</strong><div class="small text-muted mt-1">${escapeHtml(notification.message)}</div></div></div>`;
+                                toasts.appendChild(toast);
+                                window.setTimeout(() => toast.remove(), 7000);
+                            };
+
+                            const renderNotifications = payload => {
+                                updateBadge(payload.unread || 0);
+                                if (!list) return;
+                                if (!payload.data?.length) {
+                                    list.innerHTML = '<div class="text-center text-muted py-4">{{ __('common.no_notifications') }}</div>';
+                                    return;
+                                }
+                                list.innerHTML = payload.data.map(notification =>
+                                    `<a href="${escapeHtml(notification.context_url || '#')}" class="dropdown-item text-wrap border-bottom py-2${notification.read_at ? ' text-muted' : ''}${notification.context_url ? '' : ' disabled'}" data-notification-id="${notification.id}" data-unread="${notification.read_at ? '0' : '1'}" data-context-url="${escapeHtml(notification.context_url || '')}"><strong>${escapeHtml(notification.title)}</strong><br><small>${escapeHtml(notification.message)}</small></a>`
+                                ).join('');
+                                list.querySelectorAll('[data-notification-id]').forEach(element => element.addEventListener('click', function(event) {
+                                    const contextUrl = this.dataset.contextUrl;
+                                    if (!contextUrl) return;
+                                    event.preventDefault();
+                                    const markRead = this.dataset.unread !== '1' ? Promise.resolve() : fetch(`${readUrl}/${this.dataset.notificationId}/read`, {
+                                        method: 'PATCH',
+                                        headers: {
+                                            'X-CSRF-TOKEN': @json(csrf_token()),
+                                            'Accept': 'application/json'
+                                        }
+                                    }).then(response => {
+                                        if (!response.ok) return;
+                                        this.dataset.unread = '0';
+                                        this.classList.add('text-muted');
+                                        updateBadge(Math.max(0, Number(count?.textContent || 0) - 1));
+                                    }).catch(() => {});
+                                    markRead.finally(() => window.location.assign(contextUrl));
+                                }));
+                            };
+
+                            const loadNotifications = () => fetch(notificationsUrl, {
+                                headers: {
+                                    'Accept': 'application/json'
+                                },
+                                cache: 'no-store'
+                            }).then(response => response.ok ? response.json() : null).then(payload => {
+                                if (!payload) return;
+                                const lastSeenId = Number(sessionStorage.getItem(seenStorageKey) || 0);
+                                const newNotifications = initialized ? payload.data.filter(notification => Number(notification.id) > lastSeenId) : [];
+                                const newestNotificationId = Math.max(lastSeenId, ...payload.data.map(notification => Number(notification.id)));
+                                sessionStorage.setItem(seenStorageKey, String(newestNotificationId));
+                                renderNotifications(payload);
+                                newNotifications.filter(notification => ['low_stock', 'transfer_prepared', 'transfer_shipped', 'transfer_received'].includes(notification.type))
+                                    .forEach(showToast);
+                                initialized = true;
+                            }).catch(() => {});
+
+                            loadNotifications();
+                            window.setInterval(loadNotifications, 30000);
+                        });
+                    </script>
+                @endif
                 {{-- <div class="dropdown pe-dropdown-mega d-none d-md-block">
                     <button class="btn btn-icon header-btn p-1" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -291,8 +449,8 @@
                     <button class="header-profile-btn btn gap-1 text-start" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <span class="header-btn btn position-relative">
-                            @if(auth()->check())
-                                <img src="{{ Avatar::create(auth()->user()->name ?? auth()->user()->username ?? 'User')->toBase64() }}"
+                            @if (auth()->check())
+                                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
                                     alt="Avatar Image" class="img-fluid rounded-circle">
                                 <span
                                     class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
@@ -306,7 +464,7 @@
                             @endif
                         </span>
                         <div class="d-none d-lg-block pe-2">
-                            @if(auth()->check())
+                            @if (auth()->check())
                                 <span
                                     class="d-block mb-0 fs-13 fw-semibold">{{ auth()->user()->name ?? auth()->user()->username }}</span>
                                 <span class="d-block mb-0 fs-12 text-muted">{{ auth()->user()->email }}</span>
@@ -318,12 +476,13 @@
                     </button>
                     <div class="dropdown-menu dropdown-mega-sm header-dropdown-menu p-3">
                         <div class="border-bottom pb-2 mb-2 d-flex align-items-center gap-2">
-                            @if(auth()->check())
-                                <img src="{{ Avatar::create(auth()->user()->name ?? auth()->user()->username ?? 'User')->toBase64() }}"
+                            @if (auth()->check())
+                                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
                                     alt="Avatar Image" class="avatar-md">
                                 <div>
                                     <a href="javascript:void(0)">
-                                        <h6 class="mb-0 lh-base">{{ auth()->user()->name ?? auth()->user()->username }}</h6>
+                                        <h6 class="mb-0 lh-base">
+                                            {{ auth()->user()->name ?? auth()->user()->username }}</h6>
                                     </a>
                                     <p class="mb-0 fs-13 text-muted">{{ auth()->user()->email }}</p>
                                 </div>
@@ -343,16 +502,17 @@
                                     View Profile</a></li>
                         </ul> --}}
                         <ul class="list-unstyled mb-0">
-                            @if(auth()->check())
+                            @if (auth()->check())
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST">
                                         @csrf
                                         <button type="submit" class="dropdown-item"><i
-                                                    class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}</button>
+                                                class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}</button>
                                     </form>
                                 </li>
                             @else
-                                    <li><a class="dropdown-item" href=""><i class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}</a>
+                                <li><a class="dropdown-item" href=""><i class="fas fa-sign-out-alt me-1"></i>
+                                        {{ __('auth.logout') }}</a>
                                 </li>
                             @endif
                         </ul>
@@ -365,12 +525,12 @@
 <!-- END Header -->
 
 <script>
-    (function () {
+    (function() {
         const salamEl = document.getElementById('navbarSalam');
         const dateTimeEl = document.getElementById('navbarDateTime');
         if (!salamEl || !dateTimeEl) return;
 
-        const userName = @json(auth()->check() ? (auth()->user()->name ?? auth()->user()->username ?? null) : null);
+        const userName = @json(auth()->check() ? auth()->user()->name ?? (auth()->user()->username ?? null) : null);
 
         const intlLocale = @json($intlLocale);
         const greetings = @json($greetings);
@@ -411,9 +571,10 @@
             <div class="d-flex justify-content-between align-items-center bg-body">
                 <div class="d-flex align-items-center border-0 px-3">
                     <i class="fas fa-search me-2"></i>
-                    <input class="d-flex w-full py-3 bg-transparent border-0 focus-ring" placeholder="{{ __('common.search_here') }}"
-                        autocomplete="off" autocorrect="off" spellcheck="false" aria-autocomplete="list" role="combobox"
-                        aria-expanded="true" type="text">
+                    <input class="d-flex w-full py-3 bg-transparent border-0 focus-ring"
+                        placeholder="{{ __('common.search_here') }}" autocomplete="off" autocorrect="off"
+                        spellcheck="false" aria-autocomplete="list" role="combobox" aria-expanded="true"
+                        type="text">
                 </div>
                 <button type="button" class="btn-close pe-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>

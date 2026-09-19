@@ -4,6 +4,7 @@ namespace Tests\Feature\Erp;
 
 use App\Models\Stamp;
 use App\Models\StampBalance;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\StampStockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -24,7 +25,7 @@ class StampTransactionsTest extends TestCase
 
     public function test_post_in_creates_transaction_and_increases_balance(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUser();
         $this->actingAs($user);
 
         $stamp = Stamp::query()->create([
@@ -53,7 +54,7 @@ class StampTransactionsTest extends TestCase
 
     public function test_post_out_rejects_insufficient_balance(): void
     {
-        $user = User::factory()->create();
+        $user = $this->createAdminUser();
         $this->actingAs($user);
 
         $stamp = Stamp::query()->create([
@@ -77,5 +78,15 @@ class StampTransactionsTest extends TestCase
             'stamp_id' => $stamp->id,
             'qty' => 3,
         ]);
+    }
+
+    private function createAdminUser(): User
+    {
+        $role = Role::query()->firstOrCreate(
+            ['id' => 2],
+            ['role_name' => 'Admin'],
+        );
+
+        return User::factory()->create(['role_id' => $role->id]);
     }
 }

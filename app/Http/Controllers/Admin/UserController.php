@@ -20,7 +20,7 @@ class UserController extends Controller
       return null;
     }
 
-    $keys = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
+    $keys = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
     $enabled = [];
     foreach ($keys as $key) {
       if ($request->boolean('dash_tab_' . $key)) {
@@ -176,6 +176,18 @@ class UserController extends Controller
       'daily_task_priorities' => $permFor('daily_task_priorities'),
       'daily_task_statuses' => $permFor('daily_task_statuses'),
 
+      // Uniforms (Seragam Karyawan)
+      'uniforms_stock' => $permFor('uniforms_stock'),
+      'uniforms_distribution' => $permFor('uniforms_distribution'),
+      'uniforms_reports' => $permFor('uniforms_reports'),
+      'uniforms_entitlements' => $permFor('uniforms_entitlements'),
+      'uniforms_master' => $permFor('uniforms_master'),
+      'uniforms_variants' => $permFor('uniforms_variants'),
+      'uniforms_lots' => $permFor('uniforms_lots'),
+
+      // Stock management (ATK, Material, APD)
+      'stock' => $permFor('stock'),
+
       'career' => $permFor('career'),
       'certificate' => $permFor('certificate'),
       'website_products' => $permFor('website_products'),
@@ -188,13 +200,16 @@ class UserController extends Controller
       'settings_history_asset' => $permFor('settings_history_asset'),
     ];
 
-    // Preserve any unknown/hidden keys already stored, but override with submitted keys.
-    return array_merge(
-      is_array($existingOverrides) ? $existingOverrides : [],
-      $permissions
-    );
+    // Keep only explicit deviations from the selected role's defaults.
+    $overrides = array_diff_key($existingOverrides, $permissions);
+    foreach ($permissions as $key => $permission) {
+      $default = MenuAccess::normalize($defaults[$key] ?? MenuAccess::none());
+      if ($permission !== $default) {
+        $overrides[$key] = $permission;
+      }
+    }
 
-    return $permissions == $defaults ? null : $permissions;
+    return $overrides ?: null;
   }
 
   public function index(Request $request)

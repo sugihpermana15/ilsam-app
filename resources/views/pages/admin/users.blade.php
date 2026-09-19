@@ -364,6 +364,10 @@
                                                                 <input class="form-check-input" type="checkbox" id="add_dash_tab_uniforms" name="dash_tab_uniforms" value="1" checked>
                                                                 <label class="form-check-label" for="add_dash_tab_uniforms">Seragam</label>
                                                             </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="add_dash_tab_stock" name="dash_tab_stock" value="1" checked>
+                                                                <label class="form-check-label" for="add_dash_tab_stock">Stock</label>
+                                                            </div>
                                                         </div>
                                                         <div class="col-12 col-md-6">
                                                             <div class="form-check">
@@ -399,10 +403,6 @@
                                                                     value="1" checked>
                                                                 <label class="form-check-label"
                                                                     for="add_dash_asset_charts">Grafik</label>
-                                                                            <div class="form-check">
-                                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_uniforms" name="dash_tab_uniforms" value="1">
-                                                                                <label class="form-check-label" for="edit_dash_tab_uniforms">Seragam</label>
-                                                                            </div>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" type="checkbox"
@@ -568,6 +568,11 @@
                                                                             value="1">
                                                                         <label class="form-check-label"
                                                                             for="add_menu_devices">Master Device</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="add_menu_stock" name="menu_stock" value="1">
+                                                                        <label class="form-check-label" for="add_menu_stock">Manajemen Stok</label>
                                                                     </div>
 
                                                                     <div class="fw-semibold mt-3 mb-2">Seragam Karyawan</div>
@@ -1045,6 +1050,14 @@
                                                                 <input class="form-check-input" type="checkbox" id="edit_dash_tab_stamps" name="dash_tab_stamps" value="1">
                                                                 <label class="form-check-label" for="edit_dash_tab_stamps">Materai</label>
                                                             </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_uniforms" name="dash_tab_uniforms" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_uniforms">Seragam</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" id="edit_dash_tab_stock" name="dash_tab_stock" value="1">
+                                                                <label class="form-check-label" for="edit_dash_tab_stock">Stock</label>
+                                                            </div>
                                                         </div>
                                                         <div class="col-12 col-md-6">
                                                             <div class="form-check">
@@ -1247,6 +1260,11 @@
                                                                             value="1">
                                                                         <label class="form-check-label"
                                                                             for="edit_menu_devices">Master Device</label>
+                                                                    </div>
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox"
+                                                                            id="edit_menu_stock" name="menu_stock" value="1">
+                                                                        <label class="form-check-label" for="edit_menu_stock">Manajemen Stok</label>
                                                                     </div>
 
                                                                     <div class="fw-semibold mt-3 mb-2">Seragam Karyawan</div>
@@ -1645,6 +1663,9 @@
                         // Devices
                         devices: none,
 
+                        // Stock management
+                        stock: none,
+
                         // Groups
                         assets: none,
 
@@ -1729,6 +1750,9 @@
 
                     // Devices
                     devices: all,
+
+                    // Stock management
+                    stock: all,
 
                     // Groups
                     assets: all,
@@ -1868,6 +1892,7 @@
                 $('#' + prefix + '_menu_notes').prop('checked', hasRead(permissions.notes));
                 $('#' + prefix + '_menu_recruitment').prop('checked', hasRead(permissions.recruitment));
                 $('#' + prefix + '_menu_devices').prop('checked', hasRead(permissions.devices));
+                $('#' + prefix + '_menu_stock').prop('checked', hasRead(permissions.stock));
                 $('#' + prefix + '_menu_assets').prop('checked', hasRead(permissions.assets));
                 $('#' + prefix + '_menu_assets_data').prop('checked', hasRead(permissions.assets_data));
                 $('#' + prefix + '_menu_accounts_data').prop('checked', hasRead(permissions.accounts_data));
@@ -1921,7 +1946,7 @@
                 const keys = [
                     'user_dashboard', 'admin_dashboard',
                     'stamps', 'stamps_master', 'stamps_transactions', 'stamps_requests', 'stamps_validation',
-                    'daily_tasks', 'notes', 'recruitment', 'devices',
+                    'daily_tasks', 'notes', 'recruitment', 'devices', 'stock',
                     'assets', 'assets_data', 'accounts_data', 'accounts_secrets', 'documents_archive', 'documents_restricted', 'assets_jababeka', 'assets_karawang', 'assets_in', 'assets_transfer',
                     'employees', 'employees_index', 'employees_deleted', 'employees_audit',
                     'master_hr', 'master_assets', 'master_accounts', 'master_daily_task',
@@ -2467,7 +2492,7 @@
             }
 
             function enforceAdminDashboardPermissionForRestrictedTabs(prefix) {
-                const allTabs = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
+                const allTabs = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
                 const checkedCount = allTabs.filter(function (key) {
                     return $('#' + prefix + '_dash_tab_' + key).is(':checked');
                 }).length;
@@ -2512,11 +2537,12 @@
                 }
 
                 const tabOverrides = $(this).data('dashboardTabs');
-                const allTabs = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
+                const allTabs = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
                 const enabledTabs = Array.isArray(tabOverrides) ? tabOverrides : allTabs;
                 $('#edit_dash_tab_asset').prop('checked', enabledTabs.includes('asset'));
                 $('#edit_dash_tab_stamps').prop('checked', enabledTabs.includes('stamps'));
                 $('#edit_dash_tab_uniforms').prop('checked', enabledTabs.includes('uniforms'));
+                $('#edit_dash_tab_stock').prop('checked', enabledTabs.includes('stock'));
                 $('#edit_dash_tab_documents').prop('checked', enabledTabs.includes('documents'));
                 $('#edit_dash_tab_employee').prop('checked', enabledTabs.includes('employee'));
 
@@ -2604,10 +2630,10 @@
             }
 
             // If admin dashboard tabs are restricted, make sure Dashboard menu access is enabled.
-            $(document).on('change', '#add_dash_tab_asset, #add_dash_tab_stamps, #add_dash_tab_uniforms, #add_dash_tab_documents, #add_dash_tab_employee', function () {
+            $(document).on('change', '#add_dash_tab_asset, #add_dash_tab_stamps, #add_dash_tab_uniforms, #add_dash_tab_stock, #add_dash_tab_documents, #add_dash_tab_employee', function () {
                 enforceAdminDashboardPermissionForRestrictedTabs('add');
             });
-            $(document).on('change', '#edit_dash_tab_asset, #edit_dash_tab_stamps, #edit_dash_tab_uniforms, #edit_dash_tab_documents, #edit_dash_tab_employee', function () {
+            $(document).on('change', '#edit_dash_tab_asset, #edit_dash_tab_stamps, #edit_dash_tab_uniforms, #edit_dash_tab_stock, #edit_dash_tab_documents, #edit_dash_tab_employee', function () {
                 enforceAdminDashboardPermissionForRestrictedTabs('edit');
             });
 

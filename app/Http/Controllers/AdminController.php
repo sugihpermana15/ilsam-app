@@ -11,6 +11,9 @@ use App\Models\Document;
 use App\Models\Employee;
 use App\Models\Stamp;
 use App\Models\StampTransaction;
+use App\Models\StockItem;
+use App\Models\StockItemSiteBalance;
+use App\Models\StockTransaction;
 use App\Models\Uniform;
 use App\Models\UniformAllocation;
 use App\Models\UniformAllocationItem;
@@ -405,6 +408,72 @@ class AdminController extends Controller
         ];
     }
 
+    private function buildStockDashboardData(): array
+    {
+        $from = now()->subDays(29)->startOfDay();
+        $totalOnHand = (int) StockItem::query()->sum('current_stock');
+
+        $dailyRows = StockTransaction::query()
+            ->where('trx_date', '>=', $from)
+            ->selectRaw('DATE(trx_date) as day')
+            ->selectRaw("SUM(CASE WHEN trx_type = 'IN' THEN qty ELSE 0 END) as qty_in")
+            ->selectRaw("SUM(CASE WHEN trx_type = 'OUT' THEN qty ELSE 0 END) as qty_out")
+            ->groupByRaw('DATE(trx_date)')
+            ->orderBy('day')
+            ->get()
+            ->keyBy('day');
+
+        $categories = [];
+        $incoming = [];
+        $outgoing = [];
+        for ($i = 0; $i < 30; $i++) {
+            $day = $from->copy()->addDays($i);
+            $row = $dailyRows->get($day->toDateString());
+            $categories[] = $day->format('d-m');
+            $incoming[] = (int) ($row->qty_in ?? 0);
+            $outgoing[] = (int) ($row->qty_out ?? 0);
+        }
+
+        $bySite = StockItemSiteBalance::query()
+            ->select('site_code', DB::raw('SUM(on_hand_qty) as total'))
+            ->groupBy('site_code')
+            ->orderBy('site_code')
+            ->get();
+
+        return [
+            'kpi' => [
+                'total_items' => StockItem::query()->count(),
+                'active_items' => StockItem::query()->where('is_active', true)->count(),
+                'total_on_hand' => $totalOnHand,
+                'total_value' => (int) StockItem::query()->selectRaw('COALESCE(SUM(current_stock * unit_price), 0) as total')->value('total'),
+                'low_stock_items' => StockItem::query()
+                    ->where('is_active', true)
+                    ->whereColumn('current_stock', '<=', 'low_stock_threshold')
+                    ->count(),
+            ],
+            'charts' => [
+                'transactionsDaily30d' => compact('categories', 'incoming', 'outgoing'),
+                'bySite' => [
+                    'labels' => $bySite->pluck('site_code')->map(fn ($site) => ucfirst((string) $site))->values(),
+                    'series' => $bySite->pluck('total')->map(fn ($total) => (int) $total)->values(),
+                ],
+            ],
+            'lowStockItems' => StockItem::query()
+                ->where('is_active', true)
+                ->whereColumn('current_stock', '<=', 'low_stock_threshold')
+                ->orderBy('current_stock')
+                ->orderBy('name')
+                ->limit(10)
+                ->get(),
+            'recentTransactions' => StockTransaction::query()
+                ->with('item:id,code,name,category,unit')
+                ->orderByDesc('trx_date')
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get(),
+        ];
+    }
+
     public function dashboard(Request $request)
     {
         $permissions = $this->resolveDashboardPermissions(Auth::user()?->dashboard_permissions);
@@ -442,10 +511,14 @@ class AdminController extends Controller
             $uniforms = $this->buildUniformsDashboardData();
         }
 
+        $stock = $user && MenuAccess::can($user, 'stock', MenuAccess::ACTION_READ)
+            ? $this->buildStockDashboardData()
+            : null;
+
         // Apply per-user tab access overrides (if configured).
         $tabOverrides = $user && is_array($user->dashboard_tabs) ? array_values($user->dashboard_tabs) : null;
         if (is_array($tabOverrides)) {
-            $allowedKeys = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
+            $allowedKeys = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
             $tabOverrides = array_values(array_intersect($tabOverrides, $allowedKeys));
         }
 
@@ -456,16 +529,18 @@ class AdminController extends Controller
         );
         $showStamps = (bool) $stamps;
         $showUniforms = (bool) $uniforms;
+        $showStock = (bool) $stock;
         $showEmployee = !empty($employee) && !empty($employee['kpi']);
         $showDocs = (bool) $showDocuments;
 
-        $tabOrder = ['asset', 'stamps', 'uniforms', 'documents', 'employee'];
+        $tabOrder = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
         $tabs = [];
         foreach ($tabOrder as $key) {
             $available = match ($key) {
                 'asset' => $showAsset,
                 'stamps' => $showStamps,
                 'uniforms' => $showUniforms,
+                'stock' => $showStock,
                 'documents' => $showDocs,
                 'employee' => $showEmployee,
                 default => false,
@@ -484,7 +559,7 @@ class AdminController extends Controller
 
         $tab = $activeTab;
 
-        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'employee', 'showDocuments', 'documents', 'stamps', 'uniforms'));
+        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'employee', 'showDocuments', 'documents', 'stamps', 'uniforms', 'stock'));
     }
 
     public function dashboardAssets()

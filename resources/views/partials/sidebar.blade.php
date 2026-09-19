@@ -2,7 +2,7 @@
     @php
         $sidebarHomeUrl = route('home');
         if (auth()->check()) {
-            $isUserRole = ((auth()->user()->role?->role_name ?? null) === 'Users') || ((int) auth()->user()->role_id === 3);
+            $isUserRole = (auth()->user()->role?->role_name ?? null) === 'Users' || (int) auth()->user()->role_id === 3;
             $sidebarHomeUrl = $isUserRole ? route('user.dashboard') : route('admin.dashboard');
         }
     @endphp
@@ -21,6 +21,15 @@
 
         [data-sidebar="icon"] .pe-app-sidebar .pe-main-menu>.pe-slide>.pe-nav-link .pe-nav-icon {
             margin: 0 auto;
+        }
+
+        .pe-stock-menu-heading {
+            color: #98a2b3;
+            font-size: .6875rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            padding: .875rem 1rem .25rem 2.5rem;
+            text-transform: uppercase;
         }
     </style>
     <div class="pe-app-sidebar-logo px-6 d-flex align-items-center position-relative">
@@ -100,7 +109,8 @@
         };
 
         $menus = [
-            1 => [ // Super Admin
+            1 => [
+                // Super Admin
                 [
                     'title_group' => 'Main',
                     'items' => [
@@ -143,10 +153,47 @@
                                 'admin.stamps.master.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Ledger', 'route' => 'admin.stamps.transactions.index', 'active_routes' => ['admin.stamps.transactions.datatable', 'admin.stamps.transactions.store_in', 'admin.stamps.transactions.store_out', 'admin.stamps.report.pdf'], 'default' => true, 'permission_key' => 'stamps_transactions'],
-                                ['title' => 'Permintaan', 'route' => 'admin.stamps.requests.index', 'active_routes' => ['admin.stamps.requests.store'], 'permission_key' => 'stamps_requests'],
-                                ['title' => 'Validasi', 'route' => 'admin.stamps.validation.index', 'active_routes' => ['admin.stamps.validation.approve', 'admin.stamps.validation.reject', 'admin.stamps.validation.handover'], 'permission_key' => 'stamps_validation'],
-                                ['title' => 'Master', 'route' => 'admin.stamps.master.index', 'active_routes' => ['admin.stamps.master.datatable', 'admin.stamps.master.create', 'admin.stamps.master.store', 'admin.stamps.master.edit', 'admin.stamps.master.update', 'admin.stamps.master.toggle'], 'permission_key' => 'stamps_master'],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stamps.transactions.index',
+                                    'active_routes' => [
+                                        'admin.stamps.transactions.datatable',
+                                        'admin.stamps.transactions.store_in',
+                                        'admin.stamps.transactions.store_out',
+                                        'admin.stamps.report.pdf',
+                                    ],
+                                    'default' => true,
+                                    'permission_key' => 'stamps_transactions',
+                                ],
+                                [
+                                    'title' => 'Permintaan',
+                                    'route' => 'admin.stamps.requests.index',
+                                    'active_routes' => ['admin.stamps.requests.store'],
+                                    'permission_key' => 'stamps_requests',
+                                ],
+                                [
+                                    'title' => 'Validasi',
+                                    'route' => 'admin.stamps.validation.index',
+                                    'active_routes' => [
+                                        'admin.stamps.validation.approve',
+                                        'admin.stamps.validation.reject',
+                                        'admin.stamps.validation.handover',
+                                    ],
+                                    'permission_key' => 'stamps_validation',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stamps.master.index',
+                                    'active_routes' => [
+                                        'admin.stamps.master.datatable',
+                                        'admin.stamps.master.create',
+                                        'admin.stamps.master.store',
+                                        'admin.stamps.master.edit',
+                                        'admin.stamps.master.update',
+                                        'admin.stamps.master.toggle',
+                                    ],
+                                    'permission_key' => 'stamps_master',
+                                ],
                             ],
                         ],
                         [
@@ -165,14 +212,259 @@
                                 'admin.uniforms.stock.lots.index',
                             ],
                             'children' => [
-                                ['title' => 'Master Uniform', 'route' => 'admin.uniforms.master.index', 'active_routes' => ['admin.uniforms.master.datatable', 'admin.uniforms.master.json', 'admin.uniforms.master.store', 'admin.uniforms.master.update', 'admin.uniforms.master.toggle'], 'permission_key' => 'uniforms_master'],
-                                ['title' => 'Master Varian', 'route' => 'admin.uniforms.variants.index', 'active_routes' => ['admin.uniforms.variants.datatable', 'admin.uniforms.variants.json', 'admin.uniforms.variants.store', 'admin.uniforms.variants.update', 'admin.uniforms.variants.toggle'], 'permission_key' => 'uniforms_variants'],
-                                ['title' => 'Master LOT', 'route' => 'admin.uniforms.lots.index', 'active_routes' => ['admin.uniforms.lots.datatable', 'admin.uniforms.lots.json', 'admin.uniforms.lots.store', 'admin.uniforms.lots.update'], 'permission_key' => 'uniforms_lots'],
-                                ['title' => 'Kuota Seragam', 'route' => 'admin.uniforms.entitlements.index', 'active_routes' => ['admin.uniforms.entitlements.datatable', 'admin.uniforms.entitlements.json', 'admin.uniforms.entitlements.store', 'admin.uniforms.entitlements.update'], 'permission_key' => 'uniforms_entitlements'],
-                                ['title' => 'Stok', 'route' => 'admin.uniforms.stock.index', 'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'], 'default' => true, 'permission_key' => 'uniforms_stock'],
-                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distributions.index', 'active_routes' => ['admin.uniforms.distributions.datatable', 'admin.uniforms.distributions.store'], 'permission_key' => 'uniforms_distribution'],
-                                ['title' => 'Pivot Stok', 'route' => 'admin.uniforms.reports.pivot.index', 'active_routes' => ['admin.uniforms.reports.pivot.datatable'], 'permission_key' => 'uniforms_reports'],
-                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.stock.lots.index', 'active_routes' => ['admin.uniforms.stock.lots.datatable'], 'permission_key' => 'uniforms_stock'],
+                                [
+                                    'title' => 'Master Uniform',
+                                    'route' => 'admin.uniforms.master.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.master.datatable',
+                                        'admin.uniforms.master.json',
+                                        'admin.uniforms.master.store',
+                                        'admin.uniforms.master.update',
+                                        'admin.uniforms.master.toggle',
+                                    ],
+                                    'permission_key' => 'uniforms_master',
+                                ],
+                                [
+                                    'title' => 'Master Varian',
+                                    'route' => 'admin.uniforms.variants.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.variants.datatable',
+                                        'admin.uniforms.variants.json',
+                                        'admin.uniforms.variants.store',
+                                        'admin.uniforms.variants.update',
+                                        'admin.uniforms.variants.toggle',
+                                    ],
+                                    'permission_key' => 'uniforms_variants',
+                                ],
+                                [
+                                    'title' => 'Master LOT',
+                                    'route' => 'admin.uniforms.lots.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.lots.datatable',
+                                        'admin.uniforms.lots.json',
+                                        'admin.uniforms.lots.store',
+                                        'admin.uniforms.lots.update',
+                                    ],
+                                    'permission_key' => 'uniforms_lots',
+                                ],
+                                [
+                                    'title' => 'Kuota Seragam',
+                                    'route' => 'admin.uniforms.entitlements.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.entitlements.datatable',
+                                        'admin.uniforms.entitlements.json',
+                                        'admin.uniforms.entitlements.store',
+                                        'admin.uniforms.entitlements.update',
+                                    ],
+                                    'permission_key' => 'uniforms_entitlements',
+                                ],
+                                [
+                                    'title' => 'Stok',
+                                    'route' => 'admin.uniforms.stock.index',
+                                    'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'],
+                                    'default' => true,
+                                    'permission_key' => 'uniforms_stock',
+                                ],
+                                [
+                                    'title' => 'Distribusi',
+                                    'route' => 'admin.uniforms.distributions.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.distributions.datatable',
+                                        'admin.uniforms.distributions.store',
+                                    ],
+                                    'permission_key' => 'uniforms_distribution',
+                                ],
+                                [
+                                    'title' => 'Pivot Stok',
+                                    'route' => 'admin.uniforms.reports.pivot.index',
+                                    'active_routes' => ['admin.uniforms.reports.pivot.datatable'],
+                                    'permission_key' => 'uniforms_reports',
+                                ],
+                                [
+                                    'title' => 'Stok per LOT',
+                                    'route' => 'admin.uniforms.stock.lots.index',
+                                    'active_routes' => ['admin.uniforms.stock.lots.datatable'],
+                                    'permission_key' => 'uniforms_stock',
+                                ],
+                            ],
+                        ],
+                        [
+                            'title' => 'Manajemen Stok',
+                            'icon' => 'fas fa-boxes-stacked',
+                            'permission_key' => 'stock',
+                            'active_routes' => [
+                                'admin.stock.master.index',
+                                'admin.stock.master.datatable',
+                                'admin.stock.master.json',
+                                'admin.stock.master.store',
+                                'admin.stock.master.update',
+                                'admin.stock.master.toggle',
+                                'admin.stock.master.destroy',
+                                'admin.stock.restock.index',
+                                'admin.stock.restock.store',
+                                'admin.stock.request.index',
+                                'admin.stock.request.store',
+                                'admin.stock.ledger.index',
+                                'admin.stock.ledger.datatable',
+                            ],
+                            'children' => [
+                                [
+                                    'title' => 'ATK',
+                                    'is_heading' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => [
+                                        'admin.stock.master.datatable',
+                                        'admin.stock.master.json',
+                                        'admin.stock.master.store',
+                                        'admin.stock.master.update',
+                                        'admin.stock.master.toggle',
+                                        'admin.stock.master.destroy',
+                                    ],
+                                    'default' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Stok Masuk',
+                                    'route' => 'admin.stock.restock.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => ['admin.stock.restock.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Pengambilan',
+                                    'route' => 'admin.stock.request.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => ['admin.stock.request.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stock.ledger.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => ['admin.stock.ledger.datatable'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Transfer Site',
+                                    'route' => 'admin.stock.transfer.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => [
+                                        'admin.stock.transfer.store',
+                                        'admin.stock.transfer.prepare',
+                                        'admin.stock.transfer.ship',
+                                        'admin.stock.transfer.receive',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Material',
+                                    'is_heading' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => [
+                                        'admin.stock.master.datatable',
+                                        'admin.stock.master.json',
+                                        'admin.stock.master.store',
+                                        'admin.stock.master.update',
+                                        'admin.stock.master.toggle',
+                                        'admin.stock.master.destroy',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Stok Masuk',
+                                    'route' => 'admin.stock.restock.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => ['admin.stock.restock.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Pengambilan',
+                                    'route' => 'admin.stock.request.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => ['admin.stock.request.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stock.ledger.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => ['admin.stock.ledger.datatable'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Transfer Site',
+                                    'route' => 'admin.stock.transfer.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => [
+                                        'admin.stock.transfer.store',
+                                        'admin.stock.transfer.prepare',
+                                        'admin.stock.transfer.ship',
+                                        'admin.stock.transfer.receive',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'APD',
+                                    'is_heading' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => [
+                                        'admin.stock.master.datatable',
+                                        'admin.stock.master.json',
+                                        'admin.stock.master.store',
+                                        'admin.stock.master.update',
+                                        'admin.stock.master.toggle',
+                                        'admin.stock.master.destroy',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Stok Masuk',
+                                    'route' => 'admin.stock.restock.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => ['admin.stock.restock.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Pengambilan',
+                                    'route' => 'admin.stock.request.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => ['admin.stock.request.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stock.ledger.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => ['admin.stock.ledger.datatable'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Transfer Site',
+                                    'route' => 'admin.stock.transfer.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => [
+                                        'admin.stock.transfer.store',
+                                        'admin.stock.transfer.prepare',
+                                        'admin.stock.transfer.ship',
+                                        'admin.stock.transfer.receive',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
                             ],
                         ],
                         [
@@ -190,13 +482,69 @@
                                 'admin.assets.karawang',
                             ],
                             'children' => [
-                                ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'active_routes' => ['admin.assets.datatable'], 'default' => true, 'permission_key' => 'assets_data'],
-                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'active_routes' => ['admin.accounts.show', 'admin.accounts.json', 'admin.accounts.endpoints.open', 'admin.accounts.store', 'admin.accounts.update', 'admin.accounts.destroy', 'admin.accounts.verify'], 'permission_key' => 'accounts_data'],
-                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'active_routes' => ['admin.documents.dashboard', 'admin.documents.show', 'admin.documents.create', 'admin.documents.store', 'admin.documents.update', 'admin.documents.destroy', 'admin.documents.restore', 'admin.documents.files.download', 'admin.documents.files.upload'], 'permission_key' => 'documents_archive'],
-                                ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Jababeka'], 'permission_key' => 'assets_jababeka'],
-                                ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Karawang'], 'permission_key' => 'assets_karawang'],
-                                ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'active_routes' => ['admin.assets.in.scan'], 'permission_key' => 'assets_in'],
-                                ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'active_routes' => ['admin.assets.transfer.list'], 'permission_key' => 'assets_transfer'],
+                                [
+                                    'title' => 'Data Asset',
+                                    'route' => 'admin.assets.index',
+                                    'active_routes' => ['admin.assets.datatable'],
+                                    'default' => true,
+                                    'permission_key' => 'assets_data',
+                                ],
+                                [
+                                    'title' => 'Data Akun',
+                                    'route' => 'admin.accounts.index',
+                                    'active_routes' => [
+                                        'admin.accounts.show',
+                                        'admin.accounts.json',
+                                        'admin.accounts.endpoints.open',
+                                        'admin.accounts.store',
+                                        'admin.accounts.update',
+                                        'admin.accounts.destroy',
+                                        'admin.accounts.verify',
+                                    ],
+                                    'permission_key' => 'accounts_data',
+                                ],
+                                [
+                                    'title' => 'Archived Berkas',
+                                    'route' => 'admin.documents.index',
+                                    'active_routes' => [
+                                        'admin.documents.dashboard',
+                                        'admin.documents.show',
+                                        'admin.documents.create',
+                                        'admin.documents.store',
+                                        'admin.documents.update',
+                                        'admin.documents.destroy',
+                                        'admin.documents.restore',
+                                        'admin.documents.files.download',
+                                        'admin.documents.files.upload',
+                                    ],
+                                    'permission_key' => 'documents_archive',
+                                ],
+                                [
+                                    'title' => 'Aset Jababeka',
+                                    'route' => 'admin.assets.jababeka',
+                                    'active_routes' => ['admin.assets.index'],
+                                    'params' => ['location' => 'Jababeka'],
+                                    'permission_key' => 'assets_jababeka',
+                                ],
+                                [
+                                    'title' => 'Aset Karawang',
+                                    'route' => 'admin.assets.karawang',
+                                    'active_routes' => ['admin.assets.index'],
+                                    'params' => ['location' => 'Karawang'],
+                                    'permission_key' => 'assets_karawang',
+                                ],
+                                [
+                                    'title' => 'Aset Masuk',
+                                    'route' => 'admin.assets.in',
+                                    'active_routes' => ['admin.assets.in.scan'],
+                                    'permission_key' => 'assets_in',
+                                ],
+                                [
+                                    'title' => 'Aset Keluar',
+                                    'route' => 'admin.assets.transfer',
+                                    'active_routes' => ['admin.assets.transfer.list'],
+                                    'permission_key' => 'assets_transfer',
+                                ],
                             ],
                         ],
                         [
@@ -273,6 +621,185 @@
                             ],
                         ],
                         [
+                            'title' => 'Manajemen Stok',
+                            'icon' => 'fas fa-boxes-stacked',
+                            'permission_key' => 'stock',
+                            'active_routes' => [
+                                'admin.stock.master.index',
+                                'admin.stock.master.datatable',
+                                'admin.stock.master.json',
+                                'admin.stock.master.store',
+                                'admin.stock.master.update',
+                                'admin.stock.master.toggle',
+                                'admin.stock.master.destroy',
+                                'admin.stock.restock.index',
+                                'admin.stock.restock.store',
+                                'admin.stock.request.index',
+                                'admin.stock.request.store',
+                                'admin.stock.ledger.index',
+                                'admin.stock.ledger.datatable',
+                            ],
+                            'children' => [
+                                [
+                                    'title' => 'ATK',
+                                    'is_heading' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => [
+                                        'admin.stock.master.datatable',
+                                        'admin.stock.master.json',
+                                        'admin.stock.master.store',
+                                        'admin.stock.master.update',
+                                        'admin.stock.master.toggle',
+                                        'admin.stock.master.destroy',
+                                    ],
+                                    'default' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Stok Masuk',
+                                    'route' => 'admin.stock.restock.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => ['admin.stock.restock.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Pengambilan',
+                                    'route' => 'admin.stock.request.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => ['admin.stock.request.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stock.ledger.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => ['admin.stock.ledger.datatable'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Transfer Site',
+                                    'route' => 'admin.stock.transfer.index',
+                                    'params' => ['category' => 'atk'],
+                                    'active_routes' => [
+                                        'admin.stock.transfer.store',
+                                        'admin.stock.transfer.prepare',
+                                        'admin.stock.transfer.ship',
+                                        'admin.stock.transfer.receive',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Material',
+                                    'is_heading' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => [
+                                        'admin.stock.master.datatable',
+                                        'admin.stock.master.json',
+                                        'admin.stock.master.store',
+                                        'admin.stock.master.update',
+                                        'admin.stock.master.toggle',
+                                        'admin.stock.master.destroy',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Stok Masuk',
+                                    'route' => 'admin.stock.restock.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => ['admin.stock.restock.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Pengambilan',
+                                    'route' => 'admin.stock.request.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => ['admin.stock.request.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stock.ledger.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => ['admin.stock.ledger.datatable'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Transfer Site',
+                                    'route' => 'admin.stock.transfer.index',
+                                    'params' => ['category' => 'material'],
+                                    'active_routes' => [
+                                        'admin.stock.transfer.store',
+                                        'admin.stock.transfer.prepare',
+                                        'admin.stock.transfer.ship',
+                                        'admin.stock.transfer.receive',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'APD',
+                                    'is_heading' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => [
+                                        'admin.stock.master.datatable',
+                                        'admin.stock.master.json',
+                                        'admin.stock.master.store',
+                                        'admin.stock.master.update',
+                                        'admin.stock.master.toggle',
+                                        'admin.stock.master.destroy',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Stok Masuk',
+                                    'route' => 'admin.stock.restock.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => ['admin.stock.restock.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Pengambilan',
+                                    'route' => 'admin.stock.request.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => ['admin.stock.request.store'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stock.ledger.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => ['admin.stock.ledger.datatable'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Transfer Site',
+                                    'route' => 'admin.stock.transfer.index',
+                                    'params' => ['category' => 'apd'],
+                                    'active_routes' => [
+                                        'admin.stock.transfer.store',
+                                        'admin.stock.transfer.prepare',
+                                        'admin.stock.transfer.ship',
+                                        'admin.stock.transfer.receive',
+                                    ],
+                                    'permission_key' => 'stock',
+                                ],
+                            ],
+                        ],
+                        [
                             'title' => __('menu.employees_master'),
                             'icon' => 'fas fa-users',
                             'permission_key' => 'employees',
@@ -286,9 +813,22 @@
                                 'admin.employees.audit',
                             ],
                             'children' => [
-                                ['title' => 'Employees', 'route' => 'admin.employees.index', 'default' => true, 'permission_key' => 'employees_index'],
-                                ['title' => 'Deleted', 'route' => 'admin.employees.deleted', 'permission_key' => 'employees_deleted'],
-                                ['title' => 'Audit Log', 'route' => 'admin.employees.audit', 'permission_key' => 'employees_audit'],
+                                [
+                                    'title' => 'Employees',
+                                    'route' => 'admin.employees.index',
+                                    'default' => true,
+                                    'permission_key' => 'employees_index',
+                                ],
+                                [
+                                    'title' => 'Deleted',
+                                    'route' => 'admin.employees.deleted',
+                                    'permission_key' => 'employees_deleted',
+                                ],
+                                [
+                                    'title' => 'Audit Log',
+                                    'route' => 'admin.employees.audit',
+                                    'permission_key' => 'employees_audit',
+                                ],
                             ],
                         ],
                         [
@@ -306,8 +846,17 @@
                                 'admin.positions.destroy',
                             ],
                             'children' => [
-                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
-                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
+                                [
+                                    'title' => 'Departments',
+                                    'route' => 'admin.departments.index',
+                                    'default' => true,
+                                    'permission_key' => 'departments',
+                                ],
+                                [
+                                    'title' => 'Positions',
+                                    'route' => 'admin.positions.index',
+                                    'permission_key' => 'positions',
+                                ],
                             ],
                         ],
                         [
@@ -337,11 +886,32 @@
                                 'admin.asset_vendors.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index', 'default' => true, 'permission_key' => 'asset_categories'],
-                                ['title' => 'Lokasi Asset', 'route' => 'admin.asset_locations.index', 'permission_key' => 'asset_locations'],
-                                ['title' => 'Plant/Site', 'route' => 'admin.plant_sites.index', 'permission_key' => 'plant_sites'],
-                                ['title' => 'Satuan Asset', 'route' => 'admin.asset_uoms.index', 'permission_key' => 'asset_uoms'],
-                                ['title' => 'Vendor Asset', 'route' => 'admin.asset_vendors.index', 'permission_key' => 'asset_vendors'],
+                                [
+                                    'title' => 'Kategori Asset',
+                                    'route' => 'admin.asset_categories.index',
+                                    'default' => true,
+                                    'permission_key' => 'asset_categories',
+                                ],
+                                [
+                                    'title' => 'Lokasi Asset',
+                                    'route' => 'admin.asset_locations.index',
+                                    'permission_key' => 'asset_locations',
+                                ],
+                                [
+                                    'title' => 'Plant/Site',
+                                    'route' => 'admin.plant_sites.index',
+                                    'permission_key' => 'plant_sites',
+                                ],
+                                [
+                                    'title' => 'Satuan Asset',
+                                    'route' => 'admin.asset_uoms.index',
+                                    'permission_key' => 'asset_uoms',
+                                ],
+                                [
+                                    'title' => 'Vendor Asset',
+                                    'route' => 'admin.asset_vendors.index',
+                                    'permission_key' => 'asset_vendors',
+                                ],
                             ],
                         ],
                         [
@@ -355,7 +925,12 @@
                                 'admin.account_types.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'default' => true, 'permission_key' => 'account_types'],
+                                [
+                                    'title' => 'Kategori Akun',
+                                    'route' => 'admin.account_types.index',
+                                    'default' => true,
+                                    'permission_key' => 'account_types',
+                                ],
                             ],
                         ],
                         [
@@ -376,9 +951,22 @@
                                 'admin.daily_task_statuses.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Task Types', 'route' => 'admin.daily_task_types.index', 'default' => true, 'permission_key' => 'daily_task_types'],
-                                ['title' => 'Task Priorities', 'route' => 'admin.daily_task_priorities.index', 'permission_key' => 'daily_task_priorities'],
-                                ['title' => 'Task Statuses', 'route' => 'admin.daily_task_statuses.index', 'permission_key' => 'daily_task_statuses'],
+                                [
+                                    'title' => 'Task Types',
+                                    'route' => 'admin.daily_task_types.index',
+                                    'default' => true,
+                                    'permission_key' => 'daily_task_types',
+                                ],
+                                [
+                                    'title' => 'Task Priorities',
+                                    'route' => 'admin.daily_task_priorities.index',
+                                    'permission_key' => 'daily_task_priorities',
+                                ],
+                                [
+                                    'title' => 'Task Statuses',
+                                    'route' => 'admin.daily_task_statuses.index',
+                                    'permission_key' => 'daily_task_statuses',
+                                ],
                             ],
                         ],
                     ],
@@ -469,20 +1057,14 @@
                             'icon' => 'fas fa-sliders',
                             'route' => 'admin.website_settings.edit',
                             'permission_key' => 'website_settings',
-                            'active_routes' => [
-                                'admin.website_settings.edit',
-                                'admin.website_settings.update',
-                            ],
+                            'active_routes' => ['admin.website_settings.edit', 'admin.website_settings.update'],
                         ],
                         [
                             'title' => 'Website Contact Page',
                             'icon' => 'fas fa-address-book',
                             'route' => 'admin.website_contact_page.edit',
                             'permission_key' => 'website_contact_page',
-                            'active_routes' => [
-                                'admin.website_contact_page.edit',
-                                'admin.website_contact_page.update',
-                            ],
+                            'active_routes' => ['admin.website_contact_page.edit', 'admin.website_contact_page.update'],
                         ],
                         [
                             'title' => 'Website Home Sections',
@@ -505,14 +1087,23 @@
                             'permission_key' => 'settings',
                             'children' => [
                                 ['title' => 'Users', 'route' => 'admin.users', 'permission_key' => 'settings_users'],
-                                ['title' => 'History Delete User', 'route' => 'admin.users.history.delete', 'permission_key' => 'settings_history_user'],
-                                ['title' => 'History Delete Asset', 'route' => 'admin.assets.historyDelete', 'permission_key' => 'settings_history_asset'],
+                                [
+                                    'title' => 'History Delete User',
+                                    'route' => 'admin.users.history.delete',
+                                    'permission_key' => 'settings_history_user',
+                                ],
+                                [
+                                    'title' => 'History Delete Asset',
+                                    'route' => 'admin.assets.historyDelete',
+                                    'permission_key' => 'settings_history_asset',
+                                ],
                             ],
                         ],
                     ],
                 ],
             ],
-            2 => [ // Admin
+            2 => [
+                // Admin
                 [
                     'title_group' => 'Main',
                     'items' => [
@@ -550,10 +1141,47 @@
                                 'admin.stamps.master.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Ledger', 'route' => 'admin.stamps.transactions.index', 'active_routes' => ['admin.stamps.transactions.datatable', 'admin.stamps.transactions.store_in', 'admin.stamps.transactions.store_out', 'admin.stamps.report.pdf'], 'default' => true, 'permission_key' => 'stamps_transactions'],
-                                ['title' => 'Permintaan', 'route' => 'admin.stamps.requests.index', 'active_routes' => ['admin.stamps.requests.store'], 'permission_key' => 'stamps_requests'],
-                                ['title' => 'Validasi', 'route' => 'admin.stamps.validation.index', 'active_routes' => ['admin.stamps.validation.approve', 'admin.stamps.validation.reject', 'admin.stamps.validation.handover'], 'permission_key' => 'stamps_validation'],
-                                ['title' => 'Master', 'route' => 'admin.stamps.master.index', 'active_routes' => ['admin.stamps.master.datatable', 'admin.stamps.master.create', 'admin.stamps.master.store', 'admin.stamps.master.edit', 'admin.stamps.master.update', 'admin.stamps.master.toggle'], 'permission_key' => 'stamps_master'],
+                                [
+                                    'title' => 'Ledger',
+                                    'route' => 'admin.stamps.transactions.index',
+                                    'active_routes' => [
+                                        'admin.stamps.transactions.datatable',
+                                        'admin.stamps.transactions.store_in',
+                                        'admin.stamps.transactions.store_out',
+                                        'admin.stamps.report.pdf',
+                                    ],
+                                    'default' => true,
+                                    'permission_key' => 'stamps_transactions',
+                                ],
+                                [
+                                    'title' => 'Permintaan',
+                                    'route' => 'admin.stamps.requests.index',
+                                    'active_routes' => ['admin.stamps.requests.store'],
+                                    'permission_key' => 'stamps_requests',
+                                ],
+                                [
+                                    'title' => 'Validasi',
+                                    'route' => 'admin.stamps.validation.index',
+                                    'active_routes' => [
+                                        'admin.stamps.validation.approve',
+                                        'admin.stamps.validation.reject',
+                                        'admin.stamps.validation.handover',
+                                    ],
+                                    'permission_key' => 'stamps_validation',
+                                ],
+                                [
+                                    'title' => 'Master',
+                                    'route' => 'admin.stamps.master.index',
+                                    'active_routes' => [
+                                        'admin.stamps.master.datatable',
+                                        'admin.stamps.master.create',
+                                        'admin.stamps.master.store',
+                                        'admin.stamps.master.edit',
+                                        'admin.stamps.master.update',
+                                        'admin.stamps.master.toggle',
+                                    ],
+                                    'permission_key' => 'stamps_master',
+                                ],
                             ],
                         ],
                         [
@@ -572,14 +1200,80 @@
                                 'admin.uniforms.stock.lots.index',
                             ],
                             'children' => [
-                                ['title' => 'Master Uniform', 'route' => 'admin.uniforms.master.index', 'active_routes' => ['admin.uniforms.master.datatable', 'admin.uniforms.master.json', 'admin.uniforms.master.store', 'admin.uniforms.master.update', 'admin.uniforms.master.toggle'], 'permission_key' => 'uniforms_master'],
-                                ['title' => 'Master Varian', 'route' => 'admin.uniforms.variants.index', 'active_routes' => ['admin.uniforms.variants.datatable', 'admin.uniforms.variants.json', 'admin.uniforms.variants.store', 'admin.uniforms.variants.update', 'admin.uniforms.variants.toggle'], 'permission_key' => 'uniforms_variants'],
-                                ['title' => 'Master LOT', 'route' => 'admin.uniforms.lots.index', 'active_routes' => ['admin.uniforms.lots.datatable', 'admin.uniforms.lots.json', 'admin.uniforms.lots.store', 'admin.uniforms.lots.update'], 'permission_key' => 'uniforms_lots'],
-                                ['title' => 'Kuota Seragam', 'route' => 'admin.uniforms.entitlements.index', 'active_routes' => ['admin.uniforms.entitlements.datatable', 'admin.uniforms.entitlements.json', 'admin.uniforms.entitlements.store', 'admin.uniforms.entitlements.update'], 'permission_key' => 'uniforms_entitlements'],
-                                ['title' => 'Stok', 'route' => 'admin.uniforms.stock.index', 'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'], 'default' => true, 'permission_key' => 'uniforms_stock'],
-                                ['title' => 'Distribusi', 'route' => 'admin.uniforms.distributions.index', 'active_routes' => ['admin.uniforms.distributions.datatable', 'admin.uniforms.distributions.store'], 'permission_key' => 'uniforms_distribution'],
-                                ['title' => 'Pivot Stok', 'route' => 'admin.uniforms.reports.pivot.index', 'active_routes' => ['admin.uniforms.reports.pivot.datatable'], 'permission_key' => 'uniforms_reports'],
-                                ['title' => 'Stok per LOT', 'route' => 'admin.uniforms.stock.lots.index', 'active_routes' => ['admin.uniforms.stock.lots.datatable'], 'permission_key' => 'uniforms_stock'],
+                                [
+                                    'title' => 'Master Uniform',
+                                    'route' => 'admin.uniforms.master.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.master.datatable',
+                                        'admin.uniforms.master.json',
+                                        'admin.uniforms.master.store',
+                                        'admin.uniforms.master.update',
+                                        'admin.uniforms.master.toggle',
+                                    ],
+                                    'permission_key' => 'uniforms_master',
+                                ],
+                                [
+                                    'title' => 'Master Varian',
+                                    'route' => 'admin.uniforms.variants.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.variants.datatable',
+                                        'admin.uniforms.variants.json',
+                                        'admin.uniforms.variants.store',
+                                        'admin.uniforms.variants.update',
+                                        'admin.uniforms.variants.toggle',
+                                    ],
+                                    'permission_key' => 'uniforms_variants',
+                                ],
+                                [
+                                    'title' => 'Master LOT',
+                                    'route' => 'admin.uniforms.lots.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.lots.datatable',
+                                        'admin.uniforms.lots.json',
+                                        'admin.uniforms.lots.store',
+                                        'admin.uniforms.lots.update',
+                                    ],
+                                    'permission_key' => 'uniforms_lots',
+                                ],
+                                [
+                                    'title' => 'Kuota Seragam',
+                                    'route' => 'admin.uniforms.entitlements.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.entitlements.datatable',
+                                        'admin.uniforms.entitlements.json',
+                                        'admin.uniforms.entitlements.store',
+                                        'admin.uniforms.entitlements.update',
+                                    ],
+                                    'permission_key' => 'uniforms_entitlements',
+                                ],
+                                [
+                                    'title' => 'Stok',
+                                    'route' => 'admin.uniforms.stock.index',
+                                    'active_routes' => ['admin.uniforms.stock.datatable', 'admin.uniforms.stock.in'],
+                                    'default' => true,
+                                    'permission_key' => 'uniforms_stock',
+                                ],
+                                [
+                                    'title' => 'Distribusi',
+                                    'route' => 'admin.uniforms.distributions.index',
+                                    'active_routes' => [
+                                        'admin.uniforms.distributions.datatable',
+                                        'admin.uniforms.distributions.store',
+                                    ],
+                                    'permission_key' => 'uniforms_distribution',
+                                ],
+                                [
+                                    'title' => 'Pivot Stok',
+                                    'route' => 'admin.uniforms.reports.pivot.index',
+                                    'active_routes' => ['admin.uniforms.reports.pivot.datatable'],
+                                    'permission_key' => 'uniforms_reports',
+                                ],
+                                [
+                                    'title' => 'Stok per LOT',
+                                    'route' => 'admin.uniforms.stock.lots.index',
+                                    'active_routes' => ['admin.uniforms.stock.lots.datatable'],
+                                    'permission_key' => 'uniforms_stock',
+                                ],
                             ],
                         ],
                         [
@@ -596,9 +1290,22 @@
                                 'admin.employees.audit',
                             ],
                             'children' => [
-                                ['title' => 'Employees', 'route' => 'admin.employees.index', 'default' => true, 'permission_key' => 'employees_index'],
-                                ['title' => 'Deleted', 'route' => 'admin.employees.deleted', 'permission_key' => 'employees_deleted'],
-                                ['title' => 'Audit Log', 'route' => 'admin.employees.audit', 'permission_key' => 'employees_audit'],
+                                [
+                                    'title' => 'Employees',
+                                    'route' => 'admin.employees.index',
+                                    'default' => true,
+                                    'permission_key' => 'employees_index',
+                                ],
+                                [
+                                    'title' => 'Deleted',
+                                    'route' => 'admin.employees.deleted',
+                                    'permission_key' => 'employees_deleted',
+                                ],
+                                [
+                                    'title' => 'Audit Log',
+                                    'route' => 'admin.employees.audit',
+                                    'permission_key' => 'employees_audit',
+                                ],
                             ],
                         ],
                         [
@@ -655,8 +1362,17 @@
                                 'admin.positions.destroy',
                             ],
                             'children' => [
-                                ['title' => 'Departments', 'route' => 'admin.departments.index', 'default' => true, 'permission_key' => 'departments'],
-                                ['title' => 'Positions', 'route' => 'admin.positions.index', 'permission_key' => 'positions'],
+                                [
+                                    'title' => 'Departments',
+                                    'route' => 'admin.departments.index',
+                                    'default' => true,
+                                    'permission_key' => 'departments',
+                                ],
+                                [
+                                    'title' => 'Positions',
+                                    'route' => 'admin.positions.index',
+                                    'permission_key' => 'positions',
+                                ],
                             ],
                         ],
                         [
@@ -686,11 +1402,32 @@
                                 'admin.asset_vendors.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Kategori Asset', 'route' => 'admin.asset_categories.index', 'default' => true, 'permission_key' => 'asset_categories'],
-                                ['title' => 'Lokasi Asset', 'route' => 'admin.asset_locations.index', 'permission_key' => 'asset_locations'],
-                                ['title' => 'Plant/Site', 'route' => 'admin.plant_sites.index', 'permission_key' => 'plant_sites'],
-                                ['title' => 'Satuan Asset', 'route' => 'admin.asset_uoms.index', 'permission_key' => 'asset_uoms'],
-                                ['title' => 'Vendor Asset', 'route' => 'admin.asset_vendors.index', 'permission_key' => 'asset_vendors'],
+                                [
+                                    'title' => 'Kategori Asset',
+                                    'route' => 'admin.asset_categories.index',
+                                    'default' => true,
+                                    'permission_key' => 'asset_categories',
+                                ],
+                                [
+                                    'title' => 'Lokasi Asset',
+                                    'route' => 'admin.asset_locations.index',
+                                    'permission_key' => 'asset_locations',
+                                ],
+                                [
+                                    'title' => 'Plant/Site',
+                                    'route' => 'admin.plant_sites.index',
+                                    'permission_key' => 'plant_sites',
+                                ],
+                                [
+                                    'title' => 'Satuan Asset',
+                                    'route' => 'admin.asset_uoms.index',
+                                    'permission_key' => 'asset_uoms',
+                                ],
+                                [
+                                    'title' => 'Vendor Asset',
+                                    'route' => 'admin.asset_vendors.index',
+                                    'permission_key' => 'asset_vendors',
+                                ],
                             ],
                         ],
                         [
@@ -704,7 +1441,12 @@
                                 'admin.account_types.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Kategori Akun', 'route' => 'admin.account_types.index', 'default' => true, 'permission_key' => 'account_types'],
+                                [
+                                    'title' => 'Kategori Akun',
+                                    'route' => 'admin.account_types.index',
+                                    'default' => true,
+                                    'permission_key' => 'account_types',
+                                ],
                             ],
                         ],
                         [
@@ -725,9 +1467,22 @@
                                 'admin.daily_task_statuses.toggle',
                             ],
                             'children' => [
-                                ['title' => 'Task Types', 'route' => 'admin.daily_task_types.index', 'default' => true, 'permission_key' => 'daily_task_types'],
-                                ['title' => 'Task Priorities', 'route' => 'admin.daily_task_priorities.index', 'permission_key' => 'daily_task_priorities'],
-                                ['title' => 'Task Statuses', 'route' => 'admin.daily_task_statuses.index', 'permission_key' => 'daily_task_statuses'],
+                                [
+                                    'title' => 'Task Types',
+                                    'route' => 'admin.daily_task_types.index',
+                                    'default' => true,
+                                    'permission_key' => 'daily_task_types',
+                                ],
+                                [
+                                    'title' => 'Task Priorities',
+                                    'route' => 'admin.daily_task_priorities.index',
+                                    'permission_key' => 'daily_task_priorities',
+                                ],
+                                [
+                                    'title' => 'Task Statuses',
+                                    'route' => 'admin.daily_task_statuses.index',
+                                    'permission_key' => 'daily_task_statuses',
+                                ],
                             ],
                         ],
                         [
@@ -770,7 +1525,8 @@
                     ],
                 ],
             ],
-            3 => [ // Users
+            3 => [
+                // Users
                 [
                     'title_group' => 'Main',
                     'items' => [
@@ -779,9 +1535,7 @@
                             'icon' => 'fas fa-gauge-high',
                             'route' => 'user.dashboard',
                             'permission_key' => 'user_dashboard',
-                            'active_routes' => [
-                                'user.dashboard',
-                            ],
+                            'active_routes' => ['user.dashboard'],
                         ],
                     ],
                 ],
@@ -793,10 +1547,7 @@
                             'icon' => 'fas fa-stamp',
                             'route' => 'admin.stamps.requests.index',
                             'permission_key' => 'stamps_requests',
-                            'active_routes' => [
-                                'admin.stamps.requests.index',
-                                'admin.stamps.requests.store',
-                            ],
+                            'active_routes' => ['admin.stamps.requests.index', 'admin.stamps.requests.store'],
                         ],
                         [
                             'title' => 'Validasi Materai',
@@ -847,13 +1598,69 @@
                                 'admin.assets.transfer',
                             ],
                             'children' => [
-                                ['title' => 'Data Asset', 'route' => 'admin.assets.index', 'active_routes' => ['admin.assets.datatable'], 'default' => true, 'permission_key' => 'assets_data'],
-                                ['title' => 'Data Akun', 'route' => 'admin.accounts.index', 'active_routes' => ['admin.accounts.show', 'admin.accounts.json', 'admin.accounts.endpoints.open', 'admin.accounts.store', 'admin.accounts.update', 'admin.accounts.destroy', 'admin.accounts.verify'], 'permission_key' => 'accounts_data'],
-                                ['title' => 'Archived Berkas', 'route' => 'admin.documents.index', 'active_routes' => ['admin.documents.dashboard', 'admin.documents.show', 'admin.documents.create', 'admin.documents.store', 'admin.documents.update', 'admin.documents.destroy', 'admin.documents.restore', 'admin.documents.files.download', 'admin.documents.files.upload'], 'permission_key' => 'documents_archive'],
-                                ['title' => 'Aset Jababeka', 'route' => 'admin.assets.jababeka', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Jababeka'], 'permission_key' => 'assets_jababeka'],
-                                ['title' => 'Aset Karawang', 'route' => 'admin.assets.karawang', 'active_routes' => ['admin.assets.index'], 'params' => ['location' => 'Karawang'], 'permission_key' => 'assets_karawang'],
-                                ['title' => 'Aset Masuk', 'route' => 'admin.assets.in', 'active_routes' => ['admin.assets.in.scan'], 'permission_key' => 'assets_in'],
-                                ['title' => 'Aset Keluar', 'route' => 'admin.assets.transfer', 'active_routes' => ['admin.assets.transfer.list'], 'permission_key' => 'assets_transfer'],
+                                [
+                                    'title' => 'Data Asset',
+                                    'route' => 'admin.assets.index',
+                                    'active_routes' => ['admin.assets.datatable'],
+                                    'default' => true,
+                                    'permission_key' => 'assets_data',
+                                ],
+                                [
+                                    'title' => 'Data Akun',
+                                    'route' => 'admin.accounts.index',
+                                    'active_routes' => [
+                                        'admin.accounts.show',
+                                        'admin.accounts.json',
+                                        'admin.accounts.endpoints.open',
+                                        'admin.accounts.store',
+                                        'admin.accounts.update',
+                                        'admin.accounts.destroy',
+                                        'admin.accounts.verify',
+                                    ],
+                                    'permission_key' => 'accounts_data',
+                                ],
+                                [
+                                    'title' => 'Archived Berkas',
+                                    'route' => 'admin.documents.index',
+                                    'active_routes' => [
+                                        'admin.documents.dashboard',
+                                        'admin.documents.show',
+                                        'admin.documents.create',
+                                        'admin.documents.store',
+                                        'admin.documents.update',
+                                        'admin.documents.destroy',
+                                        'admin.documents.restore',
+                                        'admin.documents.files.download',
+                                        'admin.documents.files.upload',
+                                    ],
+                                    'permission_key' => 'documents_archive',
+                                ],
+                                [
+                                    'title' => 'Aset Jababeka',
+                                    'route' => 'admin.assets.jababeka',
+                                    'active_routes' => ['admin.assets.index'],
+                                    'params' => ['location' => 'Jababeka'],
+                                    'permission_key' => 'assets_jababeka',
+                                ],
+                                [
+                                    'title' => 'Aset Karawang',
+                                    'route' => 'admin.assets.karawang',
+                                    'active_routes' => ['admin.assets.index'],
+                                    'params' => ['location' => 'Karawang'],
+                                    'permission_key' => 'assets_karawang',
+                                ],
+                                [
+                                    'title' => 'Aset Masuk',
+                                    'route' => 'admin.assets.in',
+                                    'active_routes' => ['admin.assets.in.scan'],
+                                    'permission_key' => 'assets_in',
+                                ],
+                                [
+                                    'title' => 'Aset Keluar',
+                                    'route' => 'admin.assets.transfer',
+                                    'active_routes' => ['admin.assets.transfer.list'],
+                                    'permission_key' => 'assets_transfer',
+                                ],
                             ],
                         ],
                         [
@@ -861,10 +1668,7 @@
                             'icon' => 'fas fa-desktop',
                             'route' => 'admin.devices.index',
                             'permission_key' => 'devices',
-                            'active_routes' => [
-                                'admin.devices.index',
-                                'admin.devices.show',
-                            ],
+                            'active_routes' => ['admin.devices.index', 'admin.devices.show'],
                         ],
                         [
                             'title' => 'Daily Tasks',
@@ -1047,7 +1851,11 @@
                     continue;
                 }
 
-                if ($routeName === 'admin' || $routeName === 'admin.dashboard' || str_starts_with($routeName, 'admin.dashboard.')) {
+                if (
+                    $routeName === 'admin' ||
+                    $routeName === 'admin.dashboard' ||
+                    str_starts_with($routeName, 'admin.dashboard.')
+                ) {
                     return 'admin_dashboard';
                 }
                 if ($routeName === 'user.dashboard' || str_starts_with($routeName, 'user.')) {
@@ -1056,58 +1864,53 @@
                 if (str_starts_with($routeName, 'admin.assets.')) {
                     // Assets leaf permissions
                     if (
-                        in_array($routeName, [
-                            'admin.assets.index',
-                            'admin.assets.show',
-                            'admin.assets.edit',
-                            'admin.assets.update',
-                            'admin.assets.destroy',
-                            'admin.assets.create',
-                            'admin.assets.store',
-                            'admin.assets.modalList',
-                            'admin.assets.json',
-                            'admin.assets.barcode',
-                            'admin.assets.printBarcode',
-                            'admin.assets.printSelectedBarcode',
-                            'admin.assets.historyDelete',
-                            'admin.assets.restore',
-                        ], true)
+                        in_array(
+                            $routeName,
+                            [
+                                'admin.assets.index',
+                                'admin.assets.show',
+                                'admin.assets.edit',
+                                'admin.assets.update',
+                                'admin.assets.destroy',
+                                'admin.assets.create',
+                                'admin.assets.store',
+                                'admin.assets.modalList',
+                                'admin.assets.json',
+                                'admin.assets.barcode',
+                                'admin.assets.printBarcode',
+                                'admin.assets.printSelectedBarcode',
+                                'admin.assets.historyDelete',
+                                'admin.assets.restore',
+                            ],
+                            true,
+                        )
                     ) {
                         return 'assets_data';
                     }
 
-                    if (
-                        in_array($routeName, [
-                            'admin.assets.jababeka',
-                        ], true)
-                    ) {
+                    if (in_array($routeName, ['admin.assets.jababeka'], true)) {
                         return 'assets_jababeka';
                     }
 
-                    if (
-                        in_array($routeName, [
-                            'admin.assets.karawang',
-                        ], true)
-                    ) {
+                    if (in_array($routeName, ['admin.assets.karawang'], true)) {
                         return 'assets_karawang';
                     }
 
-                    if (
-                        in_array($routeName, [
-                            'admin.assets.in',
-                            'admin.assets.in.scan',
-                        ], true)
-                    ) {
+                    if (in_array($routeName, ['admin.assets.in', 'admin.assets.in.scan'], true)) {
                         return 'assets_in';
                     }
 
                     if (
-                        in_array($routeName, [
-                            'admin.assets.transfer',
-                            'admin.assets.transfer.list',
-                            'admin.assets.transfer.save',
-                            'admin.assets.transfer.cancel',
-                        ], true)
+                        in_array(
+                            $routeName,
+                            [
+                                'admin.assets.transfer',
+                                'admin.assets.transfer.list',
+                                'admin.assets.transfer.save',
+                                'admin.assets.transfer.cancel',
+                            ],
+                            true,
+                        )
                     ) {
                         return 'assets_transfer';
                     }
@@ -1118,28 +1921,36 @@
 
                 if (str_starts_with($routeName, 'admin.accounts.')) {
                     if (
-                        in_array($routeName, [
-                            'admin.accounts.index',
-                            'admin.accounts.show',
-                            'admin.accounts.json',
-                            'admin.accounts.store',
-                            'admin.accounts.update',
-                            'admin.accounts.destroy',
-                            'admin.accounts.verify',
-                            'admin.accounts.endpoints.open',
-                        ], true)
+                        in_array(
+                            $routeName,
+                            [
+                                'admin.accounts.index',
+                                'admin.accounts.show',
+                                'admin.accounts.json',
+                                'admin.accounts.store',
+                                'admin.accounts.update',
+                                'admin.accounts.destroy',
+                                'admin.accounts.verify',
+                                'admin.accounts.endpoints.open',
+                            ],
+                            true,
+                        )
                     ) {
                         return 'accounts_data';
                     }
 
                     if (
-                        in_array($routeName, [
-                            'admin.accounts.secrets.reveal',
-                            'admin.accounts.secrets.rotate',
-                            'admin.accounts.secrets.copy_username',
-                            'admin.accounts.approvals.request',
-                            'admin.accounts.approvals.approve',
-                        ], true)
+                        in_array(
+                            $routeName,
+                            [
+                                'admin.accounts.secrets.reveal',
+                                'admin.accounts.secrets.rotate',
+                                'admin.accounts.secrets.copy_username',
+                                'admin.accounts.approvals.request',
+                                'admin.accounts.approvals.approve',
+                            ],
+                            true,
+                        )
                     ) {
                         return 'accounts_secrets';
                     }
@@ -1158,7 +1969,10 @@
                 if (str_starts_with($routeName, 'admin.stamps.master.')) {
                     return 'stamps_master';
                 }
-                if (str_starts_with($routeName, 'admin.stamps.transactions.') || $routeName === 'admin.stamps.report.pdf') {
+                if (
+                    str_starts_with($routeName, 'admin.stamps.transactions.') ||
+                    $routeName === 'admin.stamps.report.pdf'
+                ) {
                     return 'stamps_transactions';
                 }
 
@@ -1207,7 +2021,10 @@
                 if (preg_match('/^admin\.(asset_vendors)\./', $routeName) === 1) {
                     return 'asset_vendors';
                 }
-                if (str_starts_with($routeName, 'admin.careers.') || str_starts_with($routeName, 'admin.career_candidates.')) {
+                if (
+                    str_starts_with($routeName, 'admin.careers.') ||
+                    str_starts_with($routeName, 'admin.career_candidates.')
+                ) {
                     return 'career';
                 }
                 if (str_starts_with($routeName, 'admin.certificates.')) {
@@ -1245,42 +2062,56 @@
     @endphp
     <nav class="pe-app-sidebar-menu nav nav-pills" data-simplebar id="sidebar-simplebar">
         <ul class="pe-main-menu list-unstyled">
-            @if($roleId && isset($menus[$roleId]))
-                @foreach($menus[$roleId] as $group)
+            @if ($roleId && isset($menus[$roleId]))
+                @foreach ($menus[$roleId] as $group)
                     @php
-                        $filteredItems = array_values(array_filter($group['items'], function ($item) use ($isMenuAllowed, $resolvePermissionKey) {
-                            if (isset($item['children']) && is_array($item['children'])) {
-                                // If a parent menu explicitly declares a permission key (group access), enforce it.
-                                if (!empty($item['permission_key']) && !$isMenuAllowed($resolvePermissionKey($item))) {
+                        $filteredItems = array_values(
+                            array_filter($group['items'], function ($item) use ($isMenuAllowed, $resolvePermissionKey) {
+                                if (isset($item['children']) && is_array($item['children'])) {
+                                    // If a parent menu explicitly declares a permission key (group access), enforce it.
+                                    if (
+                                        !empty($item['permission_key']) &&
+                                        !$isMenuAllowed($resolvePermissionKey($item))
+                                    ) {
+                                        return false;
+                                    }
+                                    foreach ($item['children'] as $child) {
+                                        if ($isMenuAllowed($resolvePermissionKey($child))) {
+                                            return true;
+                                        }
+                                    }
                                     return false;
                                 }
-                                foreach ($item['children'] as $child) {
-                                    if ($isMenuAllowed($resolvePermissionKey($child))) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                            return $isMenuAllowed($resolvePermissionKey($item));
-                        }));
+                                return $isMenuAllowed($resolvePermissionKey($item));
+                            }),
+                        );
                     @endphp
 
-                    @if(empty($filteredItems))
+                    @if (empty($filteredItems))
                         @continue
                     @endif
 
                     <li class="pe-menu-title">{{ $tGroup($group['title_group']) }}</li>
-                    @foreach($filteredItems as $itemIndex => $item)
+                    @foreach ($filteredItems as $itemIndex => $item)
                         @php
-                            $collapseId = 'collapseMenu_' . preg_replace('/[^a-zA-Z0-9]/', '', $group['title_group']) . '_' . $itemIndex;
+                            $collapseId =
+                                'collapseMenu_' .
+                                preg_replace('/[^a-zA-Z0-9]/', '', $group['title_group']) .
+                                '_' .
+                                $itemIndex;
                         @endphp
-                        @if(isset($item['children']))
+                        @if (isset($item['children']))
                             @php
                                 $currentRoute = Route::currentRouteName();
 
-                                $childrenFiltered = array_values(array_filter($item['children'], function ($child) use ($isMenuAllowed, $resolvePermissionKey) {
-                                    return $isMenuAllowed($resolvePermissionKey($child));
-                                }));
+                                $childrenFiltered = array_values(
+                                    array_filter($item['children'], function ($child) use (
+                                        $isMenuAllowed,
+                                        $resolvePermissionKey,
+                                    ) {
+                                        return $isMenuAllowed($resolvePermissionKey($child));
+                                    }),
+                                );
 
                                 if (empty($childrenFiltered)) {
                                     continue;
@@ -1295,14 +2126,14 @@
                                     $childParams = $child['params'] ?? [];
                                     $location = request()->query('location');
                                     if (
-                                        $childRoute === 'admin.assets.index'
-                                        && empty($childParams)
-                                        && in_array($location, ['Jababeka', 'Karawang'], true)
+                                        $childRoute === 'admin.assets.index' &&
+                                        empty($childParams) &&
+                                        in_array($location, ['Jababeka', 'Karawang'], true)
                                     ) {
                                         return false;
                                     }
 
-                                    $routeMatched = ($currentRoute === $childRoute);
+                                    $routeMatched = $currentRoute === $childRoute;
                                     if (!$routeMatched && !empty($childActiveRoutes)) {
                                         $routeMatched = in_array($currentRoute, $childActiveRoutes, true);
                                     }
@@ -1314,7 +2145,8 @@
                                         return true;
                                     }
                                     foreach ($childParams as $key => $value) {
-                                        if (request()->query($key) != $value) {
+                                        $actual = request()->query($key, request()->route($key));
+                                        if ($actual != $value) {
                                             return false;
                                         }
                                     }
@@ -1330,22 +2162,28 @@
                                         break;
                                     }
                                 }
-                                if (!$isAnyChildActive && !empty($item['active_routes']) && in_array($currentRoute, (array) $item['active_routes'], true)) {
+                                if (
+                                    !$isAnyChildActive &&
+                                    !empty($item['active_routes']) &&
+                                    in_array($currentRoute, (array) $item['active_routes'], true)
+                                ) {
                                     $isAnyChildActive = true;
                                 }
                             @endphp
                             <li class="pe-slide pe-has-sub{{ $isAnyChildActive ? ' active' : '' }}">
                                 <a href="#{{ $collapseId }}" class="pe-nav-link" data-bs-toggle="collapse"
-                                    aria-expanded="{{ $isAnyChildActive ? 'true' : 'false' }}" aria-controls="{{ $collapseId }}">
+                                    aria-expanded="{{ $isAnyChildActive ? 'true' : 'false' }}"
+                                    aria-controls="{{ $collapseId }}">
                                     <i class="{{ $item['icon'] }} pe-nav-icon"></i>
                                     <span class="pe-nav-content">{{ $tMenu($item['title'] ?? '') }}</span>
                                     <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
                                 </a>
-                                <ul class="pe-slide-menu collapse{{ $isAnyChildActive ? ' show' : '' }}" id="{{ $collapseId }}">
+                                <ul class="pe-slide-menu collapse{{ $isAnyChildActive ? ' show' : '' }}"
+                                    id="{{ $collapseId }}">
                                     @php
                                         $alreadyMarkedActive = false;
                                     @endphp
-                                    @foreach($childrenFiltered as $child)
+                                    @foreach ($childrenFiltered as $child)
                                         @php
                                             $childParams = $child['params'] ?? [];
                                             $isActive = false;
@@ -1354,16 +2192,25 @@
                                                 $alreadyMarkedActive = true;
                                             }
 
-                                            if (!$alreadyMarkedActive && $isAnyChildActive && !$hasExactChildMatch && !empty($child['default'])) {
+                                            if (
+                                                !$alreadyMarkedActive &&
+                                                $isAnyChildActive &&
+                                                !$hasExactChildMatch &&
+                                                !empty($child['default'])
+                                            ) {
                                                 $isActive = true;
                                                 $alreadyMarkedActive = true;
                                             }
                                         @endphp
                                         <li class="pe-slide-item">
-                                            <a href="{{ route($child['route'], $childParams) }}"
-                                                class="pe-nav-link{{ $isActive ? ' active' : '' }}">
-                                                {{ $tMenu($child['title'] ?? '') }}
-                                            </a>
+                                            @if (!empty($child['is_heading']))
+                                                <div class="pe-stock-menu-heading">{{ $tMenu($child['title'] ?? '') }}</div>
+                                            @else
+                                                <a href="{{ route($child['route'], $childParams) }}"
+                                                    class="pe-nav-link{{ $isActive ? ' active' : '' }}">
+                                                    {{ $tMenu($child['title'] ?? '') }}
+                                                </a>
+                                            @endif
                                         </li>
                                     @endforeach
                                 </ul>
@@ -1372,7 +2219,10 @@
                             @php
                                 $currentRoute = Route::currentRouteName();
                                 $isActive = false;
-                                if (!empty($item['active_routes']) && in_array($currentRoute, (array) $item['active_routes'], true)) {
+                                if (
+                                    !empty($item['active_routes']) &&
+                                    in_array($currentRoute, (array) $item['active_routes'], true)
+                                ) {
                                     $isActive = true;
                                 }
                                 if (!$isActive && !empty($item['route']) && $currentRoute === $item['route']) {

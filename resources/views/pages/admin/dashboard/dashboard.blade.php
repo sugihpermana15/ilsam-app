@@ -97,12 +97,15 @@
         \App\Support\MenuAccess::can(auth()->user(), 'uniforms_entitlements', 'read')
       );
 
+      $showStock = auth()->check() && \App\Support\MenuAccess::can(auth()->user(), 'stock', 'read');
+
       $showDocuments = !empty($showDocuments);
 
       // Apply per-user tab access overrides.
       $showAsset = $tabAllowed('asset') && $showAsset;
       $showStamps = $tabAllowed('stamps') && $showStamps;
       $showUniforms = $tabAllowed('uniforms') && $showUniforms;
+      $showStock = $tabAllowed('stock') && $showStock;
       $showDocuments = $tabAllowed('documents') && $showDocuments;
       $showEmployee = $tabAllowed('employee') && $showEmployee;
 
@@ -113,6 +116,8 @@
         $tabs[] = 'stamps';
       if ($showUniforms)
         $tabs[] = 'uniforms';
+      if ($showStock)
+        $tabs[] = 'stock';
       if ($showDocuments)
         $tabs[] = 'documents';
       if ($showEmployee)
@@ -130,7 +135,7 @@
           </div>
 
           <div class="card-body">
-            @if(!$showAsset && !$showStamps && !$showUniforms && !$showEmployee && !$showDocuments)
+            @if(!$showAsset && !$showStamps && !$showUniforms && !$showStock && !$showEmployee && !$showDocuments)
               <div class="alert alert-warning mb-0">
                 Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
               </div>
@@ -158,6 +163,14 @@
                       <button class="nav-link {{ $activeTab === 'uniforms' ? 'active' : '' }}" data-bs-toggle="tab"
                         data-bs-target="#tab-uniforms" type="button" role="tab">
                         <i class="fas fa-shirt me-1"></i> Seragam
+                      </button>
+                    </li>
+                  @endif
+                  @if($showStock)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'stock' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-stock" type="button" role="tab">
+                        <i class="fas fa-boxes-stacked me-1"></i> Stock
                       </button>
                     </li>
                   @endif
@@ -703,6 +716,12 @@
                   </div>
                 @endif
 
+                @if($showStock)
+                  <div class="tab-pane fade {{ $activeTab === 'stock' ? 'show active' : '' }}" id="tab-stock" role="tabpanel">
+                    @include('pages.admin.dashboard.partials.stock', ['stock' => $stock])
+                  </div>
+                @endif
+
                 @if($showDocuments)
                   @php
                     $docExpiring = $documents['expiring'] ?? collect();
@@ -996,17 +1015,20 @@
   @php
     $shouldLoadCharts = !$isUser && (
       !empty($permissions['asset']['charts']) ||
-      !empty($uniforms['charts'] ?? null)
+      !empty($uniforms['charts'] ?? null) ||
+      !empty($stock['charts'] ?? null)
     );
+    $combinedDashboardData = json_encode([
+      'asset' => $asset['charts'] ?? null,
+      'uniforms' => $uniforms['charts'] ?? null,
+      'stock' => $stock['charts'] ?? null,
+    ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
   @endphp
 
   @if($shouldLoadCharts)
     <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
     <script>
-      window.combinedDashboardData = @json([
-        'asset' => $asset['charts'] ?? null,
-        'uniforms' => $uniforms['charts'] ?? null,
-      ]);
+      window.combinedDashboardData = {!! $combinedDashboardData !!};
 
       (function () {
         if (typeof ApexCharts === 'undefined') return;
@@ -1060,6 +1082,10 @@
 
         const uniforms = all.uniforms || {};
         bar('#uniformsAllocatedDaily30d', uniforms.allocatedDaily30d?.categories || [], uniforms.allocatedDaily30d?.series || [], 'Qty');
+
+        const stock = all.stock || {};
+        line('#stockTransactionsDaily30d', stock.transactionsDaily30d?.categories || [], stock.transactionsDaily30d?.incoming || [], stock.transactionsDaily30d?.outgoing || [], 'Masuk', 'Keluar');
+        donut('#stockBySite', stock.bySite?.labels || [], stock.bySite?.series || []);
       })();
     </script>
   @endif
