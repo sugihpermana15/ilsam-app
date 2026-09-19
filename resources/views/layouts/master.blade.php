@@ -21,6 +21,27 @@
 <link rel="shortcut icon" href="{{ $faviconUrl }}">
 @include('partials.head-css')
 
+<style>
+    .app-wrapper {
+        min-height: calc(100vh - var(--pe-app-header-height));
+        padding-bottom: calc(var(--pe-app-footer-height) + 1rem);
+    }
+
+    .footer {
+        position: fixed;
+        inset-inline: var(--pe-app-sidebar-width) 0;
+        bottom: 0;
+        z-index: 1001;
+        margin-inline-start: 0;
+    }
+
+    @media (max-width: 991.98px) {
+        .footer {
+            inset-inline-start: 0;
+        }
+    }
+</style>
+
 @yield('css')
 
 <!-- Font Awesome (global) -->
