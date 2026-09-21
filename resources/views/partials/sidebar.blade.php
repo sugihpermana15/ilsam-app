@@ -1524,6 +1524,44 @@
                         ],
                     ],
                 ],
+                [
+                    'title_group' => 'Application',
+                    'items' => [
+                        [
+                            'title' => 'Manajemen Stok',
+                            'icon' => 'fas fa-boxes-stacked',
+                            'permission_key' => 'stock',
+                            'active_routes' => [
+                                'admin.stock.master.index',
+                                'admin.stock.restock.index',
+                                'admin.stock.request.index',
+                                'admin.stock.ledger.index',
+                                'admin.stock.transfer.index',
+                            ],
+                            'children' => [
+                                [
+                                    'title' => 'ATK',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'atk'],
+                                    'default' => true,
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'Material',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'material'],
+                                    'permission_key' => 'stock',
+                                ],
+                                [
+                                    'title' => 'APD',
+                                    'route' => 'admin.stock.master.index',
+                                    'params' => ['category' => 'apd'],
+                                    'permission_key' => 'stock',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
             3 => [
                 // Users
