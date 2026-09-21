@@ -89,11 +89,18 @@
             right: 1rem;
             bottom: 1rem;
             z-index: 1080;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
             width: min(23rem, calc(100vw - 2rem));
+            max-height: calc(100dvh - 2rem);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
         }
 
         .stock-notification-toast {
-            margin-top: .75rem;
+            flex: 0 0 auto;
             border: 1px solid #d0d5dd;
             border-left: 4px solid #f26b21;
             border-radius: .375rem;
@@ -332,6 +339,7 @@
                                 toast.className = `stock-notification-toast${notification.type === 'low_stock' ? ' is-low-stock' : ''}`;
                                 toast.innerHTML = `<div class="d-flex gap-2"><i class="fas ${notification.type === 'low_stock' ? 'fa-triangle-exclamation text-warning' : 'fa-truck-fast text-primary'} mt-1"></i><div><strong>${escapeHtml(notification.title)}</strong><div class="small text-muted mt-1">${escapeHtml(notification.message)}</div></div></div>`;
                                 toasts.appendChild(toast);
+                                toasts.scrollTop = toasts.scrollHeight;
                                 window.setTimeout(() => toast.remove(), 7000);
                             };
 

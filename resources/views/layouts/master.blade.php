@@ -35,6 +35,12 @@
         margin-inline-start: 0;
     }
 
+    .progress-wrap {
+        right: 1rem;
+        bottom: calc(var(--pe-app-footer-height) + 1rem);
+        z-index: 1002;
+    }
+
     @media (max-width: 991.98px) {
         .footer {
             inset-inline-start: 0;
