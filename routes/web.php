@@ -91,7 +91,14 @@ Route::get('/sitemap.xml', function () {
         route('privacy-policy'),
     ];
 
-    $lastmod = now()->toAtomString();
+    $priorities = [
+        route('home') => '1.0',
+        route('products') => '0.9',
+        route('products.colorants') => '0.9',
+        route('aboutus') => '0.8',
+        route('technology') => '0.8',
+        route('contact') => '0.8',
+    ];
 
     $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     $xml .= "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
@@ -99,9 +106,9 @@ Route::get('/sitemap.xml', function () {
         $loc = htmlspecialchars($url, ENT_QUOTES | ENT_XML1, 'UTF-8');
         $xml .= "  <url>\n";
         $xml .= "    <loc>{$loc}</loc>\n";
-        $xml .= "    <lastmod>{$lastmod}</lastmod>\n";
         $xml .= "    <changefreq>weekly</changefreq>\n";
-        $xml .= "    <priority>0.7</priority>\n";
+        $priority = $priorities[$url] ?? '0.6';
+        $xml .= "    <priority>{$priority}</priority>\n";
         $xml .= "  </url>\n";
     }
     $xml .= "</urlset>\n";

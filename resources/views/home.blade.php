@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Ilsam')
+@section('title', 'PT ILSAM Global Indonesia - Chemical Colorants & Coating Solutions')
 
 @php
   $ws = \App\Support\WebsiteSettings::all();
@@ -36,6 +36,9 @@
   }
   if (!is_string($metaDescription)) {
     $metaDescription = '';
+  }
+  if (trim($metaDescription) === '') {
+    $metaDescription = 'PT ILSAM Global Indonesia supplies chemical colorants, PU resin, additives, and surface coating solutions for PU/PVC synthetic leather and footwear manufacturers in Indonesia.';
   }
 
   $metaImageRaw = data_get($ws, 'seo.home.meta_image', 'assets/img/img1.jpg');
@@ -136,6 +139,7 @@
 @endphp
 
 @section('meta_description', $metaDescription)
+@section('canonical', route('home'))
 @section('meta_image', $metaImage)
 
 @section('main')
