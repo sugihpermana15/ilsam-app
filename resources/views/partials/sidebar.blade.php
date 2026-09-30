@@ -1000,9 +1000,8 @@
                     'title_group' => 'Web Pages',
                     'items' => [
                         [
-                            'title' => 'Career Management',
+                            'title' => 'Career',
                             'icon' => 'fas fa-briefcase',
-                            'route' => 'admin.careers.index',
                             'permission_key' => 'career',
                             'active_routes' => [
                                 'admin.careers.index',
@@ -1010,6 +1009,51 @@
                                 'admin.careers.store',
                                 'admin.careers.update',
                                 'admin.careers.destroy',
+                                'admin.career_candidates.index',
+                                'admin.career_candidates.screening_cv',
+                                'admin.career_candidates.psychology_test',
+                                'admin.career_candidates.hrd_online_interview',
+                                'admin.career_candidates.user_site_interview',
+                                'admin.career_candidates.offering_letter',
+                                'admin.career_candidates.datatable',
+                                'admin.career_candidates.talent_pool',
+                                'admin.career_candidates.talent_pool.datatable',
+                                'admin.career_candidates.advance',
+                                'admin.career_candidates.talent_pool.store',
+                                'admin.career_candidates.cv.view',
+                                'admin.career_candidates.cv',
+                            ],
+                            'children' => [
+                                [
+                                    'title' => 'Job Openings',
+                                    'route' => 'admin.careers.index',
+                                    'default' => true,
+                                ],
+                                [
+                                    'title' => 'Screening CV',
+                                    'route' => 'admin.career_candidates.index',
+                                    'active_routes' => ['admin.career_candidates.screening_cv'],
+                                ],
+                                [
+                                    'title' => 'Test Psikotes',
+                                    'route' => 'admin.career_candidates.psychology_test',
+                                ],
+                                [
+                                    'title' => 'Interview HRD Online',
+                                    'route' => 'admin.career_candidates.hrd_online_interview',
+                                ],
+                                [
+                                    'title' => 'Interview User',
+                                    'route' => 'admin.career_candidates.user_site_interview',
+                                ],
+                                [
+                                    'title' => 'Offering Letter',
+                                    'route' => 'admin.career_candidates.offering_letter',
+                                ],
+                                [
+                                    'title' => 'Talent Pool',
+                                    'route' => 'admin.career_candidates.talent_pool',
+                                ],
                             ],
                         ],
                         [
@@ -1510,9 +1554,8 @@
                     'title_group' => 'Web Pages',
                     'items' => [
                         [
-                            'title' => 'Career Management',
+                            'title' => 'Career',
                             'icon' => 'fas fa-briefcase',
-                            'route' => 'admin.careers.index',
                             'permission_key' => 'career',
                             'active_routes' => [
                                 'admin.careers.index',
@@ -1520,6 +1563,51 @@
                                 'admin.careers.store',
                                 'admin.careers.update',
                                 'admin.careers.destroy',
+                                'admin.career_candidates.index',
+                                'admin.career_candidates.screening_cv',
+                                'admin.career_candidates.psychology_test',
+                                'admin.career_candidates.hrd_online_interview',
+                                'admin.career_candidates.user_site_interview',
+                                'admin.career_candidates.offering_letter',
+                                'admin.career_candidates.datatable',
+                                'admin.career_candidates.talent_pool',
+                                'admin.career_candidates.talent_pool.datatable',
+                                'admin.career_candidates.advance',
+                                'admin.career_candidates.talent_pool.store',
+                                'admin.career_candidates.cv.view',
+                                'admin.career_candidates.cv',
+                            ],
+                            'children' => [
+                                [
+                                    'title' => 'Job Openings',
+                                    'route' => 'admin.careers.index',
+                                    'default' => true,
+                                ],
+                                [
+                                    'title' => 'Screening CV',
+                                    'route' => 'admin.career_candidates.index',
+                                    'active_routes' => ['admin.career_candidates.screening_cv'],
+                                ],
+                                [
+                                    'title' => 'Test Psikotes',
+                                    'route' => 'admin.career_candidates.psychology_test',
+                                ],
+                                [
+                                    'title' => 'Interview HRD Online',
+                                    'route' => 'admin.career_candidates.hrd_online_interview',
+                                ],
+                                [
+                                    'title' => 'Interview User',
+                                    'route' => 'admin.career_candidates.user_site_interview',
+                                ],
+                                [
+                                    'title' => 'Offering Letter',
+                                    'route' => 'admin.career_candidates.offering_letter',
+                                ],
+                                [
+                                    'title' => 'Talent Pool',
+                                    'route' => 'admin.career_candidates.talent_pool',
+                                ],
                             ],
                         ],
                     ],

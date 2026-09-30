@@ -24,7 +24,7 @@
             return asset(ltrim($value, '/'));
         };
 
-        $rawTitle = strip_tags(trim($__env->yieldContent('title')));
+        $rawTitle = html_entity_decode(strip_tags(trim($__env->yieldContent('title'))), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $seoTitle = preg_replace('/\s+/', ' ', $rawTitle);
 
         $brandName = config('app.name', 'Ilsam Global Indonesia');
@@ -33,7 +33,7 @@
             $seoTitle = rtrim($seoTitle) . ' | ' . $brandName;
         }
 
-        $rawDescription = strip_tags(trim($__env->yieldContent('meta_description')));
+        $rawDescription = html_entity_decode(strip_tags(trim($__env->yieldContent('meta_description'))), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $seoDescription = preg_replace('/\s+/', ' ', $rawDescription);
         $seoDescription = $seoDescription !== ''
             ? $seoDescription
@@ -48,7 +48,7 @@
             ? $toAssetUrl($rawImage, $defaultLogoUrl)
             : $defaultLogoUrl;
 
-        $rawImageAlt = strip_tags(trim($__env->yieldContent('meta_image_alt')));
+        $rawImageAlt = html_entity_decode(strip_tags(trim($__env->yieldContent('meta_image_alt'))), ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $seoImageAlt = preg_replace('/\s+/', ' ', $rawImageAlt);
         $seoImageAlt = $seoImageAlt !== '' ? $seoImageAlt : (config('app.name', 'Ilsam Global Indonesia') . ' logo');
 

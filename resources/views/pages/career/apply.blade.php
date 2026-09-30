@@ -4,7 +4,7 @@
 @section('main')
   @php
     $company = $company ?? [];
-    $companyEmail = $company['email'] ?? 'hrd@ilsam.co.id';
+    $companyEmail = $company['email'] ?? 'career@ilsam.co.id';
 
     $openings = collect($openings ?? []);
     $selectedJob = $selectedJob ?? null;

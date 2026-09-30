@@ -17,7 +17,7 @@
     $openings = collect($openings ?? []);
 
     $company = $company ?? [];
-    $companyEmail = $company['email'] ?? 'hrd@ilsam.co.id';
+    $companyEmail = $company['email'] ?? 'career@ilsam.co.id';
 
     $filters = $filters ?? [
       'q' => request('q', ''),

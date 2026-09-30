@@ -258,7 +258,7 @@
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label">Apply URL</label>
-                <input type="text" class="form-control" name="apply_url" placeholder="mailto:hrd@ilsam.co.id">
+                <input type="text" class="form-control" name="apply_url" placeholder="mailto:career@ilsam.co.id">
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label">Deadline</label>

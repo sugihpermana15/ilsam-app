@@ -19,6 +19,12 @@ class CareerCandidate extends Model
     'linkedin_url',
     'portfolio_url',
     'message',
+    'recruitment_stage',
+    'selection_status',
+    'stage_notes',
+    'is_talent_pool',
+    'talent_pool_notes',
+    'processed_at',
     'cv_path',
     'cv_original_name',
     'cv_mime',
@@ -31,6 +37,8 @@ class CareerCandidate extends Model
   {
     return [
       'cv_size' => 'integer',
+      'is_talent_pool' => 'boolean',
+      'processed_at' => 'datetime',
     ];
   }
 }

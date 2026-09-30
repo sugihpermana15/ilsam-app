@@ -126,8 +126,8 @@ class CareerController extends Controller
       'email' => ['required', 'email', 'max:200'],
       'phone' => ['required', 'string', 'max:60'],
       'domicile' => ['nullable', 'string', 'max:160'],
-      'linkedin_url' => ['nullable', 'url', 'max:500'],
-      'portfolio_url' => ['nullable', 'url', 'max:500'],
+      'linkedin_url' => ['nullable', 'url:http,https', 'max:500'],
+      'portfolio_url' => ['nullable', 'url:http,https', 'max:500'],
       'message' => ['nullable', 'string', 'max:5000'],
       'cv' => [
         'required',
@@ -203,7 +203,7 @@ class CareerController extends Controller
     $mime = $cvFile->getClientMimeType();
     $size = $cvFile->getSize();
 
-    $safeName = Str::uuid()->toString() . '.' . $cvFile->getClientOriginalExtension();
+    $safeName = Str::uuid()->toString() . '.pdf';
     $cvPath = $cvFile->storeAs('career/cv', $safeName, 'local');
 
     CareerCandidate::query()->create([
@@ -339,7 +339,7 @@ class CareerController extends Controller
       'headline' => 'Build your next career move with us',
       'subheadline' => 'We believe in people, safety, and innovation to deliver world-class manufacturing.',
       'location' => 'Jababeka & Karawang, Indonesia',
-      'email' => 'hrd@ilsam.co.id',
+      'email' => 'career@ilsam.co.id',
       'phone' => '+62 21 0000 0000',
       'hero_image' => asset('assets/img/aboutus/img11.jpg'),
       'overview' => 'Ilsam is a global manufacturer focused on quality, sustainability, and continuous improvement. We invest in technology and people to create a safe, inclusive, and high-performance culture.',

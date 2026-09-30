@@ -449,8 +449,22 @@ Route::prefix('admin')->middleware([
     Route::put('/careers/{id}', [AdminCareerController::class, 'update'])->middleware('menu:career')->name('admin.careers.update');
     Route::delete('/careers/{id}', [AdminCareerController::class, 'destroy'])->middleware('menu:career')->name('admin.careers.destroy');
 
-    // Career Candidates
-    Route::get('/career-candidates', [AdminCareerCandidateController::class, 'index'])->middleware('menu:career')->name('admin.career_candidates.index');
+    // Career Candidate Pipeline
+    Route::get('/career-candidates', [AdminCareerCandidateController::class, 'screeningCv'])->middleware('menu:career')->name('admin.career_candidates.index');
+    Route::get('/career-candidates/screening-cv', [AdminCareerCandidateController::class, 'screeningCv'])->middleware('menu:career')->name('admin.career_candidates.screening_cv');
+    Route::get('/career-candidates/test-psikotes', [AdminCareerCandidateController::class, 'psychologyTest'])->middleware('menu:career')->name('admin.career_candidates.psychology_test');
+    Route::get('/career-candidates/interview-hrd', [AdminCareerCandidateController::class, 'hrdOnlineInterview'])->middleware('menu:career')->name('admin.career_candidates.hrd_online_interview');
+    Route::get('/career-candidates/interview-user', [AdminCareerCandidateController::class, 'userSiteInterview'])->middleware('menu:career')->name('admin.career_candidates.user_site_interview');
+    Route::get('/career-candidates/offering-letter', [AdminCareerCandidateController::class, 'offeringLetter'])->middleware('menu:career')->name('admin.career_candidates.offering_letter');
+    Route::get('/career-candidates/talent-pool', [AdminCareerCandidateController::class, 'talentPool'])->middleware('menu:career')->name('admin.career_candidates.talent_pool');
+    Route::get('/career-candidates/talent-pool/datatable', [AdminCareerCandidateController::class, 'talentPoolDatatable'])->middleware('menu:career')->name('admin.career_candidates.talent_pool.datatable');
+    Route::get('/career-candidates/datatable/{stage}', [AdminCareerCandidateController::class, 'datatable'])->middleware('menu:career')->name('admin.career_candidates.datatable');
+    Route::put('/career-candidates/advance-bulk', [AdminCareerCandidateController::class, 'bulkAdvance'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_advance');
+    Route::put('/career-candidates/reject-bulk', [AdminCareerCandidateController::class, 'bulkReject'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_reject');
+    Route::put('/career-candidates/{candidate}/advance', [AdminCareerCandidateController::class, 'advance'])->middleware('menu:career,update')->name('admin.career_candidates.advance');
+    Route::put('/career-candidates/{candidate}/reject', [AdminCareerCandidateController::class, 'reject'])->middleware('menu:career,update')->name('admin.career_candidates.reject');
+    Route::put('/career-candidates/{candidate}/talent-pool', [AdminCareerCandidateController::class, 'storeTalentPool'])->middleware('menu:career,update')->name('admin.career_candidates.talent_pool.store');
+    Route::get('/career-candidates/{candidate}/cv/view', [AdminCareerCandidateController::class, 'viewCv'])->middleware('menu:career')->name('admin.career_candidates.cv.view');
     Route::get('/career-candidates/{candidate}/cv', [AdminCareerCandidateController::class, 'downloadCv'])->middleware('menu:career')->name('admin.career_candidates.cv');
 
     // Certificate Management
