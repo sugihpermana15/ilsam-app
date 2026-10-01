@@ -106,6 +106,7 @@ class CareerCandidateController extends Controller
         $sub->where('full_name', 'like', $like)
           ->orWhere('email', 'like', $like)
           ->orWhere('phone', 'like', $like)
+          ->orWhere('candidate_code', 'like', $like)
           ->orWhere('job_title', 'like', $like);
       });
     }
@@ -117,13 +118,16 @@ class CareerCandidateController extends Controller
         'submitted_at' => optional($candidate->created_at)->format('d M Y H:i'),
         'full_name' => $candidate->full_name,
         'email' => $candidate->email,
+        'candidate_code' => $candidate->candidate_code,
         'phone' => $candidate->phone,
         'job_title' => $candidate->job_title ?: '-',
         'domicile' => $candidate->domicile ?: '-',
         'stage_label' => $isTalentPool ? 'Talent Pool' : (self::STAGES[$candidate->recruitment_stage] ?? '-'),
+        'failed_stage_label' => self::STAGES[$candidate->recruitment_stage] ?? '-',
         'stage_notes' => $candidate->stage_notes,
         'talent_pool_notes' => $candidate->talent_pool_notes,
         'selection_status' => $candidate->selection_status,
+        'has_cv' => (bool) $candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path),
         'cv_view_url' => route('admin.career_candidates.cv.view', $candidate),
         'advance_url' => $stage && $candidate->selection_status !== 'rejected'
           ? route('admin.career_candidates.advance', $candidate)
@@ -216,27 +220,13 @@ class CareerCandidateController extends Controller
       return back()->with('error', 'Sebagian kandidat tidak lagi tersedia pada tahap ini. Muat ulang tabel lalu pilih kembali.');
     }
 
-    $retainedStages = ['user_site_interview', 'offering_letter'];
-    if (in_array($validated['stage'], $retainedStages, true)) {
-      CareerCandidate::query()->whereIn('id', $candidateIds)->update([
-        'selection_status' => 'rejected',
-        'stage_notes' => $validated['rejection_reason'],
-        'processed_at' => now(),
-      ]);
-
-      return back()->with('success', count($candidateIds) . ' kandidat ditandai tidak lolos dan alasan kegagalan disimpan.');
-    }
-
     foreach ($candidates as $candidate) {
-      if ($candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path)
-        && !Storage::disk('local')->delete($candidate->cv_path)) {
-        return back()->with('error', 'CV kandidat tidak dapat dihapus. Tidak ada data kandidat yang dihapus.');
+      if (!$this->rejectAndMinimize($candidate, $validated['rejection_reason'])) {
+        return back()->with('error', 'CV kandidat tidak dapat dihapus. Perubahan kandidat dibatalkan.');
       }
     }
 
-    CareerCandidate::query()->whereIn('id', $candidateIds)->delete();
-
-    return back()->with('success', count($candidateIds) . ' data kandidat dan CV berhasil dihapus permanen.');
+    return back()->with('success', count($candidateIds) . ' kandidat ditandai tidak lolos. CV dihapus dan data ringkas disimpan.');
   }
 
   public function reject(Request $request, CareerCandidate $candidate)
@@ -247,25 +237,11 @@ class CareerCandidateController extends Controller
       'rejection_reason' => ['required', 'string', 'max:3000'],
     ]);
 
-    $retainedStages = ['user_site_interview', 'offering_letter'];
-    if (in_array($candidate->recruitment_stage, $retainedStages, true)) {
-      $candidate->update([
-        'selection_status' => 'rejected',
-        'stage_notes' => $validated['rejection_reason'],
-        'processed_at' => now(),
-      ]);
-
-      return back()->with('success', 'Kandidat ditandai tidak lolos dan alasan kegagalan disimpan.');
-    }
-
-    if ($candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path)
-      && !Storage::disk('local')->delete($candidate->cv_path)) {
+    if (!$this->rejectAndMinimize($candidate, $validated['rejection_reason'])) {
       return back()->with('error', 'CV kandidat tidak dapat dihapus. Data kandidat tetap dipertahankan.');
     }
 
-    $candidate->delete();
-
-    return back()->with('success', 'Data kandidat dan CV berhasil dihapus permanen.');
+    return back()->with('success', 'Kandidat ditandai tidak lolos. CV dihapus dan data ringkas disimpan.');
   }
 
   public function storeTalentPool(Request $request, CareerCandidate $candidate)
@@ -283,6 +259,36 @@ class CareerCandidateController extends Controller
     ]);
 
     return back()->with('success', 'Kandidat dipindahkan ke Talent Pool.');
+  }
+
+  private function rejectAndMinimize(CareerCandidate $candidate, string $reason): bool
+  {
+    if ($candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path)
+      && !Storage::disk('local')->delete($candidate->cv_path)) {
+      return false;
+    }
+
+    $candidate->update([
+      'job_id' => null,
+      'job_title' => null,
+      'candidate_code' => null,
+      'linkedin_url' => null,
+      'portfolio_url' => null,
+      'message' => null,
+      'cv_path' => null,
+      'cv_original_name' => null,
+      'cv_mime' => null,
+      'cv_size' => null,
+      'ip_address' => null,
+      'user_agent' => null,
+      'selection_status' => 'rejected',
+      'stage_notes' => $reason,
+      'is_talent_pool' => false,
+      'talent_pool_notes' => null,
+      'processed_at' => now(),
+    ]);
+
+    return true;
   }
 
   public function downloadCv(CareerCandidate $candidate)

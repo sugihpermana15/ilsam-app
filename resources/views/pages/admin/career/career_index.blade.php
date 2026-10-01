@@ -120,7 +120,7 @@
                     <td>{{ $career->location ?? $career['location'] ?? '-' }}</td>
                     <td>
                       @php
-                        $isActive = (bool) ($career->is_active ?? $career['is_active'] ?? true);
+                        $isActive = (bool) ($career->is_publicly_available ?? $career->is_active ?? $career['is_active'] ?? true);
                       @endphp
                       <span class="badge bg-{{ $isActive ? 'success' : 'secondary' }}">
                         {{ $isActive ? 'Published' : 'Draft' }}
@@ -147,12 +147,11 @@
                           data-type="{{ $career->type ?? $career['type'] ?? '' }}"
                           data-work-mode="{{ $career->work_mode ?? $career['work_mode'] ?? '' }}"
                           data-experience="{{ $career->experience ?? $career['experience'] ?? '' }}"
-                          data-summary="{{ $career->summary ?? $career['summary'] ?? '' }}"
                           data-requirements="{{ $career->requirements ?? $career['requirements'] ?? '' }}"
                           data-responsibilities="{{ $career->responsibilities ?? $career['responsibilities'] ?? '' }}"
                           data-apply-url="{{ $career->apply_url ?? $career['apply_url'] ?? '' }}"
                           data-deadline="{{ $career->deadline instanceof \Carbon\Carbon ? $career->deadline->format('Y-m-d') : ($career['deadline'] ?? '') }}"
-                          data-is-active="{{ (int) ($career->is_active ?? $career['is_active'] ?? 1) }}">
+                          data-is-active="{{ (int) ($career->is_publicly_available ?? $career->is_active ?? $career['is_active'] ?? 1) }}">
                           <i class="fas fa-pencil-alt"></i>
                         </button>
 
@@ -212,6 +211,7 @@
               <div class="col-12 col-md-6">
                 <label class="form-label">Type</label>
                 <select class="form-select" name="type">
+                  <option value="Karyawan Tetap">Karyawan Tetap</option>
                   <option value="Full-time">Full-time</option>
                   <option value="Part-time">Part-time</option>
                   <option value="Contract">Contract</option>
@@ -245,16 +245,12 @@
                 <input type="text" class="form-control" name="experience" placeholder="Example: 1-3 years">
               </div>
               <div class="col-12">
-                <label class="form-label">Summary</label>
-                <textarea class="form-control" rows="2" name="summary"></textarea>
+                <label class="form-label">Requirements</label>
+                <textarea class="form-control" rows="3" name="requirements"></textarea>
               </div>
               <div class="col-12">
                 <label class="form-label">Responsibilities</label>
                 <textarea class="form-control" rows="3" name="responsibilities"></textarea>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Requirements</label>
-                <textarea class="form-control" rows="3" name="requirements"></textarea>
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label">Apply URL</label>
@@ -317,6 +313,7 @@
               <div class="col-12 col-md-6">
                 <label class="form-label">Type</label>
                 <select class="form-select" name="type">
+                  <option value="Karyawan Tetap">Karyawan Tetap</option>
                   <option value="Full-time">Full-time</option>
                   <option value="Part-time">Part-time</option>
                   <option value="Contract">Contract</option>
@@ -350,16 +347,12 @@
                 <input type="text" class="form-control" name="experience">
               </div>
               <div class="col-12">
-                <label class="form-label">Summary</label>
-                <textarea class="form-control" rows="2" name="summary"></textarea>
+                <label class="form-label">Requirements</label>
+                <textarea class="form-control" rows="3" name="requirements"></textarea>
               </div>
               <div class="col-12">
                 <label class="form-label">Responsibilities</label>
                 <textarea class="form-control" rows="3" name="responsibilities"></textarea>
-              </div>
-              <div class="col-12">
-                <label class="form-label">Requirements</label>
-                <textarea class="form-control" rows="3" name="requirements"></textarea>
               </div>
               <div class="col-12 col-md-6">
                 <label class="form-label">Apply URL</label>
@@ -408,7 +401,6 @@
         form.querySelector('[name="type"]').value = button.getAttribute('data-type') || 'Full-time';
         form.querySelector('[name="work_mode"]').value = button.getAttribute('data-work-mode') || 'On-site';
         form.querySelector('[name="experience"]').value = button.getAttribute('data-experience') || '';
-        form.querySelector('[name="summary"]').value = button.getAttribute('data-summary') || '';
         form.querySelector('[name="responsibilities"]').value = button.getAttribute('data-responsibilities') || '';
         form.querySelector('[name="requirements"]').value = button.getAttribute('data-requirements') || '';
         form.querySelector('[name="apply_url"]').value = button.getAttribute('data-apply-url') || '';

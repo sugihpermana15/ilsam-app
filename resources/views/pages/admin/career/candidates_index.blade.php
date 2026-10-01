@@ -147,15 +147,17 @@
             return `<input type="checkbox" class="select-candidate" value="${candidateId}" ${selectedCandidateIds.has(candidateId) ? 'checked' : ''}>`;
           } },
           { data: 'submitted_at', defaultContent: '-' },
-          { data: null, render: (data, type, row) => `<div class="fw-semibold">${escapeHtml(row.full_name)}</div><div class="text-muted small">${escapeHtml(row.email)}</div>` },
+          { data: null, render: (data, type, row) => `<div class="fw-semibold">${escapeHtml(row.full_name)}</div><div class="text-muted small">${escapeHtml(row.email)}</div><div class="text-muted small">${escapeHtml(row.candidate_code || '-')}</div>` },
           { data: null, render: (data, type, row) => `<div class="fw-semibold">${escapeHtml(row.job_title)}</div><div class="text-muted small">${escapeHtml(row.domicile)}</div>` },
           { data: 'phone', defaultContent: '-' },
           { data: null, render: (data, type, row) => row.selection_status === 'rejected'
-            ? `<span class="badge bg-danger-subtle text-danger">Tidak Lolos</span>`
+            ? `<span class="badge bg-danger-subtle text-danger">Tidak Lolos</span><div class="small text-muted mt-1">Gagal pada ${escapeHtml(row.failed_stage_label)}</div>`
             : `<span class="badge bg-primary-subtle text-primary">${escapeHtml(row.stage_label)}</span>` },
           { data: null, orderable: false, render: (data, type, row) => `<span class="small text-muted">${escapeHtml(isTalentPool ? row.talent_pool_notes : row.stage_notes) || '-'}</span>` },
           { data: null, orderable: false, searchable: false, render: (data, type, row) => {
-            let html = `<button class="btn btn-sm btn-outline-primary js-view-cv" data-url="${escapeHtml(row.cv_view_url)}"><i class="fas fa-file-pdf"></i> View PDF</button>`;
+            let html = row.has_cv
+              ? `<button class="btn btn-sm btn-outline-primary js-view-cv" data-url="${escapeHtml(row.cv_view_url)}"><i class="fas fa-file-pdf"></i> View PDF</button>`
+              : '';
             if (!isTalentPool && nextStageLabel && row.advance_url) {
               html += ` <button class="btn btn-sm btn-success js-advance" data-url="${escapeHtml(row.advance_url)}"><i class="fas fa-arrow-right"></i> Ke ${escapeHtml(nextStageLabel)}</button>`;
             }
@@ -214,13 +216,10 @@
         const candidateIds = Array.from(selectedCandidateIds);
         if (candidateIds.length === 0) return;
 
-        const keepsCandidates = ['user_site_interview', 'offering_letter'].includes(stage);
         const result = await careerAlert.fire({
           icon: 'warning',
           title: 'Tandai kandidat gagal?',
-          text: keepsCandidates
-            ? `${candidateIds.length} kandidat disimpan sebagai riwayat proses gagal.`
-            : `${candidateIds.length} data kandidat dan file CV akan dihapus permanen.`,
+          text: `${candidateIds.length} kandidat disimpan sebagai riwayat proses gagal. File CV dan data tambahan akan dihapus.`,
           input: 'textarea',
           inputPlaceholder: 'Masukkan alasan kandidat tidak lolos.',
           inputAttributes: {
@@ -228,7 +227,7 @@
             maxlength: 3000
           },
           showCancelButton: true,
-          confirmButtonText: keepsCandidates ? 'Simpan alasan' : 'Hapus permanen',
+          confirmButtonText: 'Simpan alasan',
           cancelButtonText: 'Batal',
           confirmButtonColor: '#dc3545',
           inputValidator: (value) => !value || !value.trim() ? 'Alasan kegagalan wajib diisi.' : undefined
@@ -309,13 +308,10 @@
       });
 
       $('#career-candidates-table').on('click', '.js-reject', async function () {
-        const keepsCandidate = ['user_site_interview', 'offering_letter'].includes(stage);
         const result = await careerAlert.fire({
           icon: 'warning',
           title: 'Tandai kandidat gagal?',
-          text: keepsCandidate
-            ? 'Data kandidat disimpan untuk riwayat proses Interview User/Offering.'
-            : 'Data kandidat dan file CV akan dihapus permanen.',
+          text: 'Data ringkas dan tahap kegagalan disimpan. File CV serta data tambahan akan dihapus.',
           input: 'textarea',
           inputPlaceholder: 'Masukkan alasan kandidat tidak lolos.',
           inputAttributes: {
@@ -323,7 +319,7 @@
             maxlength: 3000
           },
           showCancelButton: true,
-          confirmButtonText: keepsCandidate ? 'Simpan alasan' : 'Hapus permanen',
+          confirmButtonText: 'Simpan alasan',
           cancelButtonText: 'Batal',
           confirmButtonColor: '#dc3545',
           inputValidator: (value) => !value || !value.trim() ? 'Alasan kegagalan wajib diisi.' : undefined

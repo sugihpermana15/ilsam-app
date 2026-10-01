@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\AssetLocation;
+use App\Models\CareerOpening;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CareerController extends Controller
 {
@@ -19,10 +18,9 @@ class CareerController extends Controller
   public function index()
   {
     $data = $this->loadDataWithDefaults();
-    $data = $this->ensureOpeningIds($data);
 
     $companyProfile = $this->companyToAdminForm($data['company'] ?? []);
-    $careers = collect($data['openings'] ?? [])->map(fn($row) => new Fluent($row));
+    $careers = CareerOpening::query()->orderByDesc('created_at')->get();
 
     $departmentOptions = Department::query()
       ->orderBy('name')
@@ -41,8 +39,8 @@ class CareerController extends Controller
 
     $stats = [
       'total' => $careers->count(),
-      'active' => $careers->where('is_active', true)->count(),
-      'draft' => $careers->where('is_active', false)->count(),
+      'active' => $careers->where('is_publicly_available', true)->count(),
+      'draft' => $careers->where('is_publicly_available', false)->count(),
     ];
 
     return view('pages.admin.career.career_index', compact('companyProfile', 'careers', 'stats', 'departmentOptions', 'locationOptions'));
@@ -66,7 +64,6 @@ class CareerController extends Controller
     ]);
 
     $data = $this->loadDataWithDefaults();
-    $data = $this->ensureOpeningIds($data);
 
     $company = $data['company'] ?? [];
     $incoming = Arr::get($validated, 'company', []);
@@ -96,21 +93,7 @@ class CareerController extends Controller
   public function store(Request $request): RedirectResponse
   {
     $validated = $this->validateOpening($request);
-
-    $data = $this->loadDataWithDefaults();
-    $data = $this->ensureOpeningIds($data);
-
-    $openings = collect($data['openings'] ?? []);
-
-    $opening = array_merge($validated, [
-      'id' => (string) Str::uuid(),
-      'is_active' => (bool) ($validated['is_active'] ?? true),
-    ]);
-
-    $openings->push($opening);
-
-    $data['openings'] = $openings->values()->all();
-    $this->saveData($data);
+    CareerOpening::query()->create($validated);
 
     return back()->with('success', 'Job opening created.');
   }
@@ -118,45 +101,22 @@ class CareerController extends Controller
   public function update(Request $request, string $id): RedirectResponse
   {
     $validated = $this->validateOpening($request);
-
-    $data = $this->loadDataWithDefaults();
-    $data = $this->ensureOpeningIds($data);
-
-    $openings = collect($data['openings'] ?? []);
-    $index = $openings->search(fn($row) => (string) ($row['id'] ?? '') === (string) $id);
-
-    if ($index === false) {
+    $opening = CareerOpening::query()->find($id);
+    if (!$opening) {
       return back()->with('error', 'Job opening not found.');
     }
-
-    $existing = $openings->get($index);
-    $updated = array_merge($existing, $validated, [
-      'id' => (string) $id,
-      'is_active' => (bool) ($validated['is_active'] ?? ($existing['is_active'] ?? true)),
-    ]);
-
-    $openings->put($index, $updated);
-
-    $data['openings'] = $openings->values()->all();
-    $this->saveData($data);
+    $opening->update($validated);
 
     return back()->with('success', 'Job opening updated.');
   }
 
   public function destroy(string $id): RedirectResponse
   {
-    $data = $this->loadDataWithDefaults();
-    $data = $this->ensureOpeningIds($data);
-
-    $openings = collect($data['openings'] ?? []);
-    $filtered = $openings->reject(fn($row) => (string) ($row['id'] ?? '') === (string) $id)->values();
-
-    if ($filtered->count() === $openings->count()) {
+    $opening = CareerOpening::query()->find($id);
+    if (!$opening) {
       return back()->with('error', 'Job opening not found.');
     }
-
-    $data['openings'] = $filtered->all();
-    $this->saveData($data);
+    $opening->delete();
 
     return back()->with('success', 'Job opening deleted.');
   }
@@ -195,7 +155,6 @@ class CareerController extends Controller
     }
 
     $data['company'] = array_merge($this->defaultCompanyProfileAdminForm(), $data['company'] ?? []);
-    $data['openings'] = $data['openings'] ?? [];
 
     return $data;
   }
@@ -204,36 +163,6 @@ class CareerController extends Controller
   {
     $payload = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     Storage::disk('local')->put($this->storagePath, $payload === false ? '{}' : $payload);
-  }
-
-  private function ensureOpeningIds(array $data): array
-  {
-    $openings = $data['openings'] ?? [];
-    $changed = false;
-
-    foreach ($openings as $i => $row) {
-      if (!is_array($row)) {
-        continue;
-      }
-      if (!isset($row['id']) || trim((string) $row['id']) === '') {
-        $row['id'] = (string) Str::uuid();
-        $openings[$i] = $row;
-        $changed = true;
-      }
-      if (!array_key_exists('is_active', $row)) {
-        $row['is_active'] = true;
-        $openings[$i] = $row;
-        $changed = true;
-      }
-    }
-
-    $data['openings'] = array_values($openings);
-
-    if ($changed) {
-      $this->saveData($data);
-    }
-
-    return $data;
   }
 
   private function companyToAdminForm(array $company): array

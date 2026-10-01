@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\CareerCandidate;
+use App\Models\CareerOpening;
 use Illuminate\Http\Request;
-use Illuminate\Support\Fluent;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,10 +18,7 @@ class CareerController extends Controller
     $data = $this->loadData();
     $company = $this->buildCompanyPublic($data['company'] ?? []);
 
-    $openingsAll = collect($data['openings'] ?? [])
-      ->map(fn($row) => new Fluent($row))
-      ->filter(fn($row) => (bool) ($row->is_active ?? false))
-      ->values();
+    $openingsAll = CareerOpening::query()->publiclyAvailable()->get();
 
     $filterOptions = [
       'departments' => $openingsAll->pluck('department')->filter()->unique()->sort()->values()->all(),
@@ -51,7 +48,7 @@ class CareerController extends Controller
       ->when($filters['q'] !== '', function ($rows) use ($filters, $normalize) {
         $q = $normalize($filters['q']);
 
-        return $rows->filter(function (Fluent $row) use ($q, $normalize) {
+        return $rows->filter(function (CareerOpening $row) use ($q, $normalize) {
           $haystack = implode(' ', [
             $row->title ?? '',
             $row->department ?? '',
@@ -71,10 +68,10 @@ class CareerController extends Controller
       ->values();
 
     $openings = match ($filters['sort']) {
-      'title_desc' => $openings->sortByDesc(fn(Fluent $row) => (string) ($row->title ?? '')),
-      'dept_asc' => $openings->sortBy(fn(Fluent $row) => (string) ($row->department ?? '')),
-      'loc_asc' => $openings->sortBy(fn(Fluent $row) => (string) ($row->location ?? '')),
-      default => $openings->sortBy(fn(Fluent $row) => (string) ($row->title ?? '')),
+      'title_desc' => $openings->sortByDesc(fn(CareerOpening $row) => (string) ($row->title ?? '')),
+      'dept_asc' => $openings->sortBy(fn(CareerOpening $row) => (string) ($row->department ?? '')),
+      'loc_asc' => $openings->sortBy(fn(CareerOpening $row) => (string) ($row->location ?? '')),
+      default => $openings->sortBy(fn(CareerOpening $row) => (string) ($row->title ?? '')),
     };
 
     $openings = $openings->values();
@@ -93,14 +90,11 @@ class CareerController extends Controller
     $data = $this->loadData();
     $company = $this->buildCompanyPublic($data['company'] ?? []);
 
-    $openingsAll = collect($data['openings'] ?? [])
-      ->map(fn($row) => new Fluent($row))
-      ->filter(fn($row) => (bool) ($row->is_active ?? false))
-      ->values();
+    $openingsAll = CareerOpening::query()->publiclyAvailable()->get();
 
     $selectedJob = null;
     if ($job !== null && trim($job) !== '') {
-      $selectedJob = $openingsAll->first(fn(Fluent $row) => (string) ($row->id ?? '') === (string) $job);
+      $selectedJob = $openingsAll->first(fn(CareerOpening $row) => (string) $row->id === (string) $job);
       if (!$selectedJob) {
         return redirect()->route('career')->with('error', 'Job opening not found.');
       }
@@ -157,18 +151,12 @@ class CareerController extends Controller
       }
     }
 
-    // Normalize job from source-of-truth JSON (avoid tampering).
+    // Normalize job from the database source of truth (avoid tampering).
     $jobId = trim((string) ($validated['job_id'] ?? ''));
     $jobTitle = trim((string) ($validated['job_title'] ?? ''));
 
     if ($jobId !== '') {
-      $data = $this->loadData();
-      $openingsAll = collect($data['openings'] ?? [])
-        ->map(fn($row) => new Fluent($row))
-        ->filter(fn($row) => (bool) ($row->is_active ?? false))
-        ->values();
-
-      $job = $openingsAll->first(fn(Fluent $row) => (string) ($row->id ?? '') === (string) $jobId);
+      $job = CareerOpening::query()->publiclyAvailable()->find($jobId);
       if (!$job) {
         return back()->withInput()->withErrors(['job_id' => 'Selected job is not available.']);
       }
@@ -206,7 +194,7 @@ class CareerController extends Controller
     $safeName = Str::uuid()->toString() . '.pdf';
     $cvPath = $cvFile->storeAs('career/cv', $safeName, 'local');
 
-    CareerCandidate::query()->create([
+    $candidate = CareerCandidate::query()->create([
       'job_id' => $jobId !== '' ? $jobId : null,
       'job_title' => $jobTitle !== '' ? $jobTitle : null,
       'full_name' => $validated['full_name'],
@@ -224,7 +212,9 @@ class CareerController extends Controller
       'user_agent' => substr((string) $request->userAgent(), 0, 5000),
     ]);
 
-    return redirect()->route('career')->with('success', 'Application submitted successfully.');
+    return redirect()->route('career')
+      ->with('success', 'Application submitted successfully.')
+      ->with('candidate_code', $candidate->candidate_code);
   }
 
   private function verifyRecaptcha(string $token, string $ip): bool

@@ -67,7 +67,7 @@
         Swal.fire({
           icon: 'success',
           title: @json(__('website.common.success')),
-          text: @json(session('success')),
+          text: @json(session('success') . (session('candidate_code') ? ' Candidate code: ' . session('candidate_code') : '')),
           timer: 2200,
           showConfirmButton: false
         });
@@ -100,8 +100,8 @@
       --cb-steel: #1f2a44;
       --cb-accent: #ffb020;
       /* safety amber */
-      --cb-accent-2: #00d18f;
-      /* chemical green */
+      --cb-accent-2: #0ea5e9;
+      /* safety blue */
       --cb-radius: 14px;
 
       --cb-bg: #f4f7fb;
@@ -110,24 +110,7 @@
     .ilsam-career-board {
       padding: 56px 0 28px;
       position: relative;
-      background-color: var(--cb-bg);
-      background-image:
-        radial-gradient(1200px 500px at 20% -10%, rgba(0, 209, 143, 0.10), transparent 55%),
-        radial-gradient(1100px 520px at 85% 0%, rgba(255, 176, 32, 0.10), transparent 52%),
-        linear-gradient(180deg, rgba(11, 18, 32, 0.06) 0%, rgba(11, 18, 32, 0.00) 40%, rgba(11, 18, 32, 0.05) 100%);
-    }
-
-    .ilsam-career-board:before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(11, 18, 32, 0.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(11, 18, 32, 0.06) 1px, transparent 1px);
-      background-size: 34px 34px;
-      mask-image: radial-gradient(ellipse at top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.08) 60%, rgba(0, 0, 0, 0) 76%);
-      opacity: 0.45;
+      background: var(--cb-bg);
     }
 
     .ilsam-career-board .container {
@@ -158,15 +141,6 @@
       color: var(--cb-navy);
     }
 
-    @@supports (-webkit-background-clip: text) or (background-clip: text) {
-      .ilsam-career-board .board-title .accent {
-        background: linear-gradient(90deg, var(--cb-navy), var(--cb-steel));
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-      }
-    }
-
     .ilsam-career-board .board-subtitle {
       margin: 8px 0 0;
       color: var(--cb-muted);
@@ -195,7 +169,7 @@
       padding: 6px 10px;
       border-radius: 999px;
       border: 1px solid rgba(11, 18, 32, 0.16);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+      background: var(--cb-surface);
       box-shadow: 0 14px 30px rgba(11, 18, 32, 0.10);
       color: rgba(11, 18, 32, 0.84);
       font-size: 13px;
@@ -241,8 +215,8 @@
     }
 
     .ilsam-career-board .input:focus {
-      border-color: rgba(0, 209, 143, 0.70);
-      box-shadow: 0 0 0 4px rgba(0, 209, 143, 0.18);
+      border-color: rgba(14, 165, 233, 0.70);
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.18);
     }
 
     .ilsam-career-board .label {
@@ -279,14 +253,14 @@
     }
 
     .ilsam-career-board .btn-primary {
-      background: linear-gradient(180deg, var(--cb-accent), #ff9a1f);
+      background: var(--cb-accent);
       border-color: rgba(255, 154, 31, 0.95);
       color: #1f2937;
       box-shadow: 0 18px 34px rgba(255, 154, 31, 0.22);
     }
 
     .ilsam-career-board .btn-primary:hover {
-      background: linear-gradient(180deg, #ffb020, #ff8c1a);
+      background: #ff9a1f;
       border-color: rgba(255, 140, 26, 0.95);
       color: #111827;
     }
@@ -296,14 +270,14 @@
     }
 
     .ilsam-career-board .btn-secondary {
-      background: linear-gradient(180deg, rgba(11, 18, 32, 0.92), rgba(31, 42, 68, 0.92));
+      background: var(--cb-navy);
       border-color: rgba(11, 18, 32, 0.85);
       color: rgba(255, 255, 255, 0.92);
       box-shadow: 0 18px 36px rgba(11, 18, 32, 0.22);
     }
 
     .ilsam-career-board .btn-secondary:hover {
-      background: linear-gradient(180deg, rgba(11, 18, 32, 0.98), rgba(31, 42, 68, 0.98));
+      background: var(--cb-steel);
       border-color: rgba(11, 18, 32, 0.92);
       color: rgba(255, 255, 255, 0.96);
     }
@@ -327,23 +301,14 @@
 
     .ilsam-career-board .filter-card {
       border: 1px solid rgba(11, 18, 32, 0.14);
+      border-top: 4px solid var(--cb-accent);
       border-radius: var(--cb-radius);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+      background: var(--cb-surface);
       box-shadow: var(--cb-shadow);
       padding: 18px;
       position: sticky;
       top: 110px;
       overflow: hidden;
-    }
-
-    .ilsam-career-board .filter-card:before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(90deg, rgba(0, 209, 143, 0.28), rgba(255, 176, 32, 0.18)) 0 0/100% 4px no-repeat,
-        radial-gradient(circle at 20% 0%, rgba(0, 209, 143, 0.14), transparent 40%) 0 0/100% 100% no-repeat;
     }
 
     @media (max-width: 992px) {
@@ -399,7 +364,7 @@
     .ilsam-career-board .job-card {
       border: 1px solid rgba(11, 18, 32, 0.14);
       border-radius: var(--cb-radius);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+      background: var(--cb-surface);
       padding: 16px 16px 14px;
       box-shadow: var(--cb-shadow-soft);
       position: relative;
@@ -413,7 +378,7 @@
       top: 0;
       bottom: 0;
       width: 4px;
-      background: linear-gradient(180deg, var(--cb-accent-2), var(--cb-accent));
+      background: var(--cb-accent-2);
       opacity: 0.90;
     }
 
@@ -466,9 +431,9 @@
     }
 
     .ilsam-career-board .tag.tag-mode {
-      background: rgba(0, 209, 143, 0.12);
-      border-color: rgba(0, 209, 143, 0.30);
-      color: rgba(0, 92, 61, 0.95);
+      background: rgba(14, 165, 233, 0.10);
+      border-color: rgba(14, 165, 233, 0.26);
+      color: rgba(3, 87, 126, 0.95);
     }
 
     .ilsam-career-board .tag.tag-dept {
@@ -489,8 +454,8 @@
     }
 
     .ilsam-career-board .tag.tag-mode .t-dot {
-      background: rgba(0, 209, 143, 0.95);
-      box-shadow: 0 0 0 4px rgba(0, 209, 143, 0.14);
+      background: rgba(14, 165, 233, 0.95);
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
     }
 
     .ilsam-career-board .tag.tag-dept .t-dot {
@@ -592,7 +557,7 @@
     .ilsam-career-board .empty-state {
       border: 1px dashed rgba(2, 6, 23, 0.24);
       border-radius: var(--cb-radius);
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.90), rgba(248, 250, 252, 0.90));
+      background: var(--cb-surface);
       padding: 26px;
     }
 
@@ -653,7 +618,6 @@
           <h2 class="board-title"><span class="accent">{{ __('website.career.open_positions') }}</span></h2>
           <p class="board-subtitle">{{ __('website.career.subtitle') }}</p>
         </div>
-        <a class="btn btn-secondary" href="mailto:{{ $companyEmail }}">{{ __('website.career.send_cv') }}</a>
       </div>
 
       <div class="board-top">
@@ -776,7 +740,6 @@
                   $applyUrl = route('career.apply', ['job' => $jobId !== '' ? $jobId : null]);
 
                   $experience = trim((string) data_get($job, 'experience', ''));
-                  $summary = trim((string) data_get($job, 'summary', ''));
                   $responsibilities = trim((string) data_get($job, 'responsibilities', ''));
                   $requirements = trim((string) data_get($job, 'requirements', ''));
                   $deadlineRaw = data_get($job, 'deadline');
@@ -792,12 +755,7 @@
                   $responsibilityLines = $normalizeLines($responsibilities);
                   $requirementLines = $normalizeLines($requirements);
 
-                  $hasDetails = ($summary !== '') || !empty($responsibilityLines) || !empty($requirementLines) || ($experience !== '') || ($deadlineFormatted !== '');
-
-                  $summarySnippet = '';
-                  if ($summary !== '') {
-                    $summarySnippet = \Illuminate\Support\Str::limit($summary, 180);
-                  }
+                  $hasDetails = !empty($responsibilityLines) || !empty($requirementLines) || ($experience !== '') || ($deadlineFormatted !== '');
                 @endphp
                 <div class="job-card">
                   <div class="job-head">
@@ -819,10 +777,6 @@
                     @endif
                   </div>
 
-                  @if($summarySnippet !== '')
-                    <div class="job-snippet">{{ $summarySnippet }}</div>
-                  @endif
-
                   @if($hasDetails)
                     <details class="job-details">
                       <summary>{{ __('website.career.details.summary_toggle') }}</summary>
@@ -838,10 +792,14 @@
                           </div>
                         @endif
 
-                        @if($summary !== '')
+                        @if(!empty($requirementLines))
                           <div>
-                            <div class="job-section-title">{{ __('website.career.details.summary') }}</div>
-                            <div>{!! nl2br(e($summary)) !!}</div>
+                            <div class="job-section-title">{{ __('website.career.details.requirements') }}</div>
+                            <ul class="job-list">
+                              @foreach($requirementLines as $line)
+                                <li>{{ $line }}</li>
+                              @endforeach
+                            </ul>
                           </div>
                         @endif
 
@@ -850,17 +808,6 @@
                             <div class="job-section-title">{{ __('website.career.details.responsibilities') }}</div>
                             <ul class="job-list">
                               @foreach($responsibilityLines as $line)
-                                <li>{{ $line }}</li>
-                              @endforeach
-                            </ul>
-                          </div>
-                        @endif
-
-                        @if(!empty($requirementLines))
-                          <div>
-                            <div class="job-section-title">{{ __('website.career.details.requirements') }}</div>
-                            <ul class="job-list">
-                              @foreach($requirementLines as $line)
                                 <li>{{ $line }}</li>
                               @endforeach
                             </ul>
