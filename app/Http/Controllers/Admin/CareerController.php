@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\AssetLocation;
+use App\Models\CareerCandidate;
 use App\Models\CareerOpening;
 use App\Models\Department;
 use App\Http\Controllers\Controller;
@@ -14,6 +15,45 @@ use Illuminate\Support\Facades\Storage;
 class CareerController extends Controller
 {
   private string $storagePath = 'career.json';
+
+  public function dashboard()
+  {
+    $stages = [
+      'screening_cv' => 'Screening CV',
+      'psychology_test' => 'Test Psikotes',
+      'hrd_online_interview' => 'Interview HRD Online',
+      'user_site_interview' => 'Interview User',
+      'offering_letter' => 'Offering Letter',
+    ];
+
+    $today = today();
+    $pipelineCounts = CareerCandidate::query()
+      ->where('is_talent_pool', false)
+      ->where('selection_status', '!=', 'rejected')
+      ->selectRaw('recruitment_stage, count(*) as total')
+      ->groupBy('recruitment_stage')
+      ->pluck('total', 'recruitment_stage');
+
+    $stats = [
+      'active_openings' => CareerOpening::query()->publiclyAvailable()->count(),
+      'expiring_openings' => CareerOpening::query()
+        ->where('is_active', true)
+        ->whereBetween('deadline', [$today, $today->copy()->addDays(7)])
+        ->count(),
+      'new_today' => CareerCandidate::query()->whereDate('created_at', $today)->count(),
+      'new_this_week' => CareerCandidate::query()->whereBetween('created_at', [$today->copy()->startOfWeek(), now()])->count(),
+      'failed_candidates' => CareerCandidate::query()->where('selection_status', 'rejected')->count(),
+      'talent_pool' => CareerCandidate::query()->where('is_talent_pool', true)->count(),
+    ];
+
+    $recentCandidates = CareerCandidate::query()
+      ->where('selection_status', '!=', 'rejected')
+      ->latest()
+      ->take(5)
+      ->get(['full_name', 'job_title', 'recruitment_stage', 'created_at']);
+
+    return view('pages.admin.career.dashboard', compact('stages', 'pipelineCounts', 'stats', 'recentCandidates'));
+  }
 
   public function index()
   {

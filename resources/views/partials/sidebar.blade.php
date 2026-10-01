@@ -1004,6 +1004,7 @@
                             'icon' => 'fas fa-briefcase',
                             'permission_key' => 'career',
                             'active_routes' => [
+                                'admin.careers.dashboard',
                                 'admin.careers.index',
                                 'admin.careers.company.update',
                                 'admin.careers.store',
@@ -1028,9 +1029,13 @@
                             ],
                             'children' => [
                                 [
+                                    'title' => 'Dashboard Career',
+                                    'route' => 'admin.careers.dashboard',
+                                    'default' => true,
+                                ],
+                                [
                                     'title' => 'Job Openings',
                                     'route' => 'admin.careers.index',
-                                    'default' => true,
                                 ],
                                 [
                                     'title' => 'Screening CV',
@@ -1565,6 +1570,7 @@
                             'icon' => 'fas fa-briefcase',
                             'permission_key' => 'career',
                             'active_routes' => [
+                                'admin.careers.dashboard',
                                 'admin.careers.index',
                                 'admin.careers.company.update',
                                 'admin.careers.store',
@@ -1589,9 +1595,13 @@
                             ],
                             'children' => [
                                 [
+                                    'title' => 'Dashboard Career',
+                                    'route' => 'admin.careers.dashboard',
+                                    'default' => true,
+                                ],
+                                [
                                     'title' => 'Job Openings',
                                     'route' => 'admin.careers.index',
-                                    'default' => true,
                                 ],
                                 [
                                     'title' => 'Screening CV',
