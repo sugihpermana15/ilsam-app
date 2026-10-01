@@ -147,7 +147,7 @@
         pageLength: 10,
         lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
         pagingType: 'full_numbers',
-        order: [[0, 'desc']],
+        order: [[isTalentPool ? 0 : 1, 'desc']],
         ajax: tableUrl,
         language: {
           processing: 'Memproses...', search: 'Cari:', searchPlaceholder: 'Nama, email, telepon, posisi...',

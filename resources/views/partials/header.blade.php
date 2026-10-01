@@ -87,13 +87,13 @@
         .stock-notification-toasts {
             position: fixed;
             right: 1rem;
-            bottom: 1rem;
+            top: calc(var(--pe-app-header-height) + 1rem);
             z-index: 1080;
             display: flex;
             flex-direction: column;
             gap: .75rem;
             width: min(23rem, calc(100vw - 2rem));
-            max-height: calc(100dvh - 2rem);
+            max-height: calc(100dvh - var(--pe-app-header-height) - 2rem);
             overflow-y: auto;
             overscroll-behavior: contain;
             scrollbar-width: thin;
