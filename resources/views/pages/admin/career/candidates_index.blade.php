@@ -8,6 +8,18 @@
   <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap.min.css" rel="stylesheet">
   <link href="{{ asset('assets/libs/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+  <style>
+    .career-note-preview {
+      display: -webkit-box;
+      width: 280px;
+      max-width: 280px;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-height: 1.45;
+      white-space: normal;
+    }
+  </style>
 @endsection
 
 @section('content')
@@ -172,7 +184,11 @@
           { data: null, render: (data, type, row) => row.selection_status === 'rejected'
             ? `<span class="badge bg-danger-subtle text-danger">Tidak Lolos</span><div class="small text-muted mt-1">Gagal pada ${escapeHtml(row.failed_stage_label)}</div>`
             : `<span class="badge bg-primary-subtle text-primary">${escapeHtml(row.stage_label)}</span>` },
-          { data: null, orderable: false, render: (data, type, row) => `<span class="small text-muted">${escapeHtml(isTalentPool ? row.talent_pool_notes : (row.stage_notes || row.message)) || '-'}</span>` },
+          { data: null, orderable: false, render: (data, type, row) => {
+            const note = isTalentPool ? row.talent_pool_notes : (row.stage_notes || row.message);
+            const safeNote = escapeHtml(note);
+            return `<span class="small text-muted career-note-preview" title="${safeNote}">${safeNote || '-'}</span>`;
+          } },
           { data: null, orderable: false, searchable: false, render: (data, type, row) => {
             let html = row.has_cv
               ? `<button class="btn btn-sm btn-outline-primary js-view-cv" data-url="${escapeHtml(row.cv_view_url)}"><i class="fas fa-file-pdf"></i> View PDF</button>`
