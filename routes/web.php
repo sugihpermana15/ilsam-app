@@ -467,6 +467,7 @@ Route::prefix('admin')->middleware([
     Route::put('/career-candidates/{candidate}/advance', [AdminCareerCandidateController::class, 'advance'])->middleware('menu:career,update')->name('admin.career_candidates.advance');
     Route::put('/career-candidates/{candidate}/reject', [AdminCareerCandidateController::class, 'reject'])->middleware('menu:career,update')->name('admin.career_candidates.reject');
     Route::put('/career-candidates/{candidate}/talent-pool', [AdminCareerCandidateController::class, 'storeTalentPool'])->middleware('menu:career,update')->name('admin.career_candidates.talent_pool.store');
+    Route::delete('/career-candidates/{candidate}', [AdminCareerCandidateController::class, 'destroy'])->middleware('menu:career,delete')->name('admin.career_candidates.destroy');
     Route::get('/career-candidates/{candidate}/cv/view', [AdminCareerCandidateController::class, 'viewCv'])->middleware('menu:career')->name('admin.career_candidates.cv.view');
     Route::get('/career-candidates/{candidate}/cv', [AdminCareerCandidateController::class, 'downloadCv'])->middleware('menu:career')->name('admin.career_candidates.cv');
 

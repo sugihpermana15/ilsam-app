@@ -185,6 +185,9 @@ class CareerCandidateController extends Controller
         'reject_url' => !$isTalentPool && $candidate->selection_status !== 'rejected'
           ? route('admin.career_candidates.reject', $candidate)
           : null,
+        'delete_url' => $isFailedCandidates
+          ? route('admin.career_candidates.destroy', $candidate)
+          : null,
         'is_talent_pool' => $isTalentPool,
         'is_failed_candidate' => $isFailedCandidates,
       ])->values();
@@ -303,6 +306,19 @@ class CareerCandidateController extends Controller
     }
 
     return back()->with('success', 'Kandidat ditandai tidak lolos. CV dihapus dan data ringkas disimpan.');
+  }
+
+  public function destroy(CareerCandidate $candidate)
+  {
+    abort_unless($candidate->selection_status === 'rejected', 404);
+
+    if ($candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path)) {
+      Storage::disk('local')->delete($candidate->cv_path);
+    }
+
+    $candidate->delete();
+
+    return back()->with('success', 'Data kandidat gagal telah dihapus permanen.');
   }
 
   public function storeTalentPool(Request $request, CareerCandidate $candidate)

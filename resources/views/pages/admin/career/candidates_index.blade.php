@@ -177,6 +177,9 @@
             if (row.reject_url) {
               html += ` <button class="btn btn-sm btn-outline-danger js-reject" data-url="${escapeHtml(row.reject_url)}"><i class="fas fa-times-circle"></i> Gagal</button>`;
             }
+            if (row.delete_url) {
+              html += ` <button class="btn btn-sm btn-danger js-delete-failed" data-url="${escapeHtml(row.delete_url)}"><i class="fas fa-trash"></i> Hapus</button>`;
+            }
             return html;
           } }
         ],
@@ -280,6 +283,24 @@
             viewer.style.height = `${viewerHeight}px`;
           }
         });
+      });
+
+      $('#career-candidates-table').on('click', '.js-delete-failed', async function () {
+        const result = await careerAlert.fire({
+          icon: 'warning',
+          title: 'Hapus permanen kandidat?',
+          text: 'Data kandidat gagal ini tidak dapat dipulihkan.',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, hapus permanen',
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#dc3545'
+        });
+        if (!result.isConfirmed) return;
+
+        const form = $('<form>', { method: 'POST', action: $(this).data('url') });
+        form.append($('<input>', { type: 'hidden', name: '_token', value: csrfToken }));
+        form.append($('<input>', { type: 'hidden', name: '_method', value: 'DELETE' }));
+        form.appendTo('body').trigger('submit');
       });
 
       $('#career-candidates-table').on('click', '.js-advance', async function () {
