@@ -81,6 +81,15 @@
           showConfirmButton: false
         });
       @endif
+
+      const filterCard = document.querySelector('.filter-card');
+      const filterToggle = document.querySelector('.filter-toggle');
+      if (filterCard && filterToggle) {
+        filterToggle.addEventListener('click', function () {
+          const isOpen = filterCard.classList.toggle('is-open');
+          filterToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+      }
       });
   </script>
 
@@ -285,8 +294,17 @@
     .ilsam-career-board .board-layout {
       display: grid;
       grid-template-columns: 360px 1fr;
+      grid-template-areas: "filter jobs";
       gap: 22px;
       align-items: start;
+    }
+
+    .ilsam-career-board .filter-card {
+      grid-area: filter;
+    }
+
+    .ilsam-career-board .job-results {
+      grid-area: jobs;
     }
 
     @media (max-width: 992px) {
@@ -314,6 +332,34 @@
     @media (max-width: 992px) {
       .ilsam-career-board .filter-card {
         position: static;
+      }
+    }
+
+    .ilsam-career-board .filter-toggle {
+      display: none;
+    }
+
+    @media (max-width: 576px) {
+      .ilsam-career-board .board-layout {
+        grid-template-areas:
+          "jobs"
+          "filter";
+      }
+
+      .ilsam-career-board .filter-toggle {
+        display: inline-flex;
+      }
+
+      .ilsam-career-board .filter-content {
+        display: none;
+      }
+
+      .ilsam-career-board .filter-card.is-open .filter-content {
+        display: block;
+      }
+
+      .ilsam-career-board .filter-card.is-open .filter-head {
+        margin-bottom: 12px;
       }
     }
 
@@ -649,10 +695,13 @@
         <aside class="filter-card">
           <div class="filter-head">
             <h3 class="filter-title">{{ __('website.career.filters.title') }}</h3>
-            <span class="pill" style="box-shadow:none; background:rgba(255,255,255,.75);">{{ __('website.career.filters.refine') }}</span>
+            <button class="btn filter-toggle" type="button" aria-expanded="false" aria-controls="career-filter-content">
+              {{ __('website.career.filters.refine') }}
+            </button>
           </div>
 
-          <form method="GET" action="{{ route('career') }}" class="filter-form">
+          <div class="filter-content" id="career-filter-content">
+            <form method="GET" action="{{ route('career') }}" class="filter-form">
             <div>
               <div class="label">{{ __('website.career.filters.search') }}</div>
               <input class="input" type="text" name="q" value="{{ $filters['q'] }}"
@@ -714,14 +763,15 @@
               <button class="btn btn-primary" type="submit">{{ __('website.career.actions.apply_filters') }}</button>
               <a class="btn btn-outline" href="{{ route('career') }}">{{ __('website.career.actions.reset') }}</a>
             </div>
-          </form>
+            </form>
 
-          <div class="filter-note">
-            {!! __('website.career.note_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}
+            <div class="filter-note">
+              {!! __('website.career.note_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}
+            </div>
           </div>
         </aside>
 
-        <div>
+        <div class="job-results">
           @if($openings->isEmpty())
             <div class="empty-state">
               <div class="empty-title">{{ __('website.career.empty.title') }}</div>
