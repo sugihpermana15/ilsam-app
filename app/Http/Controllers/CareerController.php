@@ -294,6 +294,12 @@ class CareerController extends Controller
     $defaults = $this->defaultCompanyProfile();
     $merged = array_merge($defaults, $company);
 
+    $heroImage = trim((string) ($merged['hero_image'] ?? ''));
+    $heroHost = parse_url($heroImage, PHP_URL_HOST);
+    if ($heroImage === '' || in_array($heroHost, ['localhost', '127.0.0.1', '::1'], true)) {
+      $merged['hero_image'] = $defaults['hero_image'];
+    }
+
     $benefits = $merged['benefits'] ?? [];
     if (is_string($benefits)) {
       $benefits = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $benefits))));
