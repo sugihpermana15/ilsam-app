@@ -831,7 +831,7 @@
                   </div>
 
                   @if($hasDetails)
-                    <details class="job-details">
+                    <details class="job-details" open>
                       <summary>{{ __('website.career.details.summary_toggle') }}</summary>
                       <div class="job-details-body">
                         @if($experience !== '' || $deadlineFormatted !== '')
