@@ -96,7 +96,8 @@ class CareerCandidateController extends Controller
 
     return $this->datatableResponse($request, CareerCandidate::query()
       ->where('recruitment_stage', $stage)
-      ->where('is_talent_pool', false), $stage, false);
+      ->where('is_talent_pool', false)
+      ->where('selection_status', '!=', 'rejected'), $stage, false);
   }
 
   public function talentPoolDatatable(Request $request): JsonResponse
