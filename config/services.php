@@ -38,6 +38,8 @@ return [
     'recaptcha' => [
         'site_key' => env('RECAPTCHA_SITE_KEY'),
         'secret' => env('RECAPTCHA_SECRET'),
+        'version' => env('RECAPTCHA_VERSION', 'v2'),
+        'min_score' => (float) env('RECAPTCHA_MIN_SCORE', 0.5),
     ],
 
 ];

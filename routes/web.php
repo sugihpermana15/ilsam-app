@@ -458,6 +458,9 @@ Route::prefix('admin')->middleware([
     Route::get('/career-candidates/offering-letter', [AdminCareerCandidateController::class, 'offeringLetter'])->middleware('menu:career')->name('admin.career_candidates.offering_letter');
     Route::get('/career-candidates/talent-pool', [AdminCareerCandidateController::class, 'talentPool'])->middleware('menu:career')->name('admin.career_candidates.talent_pool');
     Route::get('/career-candidates/talent-pool/datatable', [AdminCareerCandidateController::class, 'talentPoolDatatable'])->middleware('menu:career')->name('admin.career_candidates.talent_pool.datatable');
+    Route::get('/career-candidates/failed', [AdminCareerCandidateController::class, 'failedCandidates'])->middleware('menu:career')->name('admin.career_candidates.failed');
+    Route::get('/career-candidates/failed/datatable', [AdminCareerCandidateController::class, 'failedDatatable'])->middleware('menu:career')->name('admin.career_candidates.failed.datatable');
+    Route::get('/career-candidates/failed/export', [AdminCareerCandidateController::class, 'exportFailed'])->middleware('menu:career')->name('admin.career_candidates.failed.export');
     Route::get('/career-candidates/datatable/{stage}', [AdminCareerCandidateController::class, 'datatable'])->middleware('menu:career')->name('admin.career_candidates.datatable');
     Route::put('/career-candidates/advance-bulk', [AdminCareerCandidateController::class, 'bulkAdvance'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_advance');
     Route::put('/career-candidates/reject-bulk', [AdminCareerCandidateController::class, 'bulkReject'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_reject');

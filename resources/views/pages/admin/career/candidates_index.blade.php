@@ -15,6 +15,7 @@
     $stage = $stage ?? null;
     $stageLabel = $stageLabel ?? 'Career Candidates';
     $isTalentPool = $isTalentPool ?? false;
+    $isFailedCandidates = $isFailedCandidates ?? false;
     $nextStageLabel = $nextStageLabel ?? null;
   @endphp
 
@@ -30,22 +31,24 @@
       <div>
         <h5 class="card-title mb-0">{{ $stageLabel }}</h5>
         <div class="text-muted small">
-          {{ $isTalentPool ? 'Kandidat kompeten yang dapat dipanggil kembali untuk kebutuhan rekrutmen berikutnya.' : 'Kelola kandidat yang sedang berada pada tahap ini.' }}
+          {{ $isTalentPool ? 'Kandidat kompeten yang dapat dipanggil kembali untuk kebutuhan rekrutmen berikutnya.' : ($isFailedCandidates ? 'Riwayat kandidat tidak lolos beserta tahap dan alasan kegagalan.' : 'Kelola kandidat yang sedang berada pada tahap ini.') }}
         </div>
       </div>
       <div class="d-flex gap-2 flex-wrap">
-        @if(!$isTalentPool && $nextStageLabel)
+        @if(!$isTalentPool && !$isFailedCandidates && $nextStageLabel)
           <button type="button" id="bulk-advance-candidates" class="btn btn-success btn-sm" disabled>
             <i class="fas fa-arrow-right"></i> Ke {{ $nextStageLabel }} (<span id="selected-candidate-count">0</span>)
           </button>
         @endif
-        @if(!$isTalentPool)
+        @if(!$isTalentPool && !$isFailedCandidates)
           <button type="button" id="bulk-reject-candidates" class="btn btn-outline-danger btn-sm" disabled>
             <i class="fas fa-times-circle"></i> Gagal Terpilih
           </button>
         @endif
         <a href="{{ route('admin.careers.index') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-briefcase"></i> Job Openings</a>
-        @if(!$isTalentPool)
+        @if($isFailedCandidates)
+          <a href="{{ route('admin.career_candidates.failed.export') }}" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i> Export Excel</a>
+        @elseif(!$isTalentPool)
           <a href="{{ route('admin.career_candidates.talent_pool') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-user-clock"></i> Talent Pool</a>
         @else
           <a href="{{ route('admin.career_candidates.index') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-file-alt"></i> Screening CV</a>
@@ -56,10 +59,11 @@
       <table id="career-candidates-table" class="table table-nowrap table-striped table-bordered w-100">
         <thead>
           <tr>
-            <th><input type="checkbox" id="select-all-candidates" aria-label="Pilih semua kandidat pada halaman ini"></th>
+            @if(!$isFailedCandidates)<th><input type="checkbox" id="select-all-candidates" aria-label="Pilih semua kandidat pada halaman ini"></th>@endif
             <th>Submitted</th>
             <th>Candidate</th>
             <th>Position</th>
+            <th>Domicile</th>
             <th>Contact</th>
             <th>Stage</th>
             <th>Notes</th>
@@ -85,12 +89,15 @@
       const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
       const stage = @json($stage);
       const isTalentPool = @json($isTalentPool);
+      const isFailedCandidates = @json($isFailedCandidates);
       const nextStageLabel = @json($nextStageLabel);
       const bulkAdvanceUrl = @json(route('admin.career_candidates.bulk_advance'));
       const bulkRejectUrl = @json(route('admin.career_candidates.bulk_reject'));
-      const tableUrl = isTalentPool
-        ? @json(route('admin.career_candidates.talent_pool.datatable'))
-        : @json(route('admin.career_candidates.datatable', ['stage' => '__stage__'])).replace('__stage__', stage);
+      const tableUrl = isFailedCandidates
+        ? @json(route('admin.career_candidates.failed.datatable'))
+        : isTalentPool
+          ? @json(route('admin.career_candidates.talent_pool.datatable'))
+          : @json(route('admin.career_candidates.datatable', ['stage' => '__stage__'])).replace('__stage__', stage);
 
       const escapeHtml = (value) => $('<div/>').text(value || '').html();
       const selectedCandidateIds = new Set();
@@ -142,18 +149,19 @@
           "<'table-responsive'tr>" +
           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         columns: [
-          { data: 'id', orderable: false, searchable: false, render: id => {
+          ...(!isFailedCandidates ? [{ data: 'id', orderable: false, searchable: false, render: id => {
             const candidateId = String(id);
             return `<input type="checkbox" class="select-candidate" value="${candidateId}" ${selectedCandidateIds.has(candidateId) ? 'checked' : ''}>`;
-          } },
+          } }] : []),
           { data: 'submitted_at', defaultContent: '-' },
           { data: null, render: (data, type, row) => `<div class="fw-semibold">${escapeHtml(row.full_name)}</div><div class="text-muted small">${escapeHtml(row.email)}</div><div class="text-muted small">${escapeHtml(row.candidate_code || '-')}</div>` },
-          { data: null, render: (data, type, row) => `<div class="fw-semibold">${escapeHtml(row.job_title)}</div><div class="text-muted small">${escapeHtml(row.domicile)}</div>` },
+          { data: 'job_title', defaultContent: '-' },
+          { data: 'domicile', defaultContent: '-' },
           { data: 'phone', defaultContent: '-' },
           { data: null, render: (data, type, row) => row.selection_status === 'rejected'
             ? `<span class="badge bg-danger-subtle text-danger">Tidak Lolos</span><div class="small text-muted mt-1">Gagal pada ${escapeHtml(row.failed_stage_label)}</div>`
             : `<span class="badge bg-primary-subtle text-primary">${escapeHtml(row.stage_label)}</span>` },
-          { data: null, orderable: false, render: (data, type, row) => `<span class="small text-muted">${escapeHtml(isTalentPool ? row.talent_pool_notes : row.stage_notes) || '-'}</span>` },
+          { data: null, orderable: false, render: (data, type, row) => `<span class="small text-muted">${escapeHtml(isTalentPool ? row.talent_pool_notes : (row.stage_notes || row.message)) || '-'}</span>` },
           { data: null, orderable: false, searchable: false, render: (data, type, row) => {
             let html = row.has_cv
               ? `<button class="btn btn-sm btn-outline-primary js-view-cv" data-url="${escapeHtml(row.cv_view_url)}"><i class="fas fa-file-pdf"></i> View PDF</button>`

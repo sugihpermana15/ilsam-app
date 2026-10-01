@@ -236,7 +236,16 @@ class CareerController extends Controller
       }
 
       $json = $res->json() ?: [];
-      return (bool) ($json['success'] ?? false);
+      if (!(bool) ($json['success'] ?? false)) {
+        return false;
+      }
+
+      if (config('services.recaptcha.version') !== 'v3') {
+        return true;
+      }
+
+      return ($json['action'] ?? null) === 'career_apply'
+        && (float) ($json['score'] ?? 0) >= (float) config('services.recaptcha.min_score');
     } catch (\Throwable $e) {
       return false;
     }

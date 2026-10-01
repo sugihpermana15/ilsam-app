@@ -63,6 +63,18 @@ class CareerCandidateController extends Controller
     ]);
   }
 
+  public function failedCandidates()
+  {
+    return view('pages.admin.career.candidates_index', [
+      'stage' => null,
+      'stageLabel' => 'Kandidat Gagal',
+      'isTalentPool' => false,
+      'isFailedCandidates' => true,
+      'nextStage' => null,
+      'nextStageLabel' => null,
+    ]);
+  }
+
   private function stageList(string $stage)
   {
     $stageKeys = array_keys(self::STAGES);
@@ -92,7 +104,40 @@ class CareerCandidateController extends Controller
     return $this->datatableResponse($request, CareerCandidate::query()->where('is_talent_pool', true), null, true);
   }
 
-  private function datatableResponse(Request $request, $query, ?string $stage, bool $isTalentPool): JsonResponse
+  public function failedDatatable(Request $request): JsonResponse
+  {
+    return $this->datatableResponse($request, CareerCandidate::query()->where('selection_status', 'rejected'), null, false, true);
+  }
+
+  public function exportFailed()
+  {
+    $filename = 'kandidat-gagal-' . now()->format('Ymd-His') . '.csv';
+
+    return response()->streamDownload(function () {
+      $output = fopen('php://output', 'w');
+      fwrite($output, "\xEF\xBB\xBF");
+      fputcsv($output, ['Nama', 'Email', 'No. Telepon', 'Domisili', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada']);
+
+      CareerCandidate::query()
+        ->where('selection_status', 'rejected')
+        ->orderByDesc('processed_at')
+        ->each(function (CareerCandidate $candidate) use ($output) {
+          fputcsv($output, [
+            $candidate->full_name,
+            $candidate->email,
+            $candidate->phone,
+            $candidate->domicile,
+            self::STAGES[$candidate->recruitment_stage] ?? '-',
+            $candidate->stage_notes,
+            optional($candidate->processed_at)->format('d M Y H:i'),
+          ]);
+        });
+
+      fclose($output);
+    }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+  }
+
+  private function datatableResponse(Request $request, $query, ?string $stage, bool $isTalentPool, bool $isFailedCandidates = false): JsonResponse
   {
     $draw = (int) $request->input('draw', 0);
     $start = max(0, (int) $request->input('start', 0));
@@ -122,6 +167,7 @@ class CareerCandidateController extends Controller
         'phone' => $candidate->phone,
         'job_title' => $candidate->job_title ?: '-',
         'domicile' => $candidate->domicile ?: '-',
+        'message' => $candidate->message,
         'stage_label' => $isTalentPool ? 'Talent Pool' : (self::STAGES[$candidate->recruitment_stage] ?? '-'),
         'failed_stage_label' => self::STAGES[$candidate->recruitment_stage] ?? '-',
         'stage_notes' => $candidate->stage_notes,
@@ -137,6 +183,7 @@ class CareerCandidateController extends Controller
           ? route('admin.career_candidates.reject', $candidate)
           : null,
         'is_talent_pool' => $isTalentPool,
+        'is_failed_candidate' => $isFailedCandidates,
       ])->values();
 
     return response()->json(compact('draw', 'recordsTotal', 'recordsFiltered') + ['data' => $rows]);

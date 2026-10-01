@@ -69,7 +69,7 @@ class CareerCandidate extends Model
       ->implode('');
 
     return implode('-', [
-      Str::title(Str::lower($title)) . ' ' . $jobInitials . '.' . now()->format('y'),
+      $jobInitials . '.' . now()->format('y'),
       self::codeComponent($fullName),
       $title,
       preg_replace('/\D+/', '', $phone) ?: 'NOHP',

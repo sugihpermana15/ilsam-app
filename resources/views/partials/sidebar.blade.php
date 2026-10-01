@@ -1018,6 +1018,9 @@
                                 'admin.career_candidates.datatable',
                                 'admin.career_candidates.talent_pool',
                                 'admin.career_candidates.talent_pool.datatable',
+                                'admin.career_candidates.failed',
+                                'admin.career_candidates.failed.datatable',
+                                'admin.career_candidates.failed.export',
                                 'admin.career_candidates.advance',
                                 'admin.career_candidates.talent_pool.store',
                                 'admin.career_candidates.cv.view',
@@ -1053,6 +1056,10 @@
                                 [
                                     'title' => 'Talent Pool',
                                     'route' => 'admin.career_candidates.talent_pool',
+                                ],
+                                [
+                                    'title' => 'Kandidat Gagal',
+                                    'route' => 'admin.career_candidates.failed',
                                 ],
                             ],
                         ],
@@ -1572,6 +1579,9 @@
                                 'admin.career_candidates.datatable',
                                 'admin.career_candidates.talent_pool',
                                 'admin.career_candidates.talent_pool.datatable',
+                                'admin.career_candidates.failed',
+                                'admin.career_candidates.failed.datatable',
+                                'admin.career_candidates.failed.export',
                                 'admin.career_candidates.advance',
                                 'admin.career_candidates.talent_pool.store',
                                 'admin.career_candidates.cv.view',
@@ -1607,6 +1617,10 @@
                                 [
                                     'title' => 'Talent Pool',
                                     'route' => 'admin.career_candidates.talent_pool',
+                                ],
+                                [
+                                    'title' => 'Kandidat Gagal',
+                                    'route' => 'admin.career_candidates.failed',
                                 ],
                             ],
                         ],

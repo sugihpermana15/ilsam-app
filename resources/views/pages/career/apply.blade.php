@@ -370,18 +370,58 @@
                       @php
                         $recaptchaEnabled = (bool) config('career_security.recaptcha.enabled');
                         $recaptchaSiteKey = (string) config('services.recaptcha.site_key');
+                        $recaptchaVersion = (string) config('services.recaptcha.version');
                         $showRecaptcha = $recaptchaEnabled && $recaptchaSiteKey !== '';
                       @endphp
 
                       @if($showRecaptcha)
                         <div class="col-md-12">
-                          <label class="form-label">{{ __('website.career.apply.fields.verification') }} <span class="apply-required">*</span></label>
-                          <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
+                          @if($recaptchaVersion === 'v3')
+                            <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response">
+                            <div class="invalid-feedback d-none" id="recaptcha-client-error"></div>
+                          @else
+                            <label class="form-label">{{ __('website.career.apply.fields.verification') }} <span class="apply-required">*</span></label>
+                            <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
+                          @endif
                           @error('g-recaptcha-response')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                           @enderror
                         </div>
-                        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                        @if($recaptchaVersion === 'v3')
+                          <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptchaSiteKey }}"></script>
+                          <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                              const form = document.getElementById('apply_form');
+                              const tokenInput = document.getElementById('g-recaptcha-response');
+                              const clientError = document.getElementById('recaptcha-client-error');
+                              let submitting = false;
+
+                              form.addEventListener('submit', function (event) {
+                                if (submitting) return;
+                                event.preventDefault();
+
+                                if (typeof grecaptcha === 'undefined') {
+                                  clientError.textContent = 'Verification is unavailable. Please refresh the page and try again.';
+                                  clientError.classList.remove('d-none');
+                                  return;
+                                }
+
+                                grecaptcha.ready(function () {
+                                  grecaptcha.execute(@json($recaptchaSiteKey), { action: 'career_apply' }).then(function (token) {
+                                    tokenInput.value = token;
+                                    submitting = true;
+                                    form.submit();
+                                  }).catch(function () {
+                                    clientError.textContent = 'Verification failed. Please refresh the page and try again.';
+                                    clientError.classList.remove('d-none');
+                                  });
+                                });
+                              });
+                            });
+                          </script>
+                        @else
+                          <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                        @endif
                       @endif
                     </div>
                   </div>
