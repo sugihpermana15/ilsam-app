@@ -91,8 +91,13 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <label class="form-label">Email</label>
-                <input class="form-control" name="contact[email]" value="{{ old('contact.email', data_get($settings, 'contact.email')) }}">
+                <label class="form-label">Email Marketing</label>
+                <input class="form-control" type="email" name="contact[emails][marketing]" value="{{ old('contact.emails.marketing', data_get($settings, 'contact.emails.marketing')) }}">
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label class="form-label">Email Purchasing</label>
+                <input class="form-control" type="email" name="contact[emails][purchasing]" value="{{ old('contact.emails.purchasing', data_get($settings, 'contact.emails.purchasing')) }}">
               </div>
 
               <div class="col-12 col-md-6">
@@ -134,7 +139,8 @@
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label">Email</label>
-                <input class="form-control" name="offcanvas[email]" value="{{ old('offcanvas.email', data_get($settings, 'offcanvas.email')) }}">
+                <input class="form-control" value="{{ data_get($settings, 'contact.emails.marketing') }}" disabled>
+                <div class="form-text">Menggunakan Email Marketing dari bagian Contact.</div>
               </div>
               <div class="col-12 col-md-4">
                 <label class="form-label">Location URL</label>

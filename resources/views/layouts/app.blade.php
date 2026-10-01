@@ -57,7 +57,7 @@
 
         $faviconUrl = $toAssetUrl(data_get($ws, 'brand.favicon'), 'assets/img/favicon.png');
 
-        $companyEmail = data_get($ws, 'contact.email', 'marketing@ilsam.co.id');
+        $companyEmail = data_get($ws, 'contact.emails.marketing', 'marketing@ilsam.co.id');
         $companyPhone = data_get($ws, 'contact.phone_display', '+62 (267) 5200 313');
         $companyPhoneAlt = data_get($ws, 'contact.phone_display_alt', data_get($ws, 'contact.phone_display', '+62 (267) 5200 313'));
         $companyMapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');

@@ -33,8 +33,8 @@ class ContactController extends Controller
         ];
 
         $recipient = WebsiteSettings::get('contact.form_recipient_email')
-            ?: WebsiteSettings::get('contact.email')
-            ?: 'market.ilsamindonesia@yahoo.com';
+            ?: WebsiteSettings::get('contact.emails.marketing')
+            ?: 'marketing@ilsam.co.id';
 
         // The template ships with vendor/ajax-form.js which posts via AJAX and
         // expects a plain-text response (not JSON and not a redirect).

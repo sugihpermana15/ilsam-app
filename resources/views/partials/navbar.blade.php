@@ -2,13 +2,13 @@
 @php
   $ws = \App\Support\WebsiteSettings::all();
   $offcanvasWebsite = data_get($ws, 'offcanvas.website_url', 'https://www.ilsam.com/');
-  $offcanvasEmail = data_get($ws, 'offcanvas.email', 'market.ilsamindonesia@yahoo.com');
+  $offcanvasEmail = data_get($ws, 'contact.emails.marketing', 'marketing@ilsam.co.id');
   $offcanvasLocation = data_get($ws, 'offcanvas.location_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
 
   $topWebsiteUrl = data_get($ws, 'top.website_url', 'https://www.ilsam.com/');
   $topWebsiteLabel = data_get($ws, 'top.website_label', 'www.ilsam.com');
 
-  $contactEmail = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+  $contactEmail = data_get($ws, 'contact.emails.marketing', 'marketing@ilsam.co.id');
   $mapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
 
   $companyProfileUrl = data_get($ws, 'downloads.company_profile_url', 'https://drive.google.com/uc?export=download&id=1G4sEtK56mxtXtg71gsx7zyvDG2CSVqVX');

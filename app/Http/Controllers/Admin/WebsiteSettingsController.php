@@ -50,7 +50,8 @@ class WebsiteSettingsController extends Controller
             'contact.phone_tel' => ['nullable', 'string', 'max:40'],
             'contact.phone_display_alt' => ['nullable', 'string', 'max:80'],
             'contact.phone_tel_alt' => ['nullable', 'string', 'max:40'],
-            'contact.email' => ['nullable', 'email', 'max:200'],
+            'contact.emails.marketing' => ['nullable', 'email', 'max:200'],
+            'contact.emails.purchasing' => ['nullable', 'email', 'max:200'],
             'contact.map_url' => ['nullable', 'url', 'max:500'],
             'contact.address_text' => ['nullable', 'string', 'max:2000'],
 
@@ -58,7 +59,6 @@ class WebsiteSettingsController extends Controller
             'top.website_label' => ['nullable', 'string', 'max:120'],
 
             'offcanvas.website_url' => ['nullable', 'url', 'max:500'],
-            'offcanvas.email' => ['nullable', 'email', 'max:200'],
             'offcanvas.location_url' => ['nullable', 'url', 'max:500'],
 
             'downloads.company_profile_url' => ['nullable', 'url', 'max:500'],

@@ -67,7 +67,10 @@
     ? $letsTalkBgRaw
     : route('img', ['path' => ltrim($letsTalkBgRaw, '/'), 'w' => 1600, 'q' => 70]);
 
-  $contactEmail = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+  $contactEmails = array_filter([
+    data_get($ws, 'contact.emails.marketing', 'marketing@ilsam.co.id'),
+    data_get($ws, 'contact.emails.purchasing', 'purchasing@ilsam.co.id'),
+  ]);
   $contactPhoneDisplay = data_get($ws, 'contact.phone_display', '+62 (021) 89830313 / 0314');
   $contactPhoneTel = data_get($ws, 'contact.phone_tel', '02189830313');
   $contactMapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
@@ -440,7 +443,9 @@
                 </div>
                 <div class="contact-list__item-text">
                   <h4 class="title">{{ __('website.home.contact.email_address') }}</h4>
-                  <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
+                  @foreach($contactEmails as $contactEmail)
+                    <a class="d-block" href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
+                  @endforeach
                 </div>
               </div>
             </div>

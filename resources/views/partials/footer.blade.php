@@ -4,7 +4,10 @@
     $locale = app()->getLocale();
     $phoneDisplay = data_get($ws, 'contact.phone_display', '+62 (021) 89830313 / 0314');
     $phoneTel = data_get($ws, 'contact.phone_tel', '02189830313');
-    $email = data_get($ws, 'contact.email', 'market.ilsamindonesia@yahoo.com');
+    $contactEmails = array_filter([
+      data_get($ws, 'contact.emails.marketing', 'marketing@ilsam.co.id'),
+      data_get($ws, 'contact.emails.purchasing', 'purchasing@ilsam.co.id'),
+    ]);
     $mapUrl = data_get($ws, 'contact.map_url', 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6');
     $addressText = data_get($ws, 'contact.address_text', '');
 
@@ -118,7 +121,9 @@
                     </span>
                     <span class="text">
                       <span>{{ __('website.footer.contact.email_query') }}</span>
-                      <a href="mailto:{{ $email }}">{{ $email }}</a>
+                      @foreach($contactEmails as $contactEmail)
+                        <a class="d-block" href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
+                      @endforeach
                     </span>
                   </li>
                   <li class="address">

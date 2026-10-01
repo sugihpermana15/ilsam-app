@@ -105,8 +105,11 @@ final class WebsiteSettings
                 'phone_tel' => '02189830313',
                 'phone_display_alt' => '+62 (021) 89830314',
                 'phone_tel_alt' => '02189830314',
-                'email' => 'market.ilsamindonesia@yahoo.com',
-                'form_recipient_email' => 'market.ilsamindonesia@yahoo.com',
+                'emails' => [
+                    'marketing' => 'marketing@ilsam.co.id',
+                    'purchasing' => 'purchasing@ilsam.co.id',
+                ],
+                'form_recipient_email' => 'marketing@ilsam.co.id',
                 'map_url' => 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6',
                 'map_embed_src' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.0320185769133!2d107.23779097590075!3d-6.389870062501263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e699f000ca996c1%3A0x713bcc5addd9fa22!2sPT.%20ILSAM%20GLOBAL%20INDONESIA%20(IG-103)!5e0!3m2!1sid!2sid!4v1768213302522!5m2!1sid!2sid',
                 'address_text' => "Jl. Trans Heksa Artha Industrial Hill Area Block E No.13 Wanajaya Village,\nDistrict Telukjambe Barat, Karawang Regency, West Java, 41361",
@@ -122,7 +125,6 @@ final class WebsiteSettings
             ],
             'offcanvas' => [
                 'website_url' => 'https://www.ilsam.com/',
-                'email' => 'market.ilsamindonesia@yahoo.com',
                 'location_url' => 'https://maps.app.goo.gl/reUj3juAoQ8NrGLE6',
             ],
             'downloads' => [
