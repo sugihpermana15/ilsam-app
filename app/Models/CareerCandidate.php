@@ -18,6 +18,7 @@ class CareerCandidate extends Model
     'email',
     'phone',
     'domicile',
+    'current_address',
     'experience_range',
     'linkedin_url',
     'portfolio_url',

@@ -169,6 +169,7 @@ class CareerCandidateController extends Controller
         'phone' => $candidate->phone,
         'job_title' => $candidate->job_title ?: '-',
         'domicile' => $candidate->domicile ?: '-',
+        'current_address' => $candidate->current_address ?: '-',
         'experience_range' => $this->experienceLabel($candidate->experience_range),
         'message' => $candidate->message,
         'stage_label' => $isTalentPool ? 'Talent Pool' : (self::STAGES[$candidate->recruitment_stage] ?? '-'),

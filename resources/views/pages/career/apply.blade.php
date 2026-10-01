@@ -270,7 +270,7 @@
                         <small class="text-muted">{{ __('website.career.apply.fields.position_help') }}</small>
                       </div>
 
-                      <div class="col-md-6">
+                      <div class="col-md-4">
                         <label class="form-label">{{ __('website.career.apply.fields.full_name') }} <span class="apply-required">*</span></label>
                         <input type="text" class="form-control @error('full_name') is-invalid @enderror" name="full_name"
                           value="{{ old('full_name') }}" required>
@@ -279,7 +279,7 @@
                         @enderror
                       </div>
 
-                      <div class="col-md-6">
+                      <div class="col-md-4">
                         <label class="form-label">{{ __('website.career.apply.fields.domicile') }}</label>
                         <input type="text" class="form-control @error('domicile') is-invalid @enderror" name="domicile"
                           value="{{ old('domicile') }}" placeholder="{{ __('website.career.apply.placeholders.domicile') }}">
@@ -288,7 +288,7 @@
                         @enderror
                       </div>
 
-                      <div class="col-md-6">
+                      <div class="col-md-4">
                         <label class="form-label" for="experience_range">Work Experience <span class="apply-required">*</span></label>
                         <select class="form-select @error('experience_range') is-invalid @enderror" name="experience_range" id="experience_range" required>
                           <option value="">Select experience</option>
@@ -298,6 +298,14 @@
                           <option value="more_than_5" @selected(old('experience_range') === 'more_than_5')>&gt; 5 years</option>
                         </select>
                         @error('experience_range')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                      </div>
+
+                      <div class="col-12">
+                        <label class="form-label" for="current_address">Current Address <span class="apply-required">*</span></label>
+                        <textarea class="form-control @error('current_address') is-invalid @enderror" name="current_address" id="current_address" rows="2" maxlength="1000" required placeholder="Street, district, city/regency, province">{{ old('current_address') }}</textarea>
+                        @error('current_address')
                           <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                       </div>
