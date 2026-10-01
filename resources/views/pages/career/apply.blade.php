@@ -288,6 +288,20 @@
                         @enderror
                       </div>
 
+                      <div class="col-md-6">
+                        <label class="form-label" for="experience_range">Work Experience <span class="apply-required">*</span></label>
+                        <select class="form-select @error('experience_range') is-invalid @enderror" name="experience_range" id="experience_range" required>
+                          <option value="">Select experience</option>
+                          <option value="less_than_1" @selected(old('experience_range') === 'less_than_1')>&lt; 1 year</option>
+                          <option value="1_to_2" @selected(old('experience_range') === '1_to_2')>1-2 years</option>
+                          <option value="3_to_5" @selected(old('experience_range') === '3_to_5')>3-5 years</option>
+                          <option value="more_than_5" @selected(old('experience_range') === 'more_than_5')>&gt; 5 years</option>
+                        </select>
+                        @error('experience_range')
+                          <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                      </div>
+
                       <div class="col-12 pt-1">
                         <div class="apply-section-title">{{ __('website.career.apply.sections.contact') }}</div>
                         <hr class="apply-section-rule">

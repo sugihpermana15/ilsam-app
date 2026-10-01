@@ -116,7 +116,7 @@ class CareerCandidateController extends Controller
     return response()->streamDownload(function () {
       $output = fopen('php://output', 'w');
       fwrite($output, "\xEF\xBB\xBF");
-      fputcsv($output, ['Nama', 'Email', 'No. Telepon', 'Domisili', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada']);
+      fputcsv($output, ['Nama', 'Email', 'No. Telepon', 'Domisili', 'Pengalaman Kerja', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada']);
 
       CareerCandidate::query()
         ->where('selection_status', 'rejected')
@@ -127,6 +127,7 @@ class CareerCandidateController extends Controller
             $candidate->email,
             $candidate->phone,
             $candidate->domicile,
+            $this->experienceLabel($candidate->experience_range),
             self::STAGES[$candidate->recruitment_stage] ?? '-',
             $candidate->stage_notes,
             optional($candidate->processed_at)->format('d M Y H:i'),
@@ -167,6 +168,7 @@ class CareerCandidateController extends Controller
         'phone' => $candidate->phone,
         'job_title' => $candidate->job_title ?: '-',
         'domicile' => $candidate->domicile ?: '-',
+        'experience_range' => $this->experienceLabel($candidate->experience_range),
         'message' => $candidate->message,
         'stage_label' => $isTalentPool ? 'Talent Pool' : (self::STAGES[$candidate->recruitment_stage] ?? '-'),
         'failed_stage_label' => self::STAGES[$candidate->recruitment_stage] ?? '-',
@@ -187,6 +189,17 @@ class CareerCandidateController extends Controller
       ])->values();
 
     return response()->json(compact('draw', 'recordsTotal', 'recordsFiltered') + ['data' => $rows]);
+  }
+
+  private function experienceLabel(?string $experienceRange): string
+  {
+    return match ($experienceRange) {
+      'less_than_1' => '< 1 tahun',
+      '1_to_2' => '1-2 tahun',
+      '3_to_5' => '3-5 tahun',
+      'more_than_5' => '> 5 tahun',
+      default => '-',
+    };
   }
 
   public function advance(CareerCandidate $candidate)

@@ -64,6 +64,7 @@
             <th>Candidate</th>
             <th>Position</th>
             <th>Domicile</th>
+            <th>Experience</th>
             <th>Contact</th>
             <th>Stage</th>
             <th>Notes</th>
@@ -157,6 +158,7 @@
           { data: null, render: (data, type, row) => `<div class="fw-semibold">${escapeHtml(row.full_name)}</div><div class="text-muted small">${escapeHtml(row.email)}</div><div class="text-muted small">${escapeHtml(row.candidate_code || '-')}</div>` },
           { data: 'job_title', defaultContent: '-' },
           { data: 'domicile', defaultContent: '-' },
+          { data: 'experience_range', defaultContent: '-' },
           { data: 'phone', defaultContent: '-' },
           { data: null, render: (data, type, row) => row.selection_status === 'rejected'
             ? `<span class="badge bg-danger-subtle text-danger">Tidak Lolos</span><div class="small text-muted mt-1">Gagal pada ${escapeHtml(row.failed_stage_label)}</div>`
