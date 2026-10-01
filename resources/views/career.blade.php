@@ -310,6 +310,9 @@
     @media (max-width: 992px) {
       .ilsam-career-board .board-layout {
         grid-template-columns: 1fr;
+        grid-template-areas:
+          "filter"
+          "jobs";
       }
 
       .ilsam-career-board .filter-card {
@@ -339,7 +342,7 @@
       display: none;
     }
 
-    @media (max-width: 576px) {
+    @media (max-width: 768px) {
       .ilsam-career-board .board-layout {
         grid-template-areas:
           "jobs"
