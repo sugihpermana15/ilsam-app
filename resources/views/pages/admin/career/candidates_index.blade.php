@@ -45,6 +45,11 @@
             <i class="fas fa-times-circle"></i> Gagal Terpilih
           </button>
         @endif
+        @if($isFailedCandidates)
+          <button type="button" id="bulk-delete-failed-candidates" class="btn btn-danger btn-sm" disabled>
+            <i class="fas fa-trash"></i> Hapus Terpilih (<span id="selected-candidate-count">0</span>)
+          </button>
+        @endif
         <a href="{{ route('admin.careers.index') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-briefcase"></i> Job Openings</a>
         @if($isFailedCandidates)
           <a href="{{ route('admin.career_candidates.failed.export') }}" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i> Export Excel</a>
@@ -59,7 +64,7 @@
       <table id="career-candidates-table" class="table table-nowrap table-striped table-bordered w-100">
         <thead>
           <tr>
-            @if(!$isFailedCandidates)<th><input type="checkbox" id="select-all-candidates" aria-label="Pilih semua kandidat pada halaman ini"></th>@endif
+            @if(!$isTalentPool)<th><input type="checkbox" id="select-all-candidates" aria-label="Pilih semua kandidat pada halaman ini"></th>@endif
             <th>Submitted</th>
             <th>Candidate</th>
             <th>Position</th>
@@ -94,6 +99,7 @@
       const nextStageLabel = @json($nextStageLabel);
       const bulkAdvanceUrl = @json(route('admin.career_candidates.bulk_advance'));
       const bulkRejectUrl = @json(route('admin.career_candidates.bulk_reject'));
+      const bulkDeleteUrl = @json(route('admin.career_candidates.bulk_destroy'));
       const tableUrl = isFailedCandidates
         ? @json(route('admin.career_candidates.failed.datatable'))
         : isTalentPool
@@ -102,10 +108,10 @@
 
       const escapeHtml = (value) => $('<div/>').text(value || '').html();
       const selectedCandidateIds = new Set();
-      const makeForm = (url, fields) => {
+      const makeForm = (url, fields, method = 'PUT') => {
         const form = $('<form>', { method: 'POST', action: url });
         form.append($('<input>', { type: 'hidden', name: '_token', value: csrfToken }));
-        form.append($('<input>', { type: 'hidden', name: '_method', value: 'PUT' }));
+        form.append($('<input>', { type: 'hidden', name: '_method', value: method }));
         Object.entries(fields).forEach(([name, value]) => {
           (Array.isArray(value) ? value : [value]).forEach(fieldValue => {
             form.append($('<input>', { type: 'hidden', name, value: fieldValue }));
@@ -118,6 +124,7 @@
         $('#selected-candidate-count').text(selectedCount);
         $('#bulk-advance-candidates').prop('disabled', selectedCount === 0);
         $('#bulk-reject-candidates').prop('disabled', selectedCount === 0);
+        $('#bulk-delete-failed-candidates').prop('disabled', selectedCount === 0);
 
         const checks = $(table.rows({ page: 'current' }).nodes()).find('input.select-candidate');
         const checkedCount = checks.filter(':checked').length;
@@ -150,7 +157,7 @@
           "<'table-responsive'tr>" +
           "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
         columns: [
-          ...(!isFailedCandidates ? [{ data: 'id', orderable: false, searchable: false, render: id => {
+          ...(!isTalentPool ? [{ data: 'id', orderable: false, searchable: false, render: id => {
             const candidateId = String(id);
             return `<input type="checkbox" class="select-candidate" value="${candidateId}" ${selectedCandidateIds.has(candidateId) ? 'checked' : ''}>`;
           } }] : []),
@@ -251,6 +258,23 @@
           rejection_reason: result.value.trim(),
           'candidate_ids[]': candidateIds
         }).appendTo('body').trigger('submit');
+      });
+
+      $('#bulk-delete-failed-candidates').on('click', async function () {
+        const candidateIds = Array.from(selectedCandidateIds);
+        if (candidateIds.length === 0) return;
+
+        const result = await careerAlert.fire({
+          icon: 'warning',
+          title: 'Hapus kandidat gagal terpilih?',
+          text: `${candidateIds.length} data kandidat akan dihapus permanen dan tidak dapat dipulihkan.`,
+          showCancelButton: true,
+          confirmButtonText: 'Ya, hapus permanen',
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#dc3545'
+        });
+        if (!result.isConfirmed) return;
+        makeForm(bulkDeleteUrl, { 'candidate_ids[]': candidateIds }, 'DELETE').appendTo('body').trigger('submit');
       });
 
       $('#career-candidates-table').on('click', '.js-view-cv', function () {

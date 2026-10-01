@@ -98,6 +98,7 @@
       );
 
       $showStock = auth()->check() && \App\Support\MenuAccess::can(auth()->user(), 'stock', 'read');
+      $showCareer = !empty($career);
 
       $showDocuments = !empty($showDocuments);
 
@@ -122,6 +123,8 @@
         $tabs[] = 'documents';
       if ($showEmployee)
         $tabs[] = 'employee';
+      if ($showCareer)
+        $tabs[] = 'career';
 
       $activeTab = in_array(($tab ?? ''), $tabs, true) ? $tab : ($tabs[0] ?? null);
     @endphp
@@ -135,7 +138,7 @@
           </div>
 
           <div class="card-body">
-            @if(!$showAsset && !$showStamps && !$showUniforms && !$showStock && !$showEmployee && !$showDocuments)
+            @if(!$showAsset && !$showStamps && !$showUniforms && !$showStock && !$showEmployee && !$showDocuments && !$showCareer)
               <div class="alert alert-warning mb-0">
                 Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
               </div>
@@ -187,6 +190,14 @@
                       <button class="nav-link {{ $activeTab === 'documents' ? 'active' : '' }}" data-bs-toggle="tab"
                         data-bs-target="#tab-documents" type="button" role="tab">
                         <i class="fas fa-folder-open me-1"></i> Arsip Berkas
+                      </button>
+                    </li>
+                  @endif
+                  @if($showCareer)
+                    <li class="nav-item" role="presentation">
+                      <button class="nav-link {{ $activeTab === 'career' ? 'active' : '' }}" data-bs-toggle="tab"
+                        data-bs-target="#tab-career" type="button" role="tab">
+                        <i class="fas fa-briefcase me-1"></i> Career
                       </button>
                     </li>
                   @endif
@@ -356,6 +367,38 @@
                         </div>
                       </div>
                     @endif
+                  </div>
+                @endif
+
+                @if($showCareer)
+                  @php
+                    $careerStats = $career['stats'] ?? [];
+                    $careerStages = $career['stages'] ?? [];
+                    $careerPipeline = $career['pipeline_counts'] ?? collect();
+                    $careerRecent = $career['recent_candidates'] ?? collect();
+                    $careerStageRoutes = [
+                      'screening_cv' => 'admin.career_candidates.screening_cv',
+                      'psychology_test' => 'admin.career_candidates.psychology_test',
+                      'hrd_online_interview' => 'admin.career_candidates.hrd_online_interview',
+                      'user_site_interview' => 'admin.career_candidates.user_site_interview',
+                      'offering_letter' => 'admin.career_candidates.offering_letter',
+                    ];
+                  @endphp
+                  <div class="tab-pane fade {{ $activeTab === 'career' ? 'show active' : '' }}" id="tab-career" role="tabpanel">
+                    <div class="d-flex flex-wrap justify-content-end gap-2 mb-3">
+                      <a href="{{ route('admin.career_candidates.index') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-users"></i> Screening CV</a>
+                      <a href="{{ route('admin.careers.index') }}" class="btn btn-primary btn-sm"><i class="fas fa-briefcase"></i> Job Openings</a>
+                    </div>
+                    <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-4">
+                      <div class="col"><div class="card h-100 kpi-card"><div class="card-body"><div class="text-muted">Lowongan Aktif</div><div class="fs-4 fw-semibold">{{ number_format($careerStats['active_openings'] ?? 0) }}</div><div class="small text-warning">{{ number_format($careerStats['expiring_openings'] ?? 0) }} deadline 7 hari</div></div></div></div>
+                      <div class="col"><div class="card h-100 kpi-card"><div class="card-body"><div class="text-muted">Kandidat Hari Ini</div><div class="fs-4 fw-semibold">{{ number_format($careerStats['new_today'] ?? 0) }}</div><div class="small text-muted">{{ number_format($careerStats['new_this_week'] ?? 0) }} minggu ini</div></div></div></div>
+                      <div class="col"><div class="card h-100 kpi-card"><div class="card-body"><div class="text-muted">Talent Pool</div><div class="fs-4 fw-semibold">{{ number_format($careerStats['talent_pool'] ?? 0) }}</div><a href="{{ route('admin.career_candidates.talent_pool') }}" class="small">Lihat kandidat</a></div></div></div>
+                      <div class="col"><div class="card h-100 kpi-card"><div class="card-body"><div class="text-muted">Kandidat Gagal</div><div class="fs-4 fw-semibold">{{ number_format($careerStats['failed_candidates'] ?? 0) }}</div><a href="{{ route('admin.career_candidates.failed') }}" class="small text-danger">Kelola riwayat</a></div></div></div>
+                    </div>
+                    <div class="row g-3 mt-1">
+                      <div class="col-lg-7"><div class="card h-100"><div class="card-header"><h6 class="mb-0">Pipeline Seleksi</h6></div><div class="card-body"><div class="row g-3">@foreach($careerStages as $key => $label)<div class="col-6 col-md-4"><a href="{{ route($careerStageRoutes[$key]) }}" class="border rounded p-3 d-block h-100 text-decoration-none"><div class="small text-muted">{{ $label }}</div><div class="fs-4 fw-semibold text-dark">{{ number_format($careerPipeline[$key] ?? 0) }}</div></a></div>@endforeach</div></div></div></div>
+                      <div class="col-lg-5"><div class="card h-100"><div class="card-header"><h6 class="mb-0">Kandidat Terbaru</h6></div><div class="list-group list-group-flush">@forelse($careerRecent as $candidate)<div class="list-group-item"><div class="fw-semibold">{{ $candidate->full_name }}</div><div class="small text-muted">{{ $candidate->job_title ?: '-' }} · {{ $careerStages[$candidate->recruitment_stage] ?? '-' }}</div><div class="small text-muted">{{ optional($candidate->created_at)->format('d M Y H:i') }}</div></div>@empty<div class="list-group-item text-muted">Belum ada kandidat aktif.</div>@endforelse</div></div></div>
+                    </div>
                   </div>
                 @endif
 

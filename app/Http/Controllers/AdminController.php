@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Asset;
+use App\Models\CareerCandidate;
+use App\Models\CareerOpening;
 use App\Models\ContractTerms;
 use App\Models\Document;
 use App\Models\Employee;
@@ -474,6 +476,46 @@ class AdminController extends Controller
         ];
     }
 
+    private function buildCareerDashboardData(): array
+    {
+        $today = today();
+        $stages = [
+            'screening_cv' => 'Screening CV',
+            'psychology_test' => 'Test Psikotes',
+            'hrd_online_interview' => 'Interview HRD Online',
+            'user_site_interview' => 'Interview User',
+            'offering_letter' => 'Offering Letter',
+        ];
+
+        return [
+            'stages' => $stages,
+            'pipeline_counts' => CareerCandidate::query()
+                ->where('is_talent_pool', false)
+                ->where('selection_status', '!=', 'rejected')
+                ->selectRaw('recruitment_stage, count(*) as total')
+                ->groupBy('recruitment_stage')
+                ->pluck('total', 'recruitment_stage'),
+            'stats' => [
+                'active_openings' => CareerOpening::query()->publiclyAvailable()->count(),
+                'expiring_openings' => CareerOpening::query()
+                    ->where('is_active', true)
+                    ->whereBetween('deadline', [$today, $today->copy()->addDays(7)])
+                    ->count(),
+                'new_today' => CareerCandidate::query()->whereDate('created_at', $today)->count(),
+                'new_this_week' => CareerCandidate::query()
+                    ->whereBetween('created_at', [$today->copy()->startOfWeek(), now()])
+                    ->count(),
+                'failed_candidates' => CareerCandidate::query()->where('selection_status', 'rejected')->count(),
+                'talent_pool' => CareerCandidate::query()->where('is_talent_pool', true)->count(),
+            ],
+            'recent_candidates' => CareerCandidate::query()
+                ->where('selection_status', '!=', 'rejected')
+                ->latest()
+                ->take(5)
+                ->get(['full_name', 'job_title', 'recruitment_stage', 'created_at']),
+        ];
+    }
+
     public function dashboard(Request $request)
     {
         $permissions = $this->resolveDashboardPermissions(Auth::user()?->dashboard_permissions);
@@ -515,10 +557,14 @@ class AdminController extends Controller
             ? $this->buildStockDashboardData()
             : null;
 
+        $career = $user && MenuAccess::can($user, 'career', MenuAccess::ACTION_READ)
+            ? $this->buildCareerDashboardData()
+            : null;
+
         // Apply per-user tab access overrides (if configured).
         $tabOverrides = $user && is_array($user->dashboard_tabs) ? array_values($user->dashboard_tabs) : null;
         if (is_array($tabOverrides)) {
-            $allowedKeys = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
+            $allowedKeys = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee', 'career'];
             $tabOverrides = array_values(array_intersect($tabOverrides, $allowedKeys));
         }
 
@@ -532,8 +578,9 @@ class AdminController extends Controller
         $showStock = (bool) $stock;
         $showEmployee = !empty($employee) && !empty($employee['kpi']);
         $showDocs = (bool) $showDocuments;
+        $showCareer = (bool) $career;
 
-        $tabOrder = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee'];
+        $tabOrder = ['asset', 'stamps', 'uniforms', 'stock', 'documents', 'employee', 'career'];
         $tabs = [];
         foreach ($tabOrder as $key) {
             $available = match ($key) {
@@ -543,10 +590,11 @@ class AdminController extends Controller
                 'stock' => $showStock,
                 'documents' => $showDocs,
                 'employee' => $showEmployee,
+                'career' => $showCareer,
                 default => false,
             };
 
-            $allowedByOverride = $tabOverrides === null || in_array($key, $tabOverrides, true);
+            $allowedByOverride = $key === 'career' || $tabOverrides === null || in_array($key, $tabOverrides, true);
             if ($available && $allowedByOverride) {
                 $tabs[] = $key;
             }
@@ -559,7 +607,7 @@ class AdminController extends Controller
 
         $tab = $activeTab;
 
-        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'employee', 'showDocuments', 'documents', 'stamps', 'uniforms', 'stock'));
+        return view('pages.admin.dashboard.dashboard', compact('permissions', 'tab', 'asset', 'employee', 'showDocuments', 'documents', 'stamps', 'uniforms', 'stock', 'career'));
     }
 
     public function dashboardAssets()

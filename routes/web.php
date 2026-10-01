@@ -445,7 +445,6 @@ Route::prefix('admin')->middleware([
     // Website: Home sections (text slider, etc)
     Route::get('/website/home-sections', [WebsiteHomeSectionsController::class, 'edit'])->middleware('menu:website_home_sections')->name('admin.website_home_sections.edit');
     Route::put('/website/home-sections', [WebsiteHomeSectionsController::class, 'update'])->middleware('menu:website_home_sections,update')->name('admin.website_home_sections.update');
-    Route::get('/careers/dashboard', [AdminCareerController::class, 'dashboard'])->middleware('menu:career')->name('admin.careers.dashboard');
     Route::post('/careers', [AdminCareerController::class, 'store'])->middleware('menu:career')->name('admin.careers.store');
     Route::put('/careers/{id}', [AdminCareerController::class, 'update'])->middleware('menu:career')->name('admin.careers.update');
     Route::delete('/careers/{id}', [AdminCareerController::class, 'destroy'])->middleware('menu:career')->name('admin.careers.destroy');
@@ -465,6 +464,7 @@ Route::prefix('admin')->middleware([
     Route::get('/career-candidates/datatable/{stage}', [AdminCareerCandidateController::class, 'datatable'])->middleware('menu:career')->name('admin.career_candidates.datatable');
     Route::put('/career-candidates/advance-bulk', [AdminCareerCandidateController::class, 'bulkAdvance'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_advance');
     Route::put('/career-candidates/reject-bulk', [AdminCareerCandidateController::class, 'bulkReject'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_reject');
+    Route::delete('/career-candidates/bulk-destroy', [AdminCareerCandidateController::class, 'bulkDestroy'])->middleware('menu:career,delete')->name('admin.career_candidates.bulk_destroy');
     Route::put('/career-candidates/{candidate}/advance', [AdminCareerCandidateController::class, 'advance'])->middleware('menu:career,update')->name('admin.career_candidates.advance');
     Route::put('/career-candidates/{candidate}/reject', [AdminCareerCandidateController::class, 'reject'])->middleware('menu:career,update')->name('admin.career_candidates.reject');
     Route::put('/career-candidates/{candidate}/talent-pool', [AdminCareerCandidateController::class, 'storeTalentPool'])->middleware('menu:career,update')->name('admin.career_candidates.talent_pool.store');

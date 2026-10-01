@@ -322,6 +322,33 @@ class CareerCandidateController extends Controller
     return back()->with('success', 'Data kandidat gagal telah dihapus permanen.');
   }
 
+  public function bulkDestroy(Request $request)
+  {
+    $validated = $request->validate([
+      'candidate_ids' => ['required', 'array', 'min:1', 'max:100'],
+      'candidate_ids.*' => ['integer', 'distinct'],
+    ]);
+
+    $candidateIds = $validated['candidate_ids'];
+    $candidates = CareerCandidate::query()
+      ->whereIn('id', $candidateIds)
+      ->where('selection_status', 'rejected')
+      ->get();
+
+    if ($candidates->count() !== count($candidateIds)) {
+      return back()->with('error', 'Sebagian kandidat tidak lagi tersedia sebagai kandidat gagal. Muat ulang tabel lalu pilih kembali.');
+    }
+
+    foreach ($candidates as $candidate) {
+      if ($candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path)) {
+        Storage::disk('local')->delete($candidate->cv_path);
+      }
+      $candidate->delete();
+    }
+
+    return back()->with('success', count($candidateIds) . ' data kandidat gagal telah dihapus permanen.');
+  }
+
   public function storeTalentPool(Request $request, CareerCandidate $candidate)
   {
     if ($candidate->recruitment_stage !== 'user_site_interview') {
