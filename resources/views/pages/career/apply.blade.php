@@ -367,7 +367,7 @@
 
                       <div class="col-md-12">
                         <label class="form-label">{{ __('website.career.apply.fields.upload_cv') }} <span class="apply-required">*</span></label>
-                        <input type="file" class="form-control @error('cv') is-invalid @enderror" name="cv"
+                        <input type="file" class="form-control @error('cv') is-invalid @enderror" name="cv" id="cv_input"
                           accept=".pdf,application/pdf" required>
                         <small class="text-muted">{{ __('website.career.apply.cv_help', ['type' => __('website.common.pdf'), 'max' => '2MB']) }}</small>
                         @error('cv')
@@ -421,8 +421,10 @@
                               form.addEventListener('submit', function (event) {
                                 if (submitting) return;
                                 event.preventDefault();
+                                form.dataset.waitingForRecaptcha = 'true';
 
                                 if (typeof grecaptcha === 'undefined') {
+                                  form.dataset.waitingForRecaptcha = 'false';
                                   clientError.textContent = 'Verification is unavailable. Please refresh the page and try again.';
                                   clientError.classList.remove('d-none');
                                   return;
@@ -432,8 +434,15 @@
                                   grecaptcha.execute(@json($recaptchaSiteKey), { action: 'career_apply' }).then(function (token) {
                                     tokenInput.value = token;
                                     submitting = true;
+                                    form.dataset.waitingForRecaptcha = 'false';
+                                    var submitButton = document.getElementById('apply_submit');
+                                    if (submitButton) {
+                                      submitButton.disabled = true;
+                                      submitButton.setAttribute('aria-busy', 'true');
+                                    }
                                     form.submit();
                                   }).catch(function () {
+                                    form.dataset.waitingForRecaptcha = 'false';
                                     clientError.textContent = 'Verification failed. Please refresh the page and try again.';
                                     clientError.classList.remove('d-none');
                                   });
@@ -467,14 +476,33 @@
     (function () {
       var form = document.getElementById('apply_form');
       var submitBtn = document.getElementById('apply_submit');
+      var cvInput = document.getElementById('cv_input');
 
       var uploadingText = @json(__('website.career.apply.uploading'));
+      var cvTooLargeText = @json(__('website.career.apply.cv_too_large'));
 
       var select = document.getElementById('job_id_select');
       var titleInput = document.getElementById('job_title_input');
 
+      if (form && cvInput) {
+        cvInput.addEventListener('change', function () {
+          cvInput.setCustomValidity('');
+        });
+
+        form.addEventListener('submit', function (event) {
+          var file = cvInput.files && cvInput.files[0];
+          if (file && file.size > 2 * 1024 * 1024) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            cvInput.setCustomValidity(cvTooLargeText);
+            cvInput.reportValidity();
+          }
+        }, true);
+      }
+
       if (form && submitBtn) {
         form.addEventListener('submit', function () {
+          if (form.dataset.waitingForRecaptcha === 'true') return;
           if (submitBtn.disabled) return;
           submitBtn.disabled = true;
           submitBtn.setAttribute('aria-busy', 'true');

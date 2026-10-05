@@ -454,6 +454,7 @@ return [
                 'message' => 'Ceritakan singkat pengalaman dan alasan melamar.',
             ],
             'cv_help' => 'Diterima: :type. Ukuran maksimal: :max.',
+            'cv_too_large' => 'Ukuran file CV maksimal 2 MB. Silakan pilih file yang lebih kecil.',
             'actions' => [
                 'submit_application' => 'Kirim Lamaran',
             ],

@@ -454,6 +454,7 @@ return [
                 'message' => 'Briefly tell us your experience and why you are applying.',
             ],
             'cv_help' => 'Accepted: :type. Maximum size: :max.',
+            'cv_too_large' => 'The CV file must be 2 MB or smaller. Please choose a smaller file.',
             'actions' => [
                 'submit_application' => 'Submit Application',
             ],

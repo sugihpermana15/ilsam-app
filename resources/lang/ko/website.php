@@ -454,6 +454,7 @@ return [
                 'message' => '경력과 지원 동기를 간단히 적어 주세요.',
             ],
             'cv_help' => '허용 형식: :type. 최대 용량: :max.',
+            'cv_too_large' => 'CV 파일은 2MB 이하여야 합니다. 더 작은 파일을 선택하세요.',
             'actions' => [
                 'submit_application' => '지원서 제출',
             ],
