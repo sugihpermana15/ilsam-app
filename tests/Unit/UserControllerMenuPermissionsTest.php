@@ -104,13 +104,16 @@ class UserControllerMenuPermissionsTest extends TestCase
 
             try {
                 $sidebar = view('partials.sidebar')->render();
-                $masterDataPosition = strpos($sidebar, 'Master Data');
-                $masterHrPosition = strpos($sidebar, 'Master HR');
+                $operationsPosition = strpos($sidebar, __('menu.group.operations'));
+                $masterDataPosition = strpos($sidebar, __('menu.master_data'));
+                $masterHrPosition = strpos($sidebar, __('menu.master_groups.hr'));
 
                 $this->assertSame(1, substr_count($sidebar, 'Manajemen Stok'));
+                $this->assertNotFalse($operationsPosition);
                 $this->assertNotFalse($masterDataPosition);
                 $this->assertNotFalse($masterHrPosition);
-                $this->assertGreaterThan($masterDataPosition, $masterHrPosition);
+                $this->assertTrue($operationsPosition < $masterDataPosition);
+                $this->assertTrue($masterDataPosition < $masterHrPosition);
             } finally {
                 Auth::logout();
             }

@@ -31,6 +31,10 @@
             padding: .875rem 1rem .25rem 2.5rem;
             text-transform: uppercase;
         }
+
+        .pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu .pe-slide-menu {
+            margin-left: 1rem;
+        }
     </style>
     <div class="pe-app-sidebar-logo px-6 d-flex align-items-center position-relative">
         <!--begin::Brand Image-->
@@ -52,7 +56,11 @@
             $map = [
                 'Main' => __('menu.group.main'),
                 'Application' => __('menu.group.application'),
+                'Menu' => __('menu.group.menu'),
+                'Operasional' => __('menu.group.operations'),
                 'Master Data' => __('menu.master_data'),
+                'Website' => __('menu.group.website'),
+                'Settings' => __('menu.group.settings'),
                 'Web Pages' => __('menu.group.web_pages'),
                 'Settings & UI' => __('menu.group.settings_ui'),
             ];
@@ -63,6 +71,10 @@
         $tMenu = function (?string $text): string {
             $map = [
                 'Dashboard' => __('menu.dashboard'),
+                'Operasional' => __('menu.group.operations'),
+                'Master Data' => __('menu.master_data'),
+                'Website' => __('menu.group.website'),
+                'Settings' => __('menu.group.settings'),
 
                 'Perlengkapan Aset' => __('menu.assets_equipment'),
                 'Data Asset' => __('menu.assets.data_asset'),
@@ -1964,6 +1976,28 @@
             'master_daily_task',
         ];
         $groupOrder = ['Main', 'Application', 'Master Data', 'Web Pages', 'Settings & UI'];
+        $menuGroupDefinitions = [
+            'Application' => ['title' => 'Operasional', 'icon' => 'fas fa-layer-group'],
+            'Master Data' => ['title' => 'Master Data', 'icon' => 'fas fa-database'],
+            'Web Pages' => ['title' => 'Website', 'icon' => 'fas fa-globe'],
+            'Settings & UI' => [
+                'title' => 'Settings',
+                'icon' => 'fas fa-gear',
+                'permission_key' => 'settings',
+            ],
+        ];
+        $collectMenuRoutes = function (array $item) use (&$collectMenuRoutes): array {
+            $routes = (array) ($item['active_routes'] ?? []);
+            if (!empty($item['route'])) {
+                $routes[] = $item['route'];
+            }
+
+            foreach ((array) ($item['children'] ?? []) as $child) {
+                $routes = array_merge($routes, $collectMenuRoutes($child));
+            }
+
+            return array_values(array_unique(array_filter($routes, 'is_string')));
+        };
 
         foreach ($menus as $role => $groups) {
             $normalizedGroups = [];
@@ -2054,7 +2088,46 @@
                 return array_search($left, $groupOrder, true) <=> array_search($right, $groupOrder, true);
             });
 
-            $menus[$role] = array_values($normalizedGroups);
+            $topLevelItems = [];
+            foreach ($normalizedGroups as $group) {
+                if ($group['title_group'] === 'Main') {
+                    $topLevelItems = array_merge($topLevelItems, $group['items']);
+                    continue;
+                }
+
+                $definition = $menuGroupDefinitions[$group['title_group']] ?? null;
+                if ($definition === null || empty($group['items'])) {
+                    continue;
+                }
+
+                $groupItems = $group['items'];
+                if ($group['title_group'] === 'Settings & UI') {
+                    $groupItems = [];
+                    foreach ($group['items'] as $item) {
+                        $groupItems = array_merge($groupItems, (array) ($item['children'] ?? [$item]));
+                    }
+                }
+
+                $activeRoutes = [];
+                foreach ($groupItems as $item) {
+                    $activeRoutes = array_merge($activeRoutes, $collectMenuRoutes($item));
+                }
+
+                $topLevelItems[] = [
+                    'title' => $definition['title'],
+                    'icon' => $definition['icon'],
+                    'active_routes' => array_values(array_unique($activeRoutes)),
+                    'children' => $groupItems,
+                ];
+                if (!empty($definition['permission_key'])) {
+                    $topLevelItems[array_key_last($topLevelItems)]['permission_key'] = $definition['permission_key'];
+                }
+            }
+
+            $menus[$role] = [[
+                'title_group' => 'Menu',
+                'items' => $topLevelItems,
+            ]];
         }
 
         $user = auth()->user();
@@ -2572,16 +2645,96 @@
                                                 $alreadyMarkedActive = true;
                                             }
                                         @endphp
-                                        <li class="pe-slide-item">
-                                            @if (!empty($child['is_heading']))
+                                        @if (!empty($child['is_heading']))
+                                            <li class="pe-slide-item">
                                                 <div class="pe-stock-menu-heading">{{ $tMenu($child['title'] ?? '') }}</div>
-                                            @else
+                                            </li>
+                                        @elseif (!empty($child['children']))
+                                            @php
+                                                $nestedCollapseId = $collapseId . '_child_' . $loop->index;
+                                                $nestedChildrenFiltered = array_values(
+                                                    array_filter($child['children'], function ($nestedChild) use (
+                                                        $isMenuAllowed,
+                                                        $resolvePermissionKey,
+                                                    ) {
+                                                        return $isMenuAllowed($resolvePermissionKey($nestedChild));
+                                                    }),
+                                                );
+                                                $nestedIsActive = false;
+                                                $nestedHasExactMatch = false;
+                                                foreach ($nestedChildrenFiltered as $nestedChild) {
+                                                    if ($childMatches($nestedChild)) {
+                                                        $nestedIsActive = true;
+                                                        $nestedHasExactMatch = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (
+                                                    !$nestedIsActive &&
+                                                    !empty($child['active_routes']) &&
+                                                    in_array($currentRoute, (array) $child['active_routes'], true)
+                                                ) {
+                                                    $nestedIsActive = true;
+                                                }
+                                            @endphp
+                                            @if (!empty($nestedChildrenFiltered))
+                                                <li class="pe-slide pe-has-sub{{ $nestedIsActive ? ' active' : '' }}">
+                                                    <a href="#{{ $nestedCollapseId }}" class="pe-nav-link"
+                                                        data-bs-toggle="collapse"
+                                                        aria-expanded="{{ $nestedIsActive ? 'true' : 'false' }}"
+                                                        aria-controls="{{ $nestedCollapseId }}">
+                                                        <span class="pe-nav-content">{{ $tMenu($child['title'] ?? '') }}</span>
+                                                        <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
+                                                    </a>
+                                                    <ul class="pe-slide-menu collapse{{ $nestedIsActive ? ' show' : '' }}"
+                                                        id="{{ $nestedCollapseId }}">
+                                                        @php
+                                                            $nestedAlreadyMarkedActive = false;
+                                                        @endphp
+                                                        @foreach ($nestedChildrenFiltered as $nestedChild)
+                                                            @php
+                                                                $nestedChildActive = false;
+                                                                if (
+                                                                    !$nestedAlreadyMarkedActive &&
+                                                                    $childMatches($nestedChild)
+                                                                ) {
+                                                                    $nestedChildActive = true;
+                                                                    $nestedAlreadyMarkedActive = true;
+                                                                }
+                                                                if (
+                                                                    !$nestedAlreadyMarkedActive &&
+                                                                    $nestedIsActive &&
+                                                                    !$nestedHasExactMatch &&
+                                                                    !empty($nestedChild['default'])
+                                                                ) {
+                                                                    $nestedChildActive = true;
+                                                                    $nestedAlreadyMarkedActive = true;
+                                                                }
+                                                            @endphp
+                                                            <li class="pe-slide-item">
+                                                                @if (!empty($nestedChild['is_heading']))
+                                                                    <div class="pe-stock-menu-heading">
+                                                                        {{ $tMenu($nestedChild['title'] ?? '') }}
+                                                                    </div>
+                                                                @else
+                                                                    <a href="{{ route($nestedChild['route'], $nestedChild['params'] ?? []) }}"
+                                                                        class="pe-nav-link{{ $nestedChildActive ? ' active' : '' }}">
+                                                                        {{ $tMenu($nestedChild['title'] ?? '') }}
+                                                                    </a>
+                                                                @endif
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </li>
+                                            @endif
+                                        @else
+                                            <li class="pe-slide-item">
                                                 <a href="{{ route($child['route'], $childParams) }}"
                                                     class="pe-nav-link{{ $isActive ? ' active' : '' }}">
                                                     {{ $tMenu($child['title'] ?? '') }}
                                                 </a>
-                                            @endif
-                                        </li>
+                                            </li>
+                                        @endif
                                     @endforeach
                                 </ul>
                             </li>

@@ -4,6 +4,10 @@ return [
     'group' => [
         'main' => 'Main',
         'application' => 'Application',
+        'menu' => 'Menu',
+        'operations' => 'Operations',
+        'website' => 'Website',
+        'settings' => 'Settings',
         'web_pages' => 'Web Pages',
         'settings_ui' => 'Settings & UI',
     ],

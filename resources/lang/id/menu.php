@@ -4,6 +4,10 @@ return [
     'group' => [
         'main' => 'Utama',
         'application' => 'Aplikasi',
+        'menu' => 'Menu',
+        'operations' => 'Operasional',
+        'website' => 'Website',
+        'settings' => 'Pengaturan',
         'web_pages' => 'Halaman Web',
         'settings_ui' => 'Pengaturan & UI',
     ],
