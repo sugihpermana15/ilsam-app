@@ -1,6 +1,12 @@
-<aside class="pe-app-sidebar" id="sidebar">
+<aside class="pe-app-sidebar{{ auth()->check() ? ' has-profile' : '' }}" id="sidebar">
     @php
         $sidebarHomeUrl = route('home');
+        $sidebarLocale = app()->getLocale();
+        $sidebarLanguageOptions = [
+            'en' => __('settings.languages.en'),
+            'id' => __('settings.languages.id'),
+            'ko' => __('settings.languages.ko'),
+        ];
         if (auth()->check()) {
             $isUserRole = (auth()->user()->role?->role_name ?? null) === 'Users' || (int) auth()->user()->role_id === 3;
             $sidebarHomeUrl = $isUserRole ? route('user.dashboard') : route('admin.dashboard');
@@ -34,6 +40,67 @@
 
         .pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu .pe-slide-menu {
             margin-left: 1rem;
+        }
+
+        .pe-app-sidebar.has-profile .pe-app-sidebar-menu {
+            height: calc(100% - var(--pe-app-header-height) - 76px);
+        }
+
+        .pe-sidebar-profile {
+            position: relative;
+            z-index: 1010;
+            height: 76px;
+            padding: .75rem;
+            border-top: 1px solid var(--pe-app-sidebar-border-color);
+            background: var(--pe-app-sidebar-bg);
+        }
+
+        .pe-sidebar-profile-toggle {
+            min-width: 0;
+            height: 100%;
+            padding: .25rem;
+            color: var(--pe-app-sidebar-menu-item-color);
+            text-align: left;
+        }
+
+        .pe-sidebar-profile-toggle:hover,
+        .pe-sidebar-profile-toggle:focus {
+            color: var(--pe-app-sidebar-menu-item-color-hover);
+        }
+
+        .pe-sidebar-profile-avatar {
+            width: 2.25rem;
+            height: 2.25rem;
+            flex: 0 0 2.25rem;
+            object-fit: cover;
+        }
+
+        .pe-sidebar-profile-copy {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .pe-sidebar-profile-copy > * {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .pe-sidebar-profile .dropdown-menu {
+            width: calc(100% - 1rem);
+            min-width: 15rem;
+            max-width: calc(100vw - 1rem);
+            margin: 0 .5rem .35rem;
+        }
+
+        [data-sidebar="icon"] .pe-sidebar-profile-toggle {
+            justify-content: center;
+        }
+
+        [data-sidebar="icon"] .pe-sidebar-profile-copy,
+        [data-sidebar="icon"] .pe-sidebar-profile-arrow {
+            display: none !important;
         }
     </style>
     <div class="pe-app-sidebar-logo px-6 d-flex align-items-center position-relative">
@@ -2775,4 +2842,50 @@
             @endif
         </ul>
     </nav>
+    @if (auth()->check())
+        <div class="dropdown dropup pe-sidebar-profile">
+            <button class="pe-sidebar-profile-toggle btn w-100 d-flex align-items-center gap-2" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false" aria-label="User profile menu">
+                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
+                    alt="Avatar Image" class="pe-sidebar-profile-avatar rounded-circle">
+                <span class="pe-sidebar-profile-copy">
+                    <span class="fw-semibold">{{ auth()->user()->name ?? auth()->user()->username }}</span>
+                    <small class="text-muted">{{ auth()->user()->role?->role_name ?? 'User' }}</small>
+                </span>
+                <i class="ri-arrow-up-s-line pe-sidebar-profile-arrow"></i>
+            </button>
+            <div class="dropdown-menu header-dropdown-menu p-2">
+                <div class="d-flex align-items-center gap-2 p-2 border-bottom mb-2">
+                    <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
+                        alt="Avatar Image" class="pe-sidebar-profile-avatar rounded-circle">
+                    <div class="pe-sidebar-profile-copy">
+                        <span class="fw-semibold">{{ auth()->user()->name ?? auth()->user()->username }}</span>
+                        <small class="text-muted">{{ auth()->user()->email }}</small>
+                    </div>
+                </div>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}
+                    </button>
+                </form>
+                <div class="border-top mt-2 pt-2">
+                    <div class="small text-muted px-2 pb-1">{{ __('settings.choose_language') }}</div>
+                    @foreach ($sidebarLanguageOptions as $code => $label)
+                        <form action="{{ route('language.update') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="locale" value="{{ $code }}">
+                            <button type="submit"
+                                class="dropdown-item d-flex align-items-center justify-content-between">
+                                <span>{{ $label }}</span>
+                                @if ($sidebarLocale === $code)
+                                    <i class="fas fa-check"></i>
+                                @endif
+                            </button>
+                        </form>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
 </aside>

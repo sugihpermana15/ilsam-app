@@ -63,6 +63,26 @@
             box-shadow: 0 .5rem 1.25rem rgba(27, 43, 65, .10);
         }
 
+        .product-card.is-out-of-stock:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .product-card.is-out-of-stock {
+            border-color: #d0d5dd;
+            background-color: #f2f4f7;
+            color: #667085;
+        }
+
+        .product-card.is-out-of-stock .product-media {
+            filter: grayscale(1);
+            opacity: .7;
+        }
+
+        .product-card.is-out-of-stock .product-title {
+            color: #667085;
+        }
+
         .product-media {
             position: relative;
             height: 132px;
@@ -205,8 +225,9 @@
             <div id="stockItemGrid" class="row g-3">
                 @forelse($items as $item)
                     <div class="col-sm-6 col-lg-4 js-stock-item"
+                        data-item-id="{{ $item->id }}"
                         data-search="{{ strtolower($item->code . ' ' . $item->name . ' ' . $item->unit) }}">
-                        <div class="card product-card">
+                        <div class="card product-card{{ $item->selected_stock <= 0 ? ' is-out-of-stock' : '' }}">
                             <div class="card-body p-3">
                                 <div class="product-media mb-3">
                                     @if ($item->image_url)
@@ -222,16 +243,18 @@
                                             data-id="{{ $item->id }}"
                                             data-stock="{{ $item->selected_stock }}">{{ $item->selected_stock }}</span>
                                         {{ $item->unit }}
-                                        @if ($item->selected_stock <= $item->low_stock_threshold)
+                                        @if ($item->selected_stock <= 0)
+                                            <span class="badge bg-secondary ms-1">Habis</span>
+                                        @elseif ($item->selected_stock <= $item->low_stock_threshold)
                                             <span class="badge bg-warning text-dark ms-1">Menipis</span>
                                         @endif
                                     </div>
                                     <div class="qty-control mt-3"><button type="button"
                                             class="btn btn-outline-secondary js-minus"
-                                            data-id="{{ $item->id }}">-</button><strong class="js-qty"
+                                            data-id="{{ $item->id }}" @disabled($item->selected_stock <= 0)>-</button><strong class="js-qty"
                                             data-id="{{ $item->id }}">0</strong><button type="button"
                                             class="btn btn-outline-primary js-plus"
-                                            data-id="{{ $item->id }}">+</button></div>
+                                            data-id="{{ $item->id }}" @disabled($item->selected_stock <= 0)>+</button></div>
                                 </div>
                             </div>
                         </div>

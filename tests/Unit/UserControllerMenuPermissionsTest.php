@@ -120,6 +120,31 @@ class UserControllerMenuPermissionsTest extends TestCase
         }
     }
 
+    public function test_profile_menu_is_rendered_at_sidebar_bottom_and_removed_from_header(): void
+    {
+        $user = new User([
+            'name' => 'Root',
+            'username' => 'root',
+            'email' => 'root@example.com',
+            'role_id' => 1,
+        ]);
+        $user->setRelation('role', new Role(['role_name' => 'Super Admin']));
+        Auth::setUser($user);
+
+        try {
+            $sidebar = view('partials.sidebar')->render();
+            $header = view('partials.header')->render();
+
+            $this->assertStringContainsString('pe-sidebar-profile-toggle', $sidebar);
+            $this->assertStringContainsString('Root', $sidebar);
+            $this->assertStringContainsString(route('logout'), $sidebar);
+            $this->assertStringNotContainsString('header-profile-btn', $header);
+            $this->assertStringContainsString('fa-language', $header);
+        } finally {
+            Auth::logout();
+        }
+    }
+
     public function test_stock_can_be_selected_as_the_only_dashboard_tab(): void
     {
         $method = new ReflectionMethod(UserController::class, 'extractDashboardTabs');

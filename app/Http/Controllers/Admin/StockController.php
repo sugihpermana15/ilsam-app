@@ -436,7 +436,7 @@ class StockController extends Controller
     public function notifications(Request $request): JsonResponse
     {
         $userId = Auth::id();
-        $notifications = StockNotification::query()->where('user_id', $userId)->latest()->limit(10)->get();
+        $notifications = StockNotification::query()->where('user_id', $userId)->latest()->get();
         $transferCategories = StockTransferRequest::query()
             ->whereIn('id', $notifications->pluck('data.transfer_id')->filter())
             ->pluck('category', 'id');
@@ -481,6 +481,11 @@ class StockController extends Controller
             $item->setAttribute('selected_stock', (int) ($item->siteBalances->firstWhere('site_code', $site)?->on_hand_qty ?? 0));
             $item->setAttribute('image_url', $item->image_path ? url('storage/' . ltrim($item->image_path, '/')) : null);
         });
+        if ($activeOnly) {
+            $items = $items
+                ->sortBy(fn (StockItem $item): bool => (int) $item->selected_stock <= 0)
+                ->values();
+        }
 
         return [
             'category' => $this->category($request),

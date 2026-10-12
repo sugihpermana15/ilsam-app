@@ -78,6 +78,30 @@
             animation: stock-notification-pulse 1.8s ease-in-out infinite;
         }
 
+        .app-header .pe-dropdown-mega .dropdown-menu.pe-noti-dropdown-menu {
+            flex-direction: column;
+            max-height: calc(100vh - 6rem);
+            max-height: calc(100dvh - var(--pe-app-header-height, 4rem) - 1rem);
+            max-width: calc(100vw - 1rem);
+            overflow: hidden;
+        }
+
+        .app-header .pe-dropdown-mega .dropdown-menu.pe-noti-dropdown-menu.show {
+            display: flex;
+        }
+
+        .pe-noti-dropdown-menu > .p-3 {
+            flex: 0 0 auto;
+        }
+
+        #stockNotificationList {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            scrollbar-width: thin;
+        }
+
         @keyframes stock-notification-pulse {
             50% {
                 transform: scale(1.16);
@@ -174,67 +198,13 @@
                     </button>
                 </div>
 
-                <!-- Mobile: combine Profile + Language into one dropdown (md down) -->
+                <!-- Keep language selection available on mobile; profile is in the sidebar footer. -->
                 <div class="dropdown d-md-none">
-                    <button class="header-profile-btn btn gap-1 text-start" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false" aria-label="Profile">
-                        <span class="header-btn btn position-relative">
-                            @if (auth()->check())
-                                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
-                                    alt="Avatar Image" class="img-fluid rounded-circle">
-                                <span
-                                    class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
-                                        class="visually-hidden">online</span></span>
-                            @else
-                                <img src="{{ asset('assets/img/users/avatar-10.jpg') }}" alt="Avatar Image"
-                                    class="img-fluid rounded-circle">
-                                <span
-                                    class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
-                                        class="visually-hidden">online</span></span>
-                            @endif
-                        </span>
+                    <button class="btn header-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                        aria-label="{{ __('settings.choose_language') }}">
+                        <i class="fas fa-language"></i>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-end header-dropdown-menu p-0" style="min-width: 260px;">
-                        <div class="p-3 border-bottom">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="shrink-0">
-                                    @if (auth()->check())
-                                        <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
-                                            alt="Avatar Image" class="avatar-md">
-                                    @else
-                                        <img src="{{ asset('assets/img/avatar/avatar-10.jpg') }}" alt="Avatar Image"
-                                            class="avatar-md">
-                                    @endif
-                                </div>
-                                <div class="min-w-0">
-                                    @if (auth()->check())
-                                        <div class="fw-semibold text-truncate">
-                                            {{ auth()->user()->name ?? auth()->user()->username }}</div>
-                                        <div class="small text-muted text-truncate">{{ auth()->user()->email }}</div>
-                                    @else
-                                        <div class="fw-semibold">Guest</div>
-                                        <div class="small text-muted">Guest</div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-2 border-bottom">
-                            @if (auth()->check())
-                                <form action="{{ route('logout') }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">
-                                        <i class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}
-                                    </button>
-                                </form>
-                            @else
-                                <a class="dropdown-item" href="{{ route('auth') }}">
-                                    <i class="fas fa-sign-in-alt me-1"></i>
-                                    {{ __('auth.login') === 'auth.login' ? 'Login' : __('auth.login') }}
-                                </a>
-                            @endif
-                        </div>
-
+                    <div class="dropdown-menu dropdown-menu-end header-dropdown-menu p-0" style="min-width: 220px;">
                         <div class="p-3 border-bottom">
                             <h6 class="mb-0">{{ __('settings.choose_language') }}</h6>
                         </div>
@@ -453,79 +423,6 @@
                         </li>
                     </ul>
                 </div> --}}
-                <div class="dropdown pe-dropdown-mega d-none d-md-block">
-                    <button class="header-profile-btn btn gap-1 text-start" type="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <span class="header-btn btn position-relative">
-                            @if (auth()->check())
-                                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
-                                    alt="Avatar Image" class="img-fluid rounded-circle">
-                                <span
-                                    class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
-                                        class="visually-hidden">unread messages</span></span>
-                            @else
-                                <img src="{{ asset('assets/img/users/avatar-10.jpg') }}" alt="Avatar Image"
-                                    class="img-fluid rounded-circle">
-                                <span
-                                    class="position-absolute translate-middle badge border border-light rounded-circle bg-success"><span
-                                        class="visually-hidden">unread messages</span></span>
-                            @endif
-                        </span>
-                        <div class="d-none d-lg-block pe-2">
-                            @if (auth()->check())
-                                <span
-                                    class="d-block mb-0 fs-13 fw-semibold">{{ auth()->user()->name ?? auth()->user()->username }}</span>
-                                <span class="d-block mb-0 fs-12 text-muted">{{ auth()->user()->email }}</span>
-                            @else
-                                <span class="d-block mb-0 fs-13 fw-semibold">Guest</span>
-                                <span class="d-block mb-0 fs-12 text-muted">Guest</span>
-                            @endif
-                        </div>
-                    </button>
-                    <div class="dropdown-menu dropdown-mega-sm header-dropdown-menu p-3">
-                        <div class="border-bottom pb-2 mb-2 d-flex align-items-center gap-2">
-                            @if (auth()->check())
-                                <img src="{{ Avatar::create(auth()->user()->name ?? (auth()->user()->username ?? 'User'))->toBase64() }}"
-                                    alt="Avatar Image" class="avatar-md">
-                                <div>
-                                    <a href="javascript:void(0)">
-                                        <h6 class="mb-0 lh-base">
-                                            {{ auth()->user()->name ?? auth()->user()->username }}</h6>
-                                    </a>
-                                    <p class="mb-0 fs-13 text-muted">{{ auth()->user()->email }}</p>
-                                </div>
-                            @else
-                                <img src="{{ asset('assets/img/avatar/avatar-10.jpg') }}" alt="Avatar Image"
-                                    class="avatar-md">
-                                <div>
-                                    <a href="javascript:void(0)">
-                                        <h6 class="mb-0 lh-base">Guest</h6>
-                                    </a>
-                                    <p class="mb-0 fs-13 text-muted">Guest</p>
-                                </div>
-                            @endif
-                        </div>
-                        {{-- <ul class="list-unstyled mb-1 border-bottom pb-1">
-                            <li><a class="dropdown-item" href="javascript:void(0)"><i class="fas fa-user me-1"></i>
-                                    View Profile</a></li>
-                        </ul> --}}
-                        <ul class="list-unstyled mb-0">
-                            @if (auth()->check())
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item"><i
-                                                class="fas fa-sign-out-alt me-1"></i> {{ __('auth.logout') }}</button>
-                                    </form>
-                                </li>
-                            @else
-                                <li><a class="dropdown-item" href=""><i class="fas fa-sign-out-alt me-1"></i>
-                                        {{ __('auth.logout') }}</a>
-                                </li>
-                            @endif
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
