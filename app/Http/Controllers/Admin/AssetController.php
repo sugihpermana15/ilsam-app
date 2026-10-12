@@ -1113,8 +1113,14 @@ class AssetController extends Controller
       }
     }
 
-    // Never change asset_code on update; keep the original number stable.
-    unset($validated['asset_code']);
+    if ($validated['asset_category'] !== $asset->asset_category) {
+      $validated['asset_code'] = $this->generateUniqueAssetCode(
+        $validated['asset_category'],
+        $validated['asset_location'],
+        $validated['start_use_date'] ?? null,
+        $validated['purchase_date'] ?? null,
+      );
+    }
 
     $validated['last_updated'] = now();
     $asset->update($validated);
