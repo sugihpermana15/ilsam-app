@@ -94,6 +94,29 @@ class UserControllerMenuPermissionsTest extends TestCase
         }
     }
 
+    public function test_admin_sidebar_groups_master_data_and_shows_stock_menu_once(): void
+    {
+        foreach ([1 => 'Super Admin', 2 => 'Admin'] as $roleId => $roleName) {
+            $user = new User(['role_id' => $roleId]);
+            $user->setRelation('role', new Role(['role_name' => $roleName]));
+
+            Auth::setUser($user);
+
+            try {
+                $sidebar = view('partials.sidebar')->render();
+                $masterDataPosition = strpos($sidebar, 'Master Data');
+                $masterHrPosition = strpos($sidebar, 'Master HR');
+
+                $this->assertSame(1, substr_count($sidebar, 'Manajemen Stok'));
+                $this->assertNotFalse($masterDataPosition);
+                $this->assertNotFalse($masterHrPosition);
+                $this->assertGreaterThan($masterDataPosition, $masterHrPosition);
+            } finally {
+                Auth::logout();
+            }
+        }
+    }
+
     public function test_stock_can_be_selected_as_the_only_dashboard_tab(): void
     {
         $method = new ReflectionMethod(UserController::class, 'extractDashboardTabs');

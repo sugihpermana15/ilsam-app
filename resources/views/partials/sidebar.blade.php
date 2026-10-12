@@ -52,6 +52,7 @@
             $map = [
                 'Main' => __('menu.group.main'),
                 'Application' => __('menu.group.application'),
+                'Master Data' => __('menu.master_data'),
                 'Web Pages' => __('menu.group.web_pages'),
                 'Settings & UI' => __('menu.group.settings_ui'),
             ];
@@ -1953,6 +1954,109 @@
                 ],
             ],
         ];
+
+        $masterDataPermissionKeys = [
+            'devices',
+            'employees',
+            'master_hr',
+            'master_assets',
+            'master_accounts',
+            'master_daily_task',
+        ];
+        $groupOrder = ['Main', 'Application', 'Master Data', 'Web Pages', 'Settings & UI'];
+
+        foreach ($menus as $role => $groups) {
+            $normalizedGroups = [];
+
+            foreach ($groups as $group) {
+                foreach ($group['items'] as $item) {
+                    $titleGroup = in_array($item['permission_key'] ?? null, $masterDataPermissionKeys, true)
+                        ? 'Master Data'
+                        : $group['title_group'];
+                    $normalizedGroups[$titleGroup] ??= [
+                        'title_group' => $titleGroup,
+                        'items' => [],
+                    ];
+
+                    $itemIdentity = implode('|', [
+                        $item['title'] ?? '',
+                        $item['permission_key'] ?? '',
+                        $item['route'] ?? '',
+                    ]);
+                    $existingIndex = null;
+
+                    foreach ($normalizedGroups[$titleGroup]['items'] as $index => $existingItem) {
+                        $existingIdentity = implode('|', [
+                            $existingItem['title'] ?? '',
+                            $existingItem['permission_key'] ?? '',
+                            $existingItem['route'] ?? '',
+                        ]);
+
+                        if ($existingIdentity === $itemIdentity) {
+                            $existingIndex = $index;
+                            break;
+                        }
+                    }
+
+                    if ($existingIndex === null) {
+                        $normalizedGroups[$titleGroup]['items'][] = $item;
+                        continue;
+                    }
+
+                    $existingItem = &$normalizedGroups[$titleGroup]['items'][$existingIndex];
+                    $existingItem['active_routes'] = array_values(array_unique(array_merge(
+                        (array) ($existingItem['active_routes'] ?? []),
+                        (array) ($item['active_routes'] ?? []),
+                    )));
+
+                    foreach ((array) ($item['children'] ?? []) as $child) {
+                        $childIdentity = serialize([
+                            $child['title'] ?? null,
+                            $child['route'] ?? null,
+                            $child['params'] ?? [],
+                            $child['is_heading'] ?? false,
+                            $child['permission_key'] ?? null,
+                        ]);
+                        $matchingChildIndex = null;
+
+                        foreach ((array) ($existingItem['children'] ?? []) as $childIndex => $existingChild) {
+                            $existingChildIdentity = serialize([
+                                $existingChild['title'] ?? null,
+                                $existingChild['route'] ?? null,
+                                $existingChild['params'] ?? [],
+                                $existingChild['is_heading'] ?? false,
+                                $existingChild['permission_key'] ?? null,
+                            ]);
+
+                            if ($existingChildIdentity === $childIdentity) {
+                                $matchingChildIndex = $childIndex;
+                                break;
+                            }
+                        }
+
+                        if ($matchingChildIndex === null) {
+                            $existingItem['children'][] = $child;
+                            continue;
+                        }
+
+                        $existingChild = &$existingItem['children'][$matchingChildIndex];
+                        $existingChild['active_routes'] = array_values(array_unique(array_merge(
+                            (array) ($existingChild['active_routes'] ?? []),
+                            (array) ($child['active_routes'] ?? []),
+                        )));
+                        unset($existingChild);
+                    }
+                    unset($existingItem);
+                }
+            }
+
+            uksort($normalizedGroups, function (string $left, string $right) use ($groupOrder): int {
+                return array_search($left, $groupOrder, true) <=> array_search($right, $groupOrder, true);
+            });
+
+            $menus[$role] = array_values($normalizedGroups);
+        }
+
         $user = auth()->user();
         $roleId = $user?->role_id;
 
