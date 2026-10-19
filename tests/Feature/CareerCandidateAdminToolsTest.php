@@ -268,6 +268,13 @@ class CareerCandidateAdminToolsTest extends TestCase
       'recruitment_stage' => 'psychology_test',
       'selection_status' => 'rejected',
     ]);
+    $failedRows = app(CareerCandidateController::class)
+      ->failedDatatable(Request::create('/', 'GET', ['draw' => 1, 'start' => 0, 'length' => 10]))
+      ->getData(true)['data'];
+    $failedRow = collect($failedRows)->firstWhere('id', $candidate->id);
+    $this->assertSame('-', $failedRow['job_title']);
+    $this->assertTrue($failedRow['needs_job_title']);
+
     $request = Request::create('/', 'PUT', ['job_title' => 'Tax Officer']);
 
     app(CareerCandidateController::class)->restore($request, $candidate);

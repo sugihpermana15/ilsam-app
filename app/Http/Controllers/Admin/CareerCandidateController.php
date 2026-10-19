@@ -286,6 +286,7 @@ class CareerCandidateController extends Controller
         'candidate_code' => $candidate->candidate_code,
         'phone' => $candidate->phone,
         'job_title' => $candidate->job_title ?: '-',
+        'needs_job_title' => blank($candidate->job_title),
         'domicile' => $candidate->domicile ?: '-',
         'current_address' => $candidate->current_address ?: '-',
         'experience_range' => $this->experienceLabel($candidate->experience_range),

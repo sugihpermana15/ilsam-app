@@ -215,7 +215,7 @@
               html += ` <button class="btn btn-sm btn-danger js-delete-failed" data-url="${escapeHtml(row.delete_url)}"><i class="fas fa-trash"></i> Hapus</button>`;
             }
             if (row.restore_url) {
-              html += ` <button class="btn btn-sm btn-outline-success js-restore-failed" data-url="${escapeHtml(row.restore_url)}" data-id="${escapeHtml(row.id)}" data-has-cv="${row.has_cv ? '1' : '0'}" data-needs-position="${row.job_title ? '0' : '1'}"><i class="fas fa-undo"></i> Restore</button>`;
+              html += ` <button class="btn btn-sm btn-outline-success js-restore-failed" data-url="${escapeHtml(row.restore_url)}" data-id="${escapeHtml(row.id)}" data-has-cv="${row.has_cv ? '1' : '0'}" data-needs-position="${row.needs_job_title ? '1' : '0'}"><i class="fas fa-undo"></i> Restore</button>`;
             }
             return html;
           } }
