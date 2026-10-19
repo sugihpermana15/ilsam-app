@@ -239,6 +239,24 @@ class CareerCandidateAdminToolsTest extends TestCase
   public function test_restoring_old_failed_candidate_does_not_require_a_missing_pdf(): void
   {
     Storage::fake('local');
+    $baseCode = CareerCandidate::formatCandidateCode(
+      'TAX OFFICER',
+      'Kandidat Lama',
+      '081234567892',
+      'Jakarta',
+    );
+    CareerCandidate::create([
+      'candidate_code' => $baseCode,
+      'full_name' => 'Kandidat Kode Lama',
+      'email' => 'old-code@example.test',
+      'job_title' => 'Tax Officer',
+    ]);
+    CareerCandidate::create([
+      'candidate_code' => $baseCode . '-02',
+      'full_name' => 'Kandidat Kode Lama 2',
+      'email' => 'old-code-2@example.test',
+      'job_title' => 'Tax Officer',
+    ]);
     $candidate = CareerCandidate::create([
       'candidate_code' => null,
       'full_name' => 'Kandidat Lama',
@@ -257,7 +275,7 @@ class CareerCandidateAdminToolsTest extends TestCase
     $candidate->refresh();
     $this->assertSame('screening_cv', $candidate->recruitment_stage);
     $this->assertSame('Tax Officer', $candidate->job_title);
-    $this->assertNotEmpty($candidate->candidate_code);
+    $this->assertSame($baseCode . '-03', $candidate->candidate_code);
     $this->assertNull($candidate->cv_path);
   }
 

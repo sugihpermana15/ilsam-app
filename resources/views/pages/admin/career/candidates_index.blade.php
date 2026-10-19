@@ -364,7 +364,7 @@
         const needsPosition = button.dataset.needsPosition === '1';
         const restoreFields = [
           needsPosition
-            ? '<div class="text-start mb-3"><label for="restore-job-title" class="form-label">Posisi kandidat</label><input id="restore-job-title" class="form-control" maxlength="160" required></div>'
+            ? '<div class="text-start mb-3"><label for="restore-job-title" class="form-label">Posisi kandidat</label><input id="restore-job-title" class="form-control" maxlength="160" value="TAX OFFICER" required></div>'
             : '',
           hasCv
             ? '<div class="alert alert-info text-start mb-0">CV tersimpan dan akan digunakan kembali.</div>'
