@@ -6,7 +6,6 @@ use App\Http\Controllers\Admin\CareerCandidateController;
 use App\Models\CareerCandidate;
 use App\Models\CareerEmailTemplate;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -237,7 +236,7 @@ class CareerCandidateAdminToolsTest extends TestCase
     Storage::disk('local')->assertExists($cvPath);
   }
 
-  public function test_restoring_old_failed_candidate_requires_position_and_pdf(): void
+  public function test_restoring_old_failed_candidate_does_not_require_a_missing_pdf(): void
   {
     Storage::fake('local');
     $candidate = CareerCandidate::create([
@@ -251,8 +250,7 @@ class CareerCandidateAdminToolsTest extends TestCase
       'recruitment_stage' => 'psychology_test',
       'selection_status' => 'rejected',
     ]);
-    $upload = UploadedFile::fake()->createWithContent('resume.pdf', "%PDF-1.4\nTest CV");
-    $request = Request::create('/', 'PUT', ['job_title' => 'Tax Officer'], [], ['cv' => $upload]);
+    $request = Request::create('/', 'PUT', ['job_title' => 'Tax Officer']);
 
     app(CareerCandidateController::class)->restore($request, $candidate);
 
@@ -260,8 +258,7 @@ class CareerCandidateAdminToolsTest extends TestCase
     $this->assertSame('screening_cv', $candidate->recruitment_stage);
     $this->assertSame('Tax Officer', $candidate->job_title);
     $this->assertNotEmpty($candidate->candidate_code);
-    $this->assertNotEmpty($candidate->cv_path);
-    Storage::disk('local')->assertExists($candidate->cv_path);
+    $this->assertNull($candidate->cv_path);
   }
 
   private function csvRows($response): array

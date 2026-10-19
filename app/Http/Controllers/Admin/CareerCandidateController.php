@@ -5,11 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CareerCandidate;
 use App\Models\CareerEmailTemplate;
-use App\Services\CareerCvAntivirusScanner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class CareerCandidateController extends Controller
 {
@@ -432,23 +430,11 @@ class CareerCandidateController extends Controller
   {
     abort_unless($candidate->selection_status === 'rejected', 404);
 
-    $hasStoredCv = $candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path);
     $requiresJobTitle = blank($candidate->job_title);
     $validated = $request->validate([
       'job_title' => [$requiresJobTitle ? 'required' : 'nullable', 'string', 'max:160'],
-      'cv' => [
-        $hasStoredCv ? 'nullable' : 'required',
-        'file',
-        'max:2048',
-        'mimes:pdf',
-        'mimetypes:application/pdf',
-      ],
     ], [
       'job_title.required' => 'Masukkan posisi kandidat sebelum dipulihkan.',
-      'cv.required' => 'Unggah kembali CV PDF kandidat sebelum dipulihkan.',
-      'cv.max' => 'Ukuran CV maksimal 2 MB.',
-      'cv.mimes' => 'CV harus berupa file PDF.',
-      'cv.mimetypes' => 'CV harus berupa file PDF.',
     ]);
 
     $jobTitle = trim((string) ($validated['job_title'] ?? $candidate->job_title));
@@ -470,32 +456,6 @@ class CareerCandidateController extends Controller
         $candidate->domicile,
       );
       $attributes['candidate_code'] = CareerCandidate::nextAvailableCandidateCode($baseCode);
-    }
-
-    if ($request->hasFile('cv')) {
-      $cvFile = $request->file('cv');
-      if ((bool) config('career_security.antivirus.enabled')) {
-        $scan = app(CareerCvAntivirusScanner::class)->scan((string) $cvFile->getRealPath());
-        if ($scan === 'infected') {
-          return response()->json(['message' => 'CV ditolak karena terdeteksi malware.'], 422);
-        }
-        if ($scan === 'error' && (bool) config('career_security.antivirus.fail_closed')) {
-          return response()->json(['message' => 'CV gagal dipindai. Silakan coba lagi nanti.'], 422);
-        }
-      }
-
-      $originalName = trim(basename(str_replace("\0", '', (string) $cvFile->getClientOriginalName())));
-      $cvPath = $cvFile->storeAs('career/cv', Str::uuid() . '.pdf', 'local');
-      if ($cvPath === false) {
-        return back()->with('error', 'CV gagal disimpan. Kandidat belum dipulihkan.');
-      }
-
-      $attributes += [
-        'cv_path' => $cvPath,
-        'cv_original_name' => $originalName !== '' ? $originalName : 'cv.pdf',
-        'cv_mime' => $cvFile->getClientMimeType(),
-        'cv_size' => $cvFile->getSize(),
-      ];
     }
 
     $candidate->update($attributes);

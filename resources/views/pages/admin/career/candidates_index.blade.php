@@ -368,7 +368,7 @@
             : '',
           hasCv
             ? '<div class="alert alert-info text-start mb-0">CV tersimpan dan akan digunakan kembali.</div>'
-            : '<div class="text-start"><label for="restore-cv" class="form-label">Unggah CV PDF</label><input id="restore-cv" type="file" class="form-control" accept=".pdf,application/pdf" required><div class="form-text">PDF maksimal 2 MB.</div></div>'
+            : '<div class="alert alert-warning text-start mb-0">CV tidak ditemukan di penyimpanan. Kandidat tetap dipulihkan tanpa CV.</div>'
         ].join('');
 
         const result = await careerAlert.fire({
@@ -392,15 +392,6 @@
                 return false;
               }
               formData.append('job_title', jobTitle);
-            }
-
-            if (!hasCv) {
-              const cvFile = document.getElementById('restore-cv').files[0];
-              if (!cvFile) {
-                careerAlert.showValidationMessage('Unggah CV PDF sebelum memulihkan kandidat.');
-                return false;
-              }
-              formData.append('cv', cvFile);
             }
 
             try {
