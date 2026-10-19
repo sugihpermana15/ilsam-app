@@ -144,26 +144,40 @@ class CareerCandidateController extends Controller
   public function exportStage(string $stage)
   {
     abort_unless(array_key_exists($stage, self::STAGES), 404);
+    $includesCvLink = $stage === 'psychology_test';
+    $headers = ['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'];
+    if ($includesCvLink) {
+      $headers[] = 'Link Download CV';
+    }
 
     return $this->csvDownload(
       'kandidat-' . str_replace('_', '-', $stage) . '-' . now()->format('Ymd-His') . '.csv',
-      ['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'],
-      function ($output) use ($stage) {
+      $headers,
+      function ($output) use ($stage, $includesCvLink) {
         CareerCandidate::query()
           ->where('recruitment_stage', $stage)
           ->where('is_talent_pool', false)
           ->where('selection_status', '!=', 'rejected')
           ->orderBy('id')
-          ->chunkById(500, function ($candidates) use ($output, $stage) {
+          ->chunkById(500, function ($candidates) use ($output, $stage, $includesCvLink) {
             foreach ($candidates as $candidate) {
-              $this->writeCsvRow($output, [
+              $values = [
                 $candidate->candidate_code,
                 $candidate->full_name,
                 $candidate->email,
                 $candidate->job_title,
                 self::STAGES[$stage],
                 optional($candidate->created_at)->format('d M Y H:i'),
-              ]);
+              ];
+
+              if ($includesCvLink) {
+                $hasCv = $candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path);
+                $values[] = $hasCv
+                  ? route('admin.career_candidates.cv', $candidate)
+                  : 'CV tidak tersedia';
+              }
+
+              $this->writeCsvRow($output, $values);
             }
           });
       },

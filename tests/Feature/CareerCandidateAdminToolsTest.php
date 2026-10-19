@@ -59,10 +59,21 @@ class CareerCandidateAdminToolsTest extends TestCase
 
   public function test_stage_export_downloads_excel_compatible_csv_with_candidates_from_only_that_stage(): void
   {
-    CareerCandidate::create([
+    Storage::fake('local');
+    $cvPath = 'career/cv/psychology-candidate.pdf';
+    Storage::disk('local')->put($cvPath, '%PDF-1.4');
+    $candidate = CareerCandidate::create([
       'candidate_code' => 'PSI-001',
       'full_name' => 'Kandidat Psikotes',
       'email' => 'candidate@example.test',
+      'job_title' => 'Tax Officer',
+      'recruitment_stage' => 'psychology_test',
+      'cv_path' => $cvPath,
+    ]);
+    CareerCandidate::create([
+      'candidate_code' => 'PSI-002',
+      'full_name' => 'CV Tidak Ada',
+      'email' => 'missing-cv@example.test',
       'job_title' => 'Tax Officer',
       'recruitment_stage' => 'psychology_test',
     ]);
@@ -79,11 +90,19 @@ class CareerCandidateAdminToolsTest extends TestCase
     $this->assertSame('text/csv; charset=UTF-8', $response->headers->get('content-type'));
     $rows = $this->csvRows($response);
 
-    $this->assertSame(['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'], $rows[0]);
+    $this->assertSame(['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar', 'Link Download CV'], $rows[0]);
     $this->assertSame('PSI-001', $rows[1][0]);
     $this->assertSame('Kandidat Psikotes', $rows[1][1]);
     $this->assertSame('candidate@example.test', $rows[1][2]);
-    $this->assertCount(2, $rows);
+    $this->assertSame(route('admin.career_candidates.cv', $candidate), $rows[1][6]);
+    $this->assertSame('CV tidak tersedia', $rows[2][6]);
+    $this->assertCount(3, $rows);
+
+    $screeningRows = $this->csvRows(app(CareerCandidateController::class)->exportStage('screening_cv'));
+    $this->assertSame(
+      ['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'],
+      $screeningRows[0],
+    );
   }
 
   public function test_email_templates_can_be_created_updated_and_deleted(): void
