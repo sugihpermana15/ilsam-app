@@ -6,11 +6,10 @@ use App\Http\Controllers\Admin\CareerCandidateController;
 use App\Models\CareerCandidate;
 use App\Models\CareerEmailTemplate;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\UploadedFile;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use Tests\TestCase;
 
 class CareerCandidateAdminToolsTest extends TestCase
@@ -58,7 +57,7 @@ class CareerCandidateAdminToolsTest extends TestCase
     });
   }
 
-  public function test_stage_export_downloads_xlsx_with_candidates_from_only_that_stage(): void
+  public function test_stage_export_downloads_excel_compatible_csv_with_candidates_from_only_that_stage(): void
   {
     CareerCandidate::create([
       'candidate_code' => 'PSI-001',
@@ -76,28 +75,15 @@ class CareerCandidateAdminToolsTest extends TestCase
     ]);
 
     $response = app(CareerCandidateController::class)->exportStage('psychology_test');
-    $this->assertStringEndsWith('.xlsx', $response->headers->get('content-disposition'));
-    $this->assertSame(
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      $response->headers->get('content-type'),
-    );
+    $this->assertStringEndsWith('.csv', $response->headers->get('content-disposition'));
+    $this->assertSame('text/csv; charset=UTF-8', $response->headers->get('content-type'));
+    $rows = $this->csvRows($response);
 
-    ob_start();
-    $response->sendContent();
-    $xlsx = ob_get_clean();
-    $path = tempnam(sys_get_temp_dir(), 'career-candidates-');
-
-    try {
-      file_put_contents($path, $xlsx);
-      $sheet = IOFactory::load($path)->getActiveSheet();
-      $this->assertSame('Candidate Code', $sheet->getCell('A1')->getValue());
-      $this->assertSame('PSI-001', $sheet->getCell('A2')->getValue());
-      $this->assertSame('Kandidat Psikotes', $sheet->getCell('B2')->getValue());
-      $this->assertSame('candidate@example.test', $sheet->getCell('C2')->getValue());
-      $this->assertNull($sheet->getCell('A3')->getValue());
-    } finally {
-      unlink($path);
-    }
+    $this->assertSame(['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'], $rows[0]);
+    $this->assertSame('PSI-001', $rows[1][0]);
+    $this->assertSame('Kandidat Psikotes', $rows[1][1]);
+    $this->assertSame('candidate@example.test', $rows[1][2]);
+    $this->assertCount(2, $rows);
   }
 
   public function test_email_templates_can_be_created_updated_and_deleted(): void
@@ -129,7 +115,7 @@ class CareerCandidateAdminToolsTest extends TestCase
     $this->assertDatabaseMissing('career_email_templates', ['id' => $template->id]);
   }
 
-  public function test_failed_candidate_export_is_an_excel_workbook(): void
+  public function test_failed_candidate_export_downloads_excel_compatible_csv(): void
   {
     CareerCandidate::create([
       'candidate_code' => 'FAILED-001',
@@ -146,24 +132,29 @@ class CareerCandidateAdminToolsTest extends TestCase
     ]);
 
     $response = app(CareerCandidateController::class)->exportFailed();
-    $this->assertStringEndsWith('.xlsx', $response->headers->get('content-disposition'));
+    $this->assertStringEndsWith('.csv', $response->headers->get('content-disposition'));
+    $rows = $this->csvRows($response);
 
-    ob_start();
-    $response->sendContent();
-    $xlsx = ob_get_clean();
-    $path = tempnam(sys_get_temp_dir(), 'failed-candidates-');
+    $this->assertSame('Candidate Code', $rows[0][0]);
+    $this->assertSame('FAILED-001', $rows[1][0]);
+    $this->assertSame('Kandidat Gagal', $rows[1][1]);
+    $this->assertSame('failed@example.test', $rows[1][2]);
+    $this->assertSame('Tidak memenuhi kriteria.', $rows[1][7]);
+  }
 
-    try {
-      file_put_contents($path, $xlsx);
-      $sheet = IOFactory::load($path)->getActiveSheet();
-      $this->assertSame('Candidate Code', $sheet->getCell('A1')->getValue());
-      $this->assertSame('FAILED-001', $sheet->getCell('A2')->getValue());
-      $this->assertSame('Kandidat Gagal', $sheet->getCell('B2')->getValue());
-      $this->assertSame('failed@example.test', $sheet->getCell('C2')->getValue());
-      $this->assertSame('Tidak memenuhi kriteria.', $sheet->getCell('H2')->getValue());
-    } finally {
-      unlink($path);
-    }
+  public function test_stage_csv_export_sanitizes_formula_like_values(): void
+  {
+    CareerCandidate::create([
+      'candidate_code' => 'PSI-003',
+      'full_name' => '=HYPERLINK("https://example.test")',
+      'email' => 'candidate3@example.test',
+      'job_title' => 'Tax Officer',
+      'recruitment_stage' => 'psychology_test',
+    ]);
+
+    $rows = $this->csvRows(app(CareerCandidateController::class)->exportStage('psychology_test'));
+
+    $this->assertSame('\'=HYPERLINK("https://example.test")', $rows[1][1]);
   }
 
   public function test_rejecting_candidate_preserves_cv_and_candidate_details(): void
@@ -252,5 +243,24 @@ class CareerCandidateAdminToolsTest extends TestCase
     $this->assertNotEmpty($candidate->candidate_code);
     $this->assertNotEmpty($candidate->cv_path);
     Storage::disk('local')->assertExists($candidate->cv_path);
+  }
+
+  private function csvRows($response): array
+  {
+    ob_start();
+    $response->sendContent();
+    $csv = ob_get_clean();
+    $this->assertStringStartsWith("\xEF\xBB\xBF", $csv);
+
+    $stream = fopen('php://temp', 'r+');
+    fwrite($stream, substr($csv, 3));
+    rewind($stream);
+    $rows = [];
+    while (($row = fgetcsv($stream, null, ',', '"', '')) !== false) {
+      $rows[] = $row;
+    }
+    fclose($stream);
+
+    return $rows;
   }
 }

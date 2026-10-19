@@ -10,10 +10,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use PhpOffice\PhpSpreadsheet\Cell\DataType;
-use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CareerCandidateController extends Controller
 {
@@ -119,106 +115,98 @@ class CareerCandidateController extends Controller
 
   public function exportFailed()
   {
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-    $sheet->setTitle('Kandidat Gagal');
-    $sheet->fromArray(['Candidate Code', 'Nama', 'Email', 'No. Telepon', 'Domisili', 'Pengalaman Kerja', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada'], null, 'A1');
-    $sheet->getStyle('A1:I1')->getFont()->setBold(true);
-    $sheet->getColumnDimension('A')->setWidth(36);
-    $sheet->getColumnDimension('B')->setWidth(30);
-    $sheet->getColumnDimension('C')->setWidth(32);
-    $sheet->getColumnDimension('D')->setWidth(18);
-    $sheet->getColumnDimension('E')->setWidth(24);
-    $sheet->getColumnDimension('F')->setWidth(22);
-    $sheet->getColumnDimension('G')->setWidth(32);
-    $sheet->getColumnDimension('H')->setWidth(60);
-    $sheet->getColumnDimension('I')->setWidth(22);
-
-    $row = 2;
-    CareerCandidate::query()
-      ->where('selection_status', 'rejected')
-      ->orderBy('id')
-      ->chunkById(500, function ($candidates) use ($sheet, &$row) {
-        foreach ($candidates as $candidate) {
-          $this->setSpreadsheetRow($sheet, $row++, [
-            $candidate->candidate_code,
-            $candidate->full_name,
-            $candidate->email,
-            $candidate->phone,
-            $candidate->domicile,
-            $this->experienceLabel($candidate->experience_range),
-            self::STAGES[$candidate->recruitment_stage] ?? '-',
-            $candidate->stage_notes,
-            optional($candidate->processed_at)->format('d M Y H:i'),
-          ]);
-        }
-      });
-
-    $filename = 'kandidat-gagal-' . now()->format('Ymd-His') . '.xlsx';
-
-    return $this->spreadsheetDownload($spreadsheet, $filename);
+    return $this->csvDownload(
+      'kandidat-gagal-' . now()->format('Ymd-His') . '.csv',
+      ['Candidate Code', 'Nama', 'Email', 'No. Telepon', 'Domisili', 'Pengalaman Kerja', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada'],
+      function ($output) {
+        CareerCandidate::query()
+          ->where('selection_status', 'rejected')
+          ->orderBy('id')
+          ->chunkById(500, function ($candidates) use ($output) {
+            foreach ($candidates as $candidate) {
+              $this->writeCsvRow($output, [
+                $candidate->candidate_code,
+                $candidate->full_name,
+                $candidate->email,
+                $candidate->phone,
+                $candidate->domicile,
+                $this->experienceLabel($candidate->experience_range),
+                self::STAGES[$candidate->recruitment_stage] ?? '-',
+                $candidate->stage_notes,
+                optional($candidate->processed_at)->format('d M Y H:i'),
+              ]);
+            }
+          });
+      },
+    );
   }
 
   public function exportStage(string $stage)
   {
     abort_unless(array_key_exists($stage, self::STAGES), 404);
 
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-    $sheet->setTitle('Candidates');
-    $headers = ['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'];
-    $sheet->fromArray($headers, null, 'A1');
-    $sheet->getStyle('A1:F1')->getFont()->setBold(true);
-    $sheet->getColumnDimension('A')->setWidth(36);
-    $sheet->getColumnDimension('B')->setWidth(30);
-    $sheet->getColumnDimension('C')->setWidth(32);
-    $sheet->getColumnDimension('D')->setWidth(24);
-    $sheet->getColumnDimension('E')->setWidth(32);
-    $sheet->getColumnDimension('F')->setWidth(22);
-
-    $row = 2;
-    CareerCandidate::query()
-      ->where('recruitment_stage', $stage)
-      ->where('is_talent_pool', false)
-      ->where('selection_status', '!=', 'rejected')
-      ->orderBy('id')
-      ->chunkById(500, function ($candidates) use ($sheet, &$row, $stage) {
-        foreach ($candidates as $candidate) {
-          $this->setSpreadsheetRow($sheet, $row++, [
-            $candidate->candidate_code,
-            $candidate->full_name,
-            $candidate->email,
-            $candidate->job_title,
-            self::STAGES[$stage],
-            optional($candidate->created_at)->format('d M Y H:i'),
-          ]);
-        }
-      });
-
-    $filename = 'kandidat-' . str_replace('_', '-', $stage) . '-' . now()->format('Ymd-His') . '.xlsx';
-
-    return $this->spreadsheetDownload($spreadsheet, $filename);
+    return $this->csvDownload(
+      'kandidat-' . str_replace('_', '-', $stage) . '-' . now()->format('Ymd-His') . '.csv',
+      ['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'],
+      function ($output) use ($stage) {
+        CareerCandidate::query()
+          ->where('recruitment_stage', $stage)
+          ->where('is_talent_pool', false)
+          ->where('selection_status', '!=', 'rejected')
+          ->orderBy('id')
+          ->chunkById(500, function ($candidates) use ($output, $stage) {
+            foreach ($candidates as $candidate) {
+              $this->writeCsvRow($output, [
+                $candidate->candidate_code,
+                $candidate->full_name,
+                $candidate->email,
+                $candidate->job_title,
+                self::STAGES[$stage],
+                optional($candidate->created_at)->format('d M Y H:i'),
+              ]);
+            }
+          });
+      },
+    );
   }
 
-  private function setSpreadsheetRow(Worksheet $sheet, int $row, array $values): void
+  private function csvDownload(string $filename, array $headers, callable $writeRows)
   {
-    foreach ($values as $column => $value) {
-      $sheet->setCellValueExplicit(
-        chr(65 + $column) . $row,
-        (string) ($value ?? ''),
-        DataType::TYPE_STRING,
-      );
+    return response()->streamDownload(function () use ($headers, $writeRows) {
+      $output = fopen('php://output', 'w');
+      if ($output === false) {
+        throw new \RuntimeException('Unable to open CSV output stream.');
+      }
+
+      try {
+        if (fwrite($output, "\xEF\xBB\xBF") === false) {
+          throw new \RuntimeException('Unable to write CSV output.');
+        }
+        $this->writeCsvRow($output, $headers);
+        $writeRows($output);
+      } finally {
+        fclose($output);
+      }
+    }, $filename, [
+      'Content-Type' => 'text/csv; charset=UTF-8',
+    ]);
+  }
+
+  private function writeCsvRow($output, array $values): void
+  {
+    $safeValues = array_map(fn($value) => $this->csvValue($value), $values);
+    if (fputcsv($output, $safeValues, ',', '"', '') === false) {
+      throw new \RuntimeException('Unable to write CSV row.');
     }
   }
 
-  private function spreadsheetDownload(Spreadsheet $spreadsheet, string $filename)
+  private function csvValue($value): string
   {
-    return response()->streamDownload(function () use ($spreadsheet) {
-      (new Xlsx($spreadsheet))->save('php://output');
-      $spreadsheet->disconnectWorksheets();
-    }, $filename, [
-      'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    ]);
+    $value = (string) ($value ?? '');
+
+    return preg_match('/^[\x00-\x20]*[=+\-@]/', $value) === 1
+      ? "'" . $value
+      : $value;
   }
 
   public function emailTemplates()
