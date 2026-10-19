@@ -195,9 +195,13 @@
             return `<span class="small text-muted career-note-preview" title="${safeNote}">${safeNote || '-'}</span>`;
           } },
           { data: null, orderable: false, searchable: false, render: (data, type, row) => {
-            let html = row.has_cv
-              ? `<button class="btn btn-sm btn-outline-primary js-view-cv" data-url="${escapeHtml(row.cv_view_url)}"><i class="fas fa-file-pdf"></i> View PDF</button>`
-              : '';
+            let html = '';
+            if (row.has_cv) {
+              const viewLabel = isFailedCandidates ? 'Lihat CV' : 'View PDF';
+              html = `<button class="btn btn-sm btn-outline-primary js-view-cv" data-url="${escapeHtml(row.cv_view_url)}"><i class="fas fa-file-pdf"></i> ${viewLabel}</button>`;
+            } else if (isFailedCandidates) {
+              html = '<span class="badge bg-secondary-subtle text-muted">CV tidak tersedia</span>';
+            }
             if (!isTalentPool && nextStageLabel && row.advance_url) {
               html += ` <button class="btn btn-sm btn-success js-advance" data-url="${escapeHtml(row.advance_url)}"><i class="fas fa-arrow-right"></i> Ke ${escapeHtml(nextStageLabel)}</button>`;
             }
