@@ -4,9 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CareerCandidate;
+use App\Models\CareerEmailTemplate;
+use App\Services\CareerCvAntivirusScanner;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class CareerCandidateController extends Controller
 {
@@ -112,18 +119,29 @@ class CareerCandidateController extends Controller
 
   public function exportFailed()
   {
-    $filename = 'kandidat-gagal-' . now()->format('Ymd-His') . '.csv';
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Kandidat Gagal');
+    $sheet->fromArray(['Candidate Code', 'Nama', 'Email', 'No. Telepon', 'Domisili', 'Pengalaman Kerja', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada'], null, 'A1');
+    $sheet->getStyle('A1:I1')->getFont()->setBold(true);
+    $sheet->getColumnDimension('A')->setWidth(36);
+    $sheet->getColumnDimension('B')->setWidth(30);
+    $sheet->getColumnDimension('C')->setWidth(32);
+    $sheet->getColumnDimension('D')->setWidth(18);
+    $sheet->getColumnDimension('E')->setWidth(24);
+    $sheet->getColumnDimension('F')->setWidth(22);
+    $sheet->getColumnDimension('G')->setWidth(32);
+    $sheet->getColumnDimension('H')->setWidth(60);
+    $sheet->getColumnDimension('I')->setWidth(22);
 
-    return response()->streamDownload(function () {
-      $output = fopen('php://output', 'w');
-      fwrite($output, "\xEF\xBB\xBF");
-      fputcsv($output, ['Nama', 'Email', 'No. Telepon', 'Domisili', 'Pengalaman Kerja', 'Tahap Gagal', 'Alasan Gagal', 'Diproses Pada']);
-
-      CareerCandidate::query()
-        ->where('selection_status', 'rejected')
-        ->orderByDesc('processed_at')
-        ->each(function (CareerCandidate $candidate) use ($output) {
-          fputcsv($output, [
+    $row = 2;
+    CareerCandidate::query()
+      ->where('selection_status', 'rejected')
+      ->orderBy('id')
+      ->chunkById(500, function ($candidates) use ($sheet, &$row) {
+        foreach ($candidates as $candidate) {
+          $this->setSpreadsheetRow($sheet, $row++, [
+            $candidate->candidate_code,
             $candidate->full_name,
             $candidate->email,
             $candidate->phone,
@@ -133,10 +151,110 @@ class CareerCandidateController extends Controller
             $candidate->stage_notes,
             optional($candidate->processed_at)->format('d M Y H:i'),
           ]);
-        });
+        }
+      });
 
-      fclose($output);
-    }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
+    $filename = 'kandidat-gagal-' . now()->format('Ymd-His') . '.xlsx';
+
+    return $this->spreadsheetDownload($spreadsheet, $filename);
+  }
+
+  public function exportStage(string $stage)
+  {
+    abort_unless(array_key_exists($stage, self::STAGES), 404);
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+    $sheet->setTitle('Candidates');
+    $headers = ['Candidate Code', 'Nama Kandidat', 'Email', 'Posisi', 'Tahap', 'Tanggal Mendaftar'];
+    $sheet->fromArray($headers, null, 'A1');
+    $sheet->getStyle('A1:F1')->getFont()->setBold(true);
+    $sheet->getColumnDimension('A')->setWidth(36);
+    $sheet->getColumnDimension('B')->setWidth(30);
+    $sheet->getColumnDimension('C')->setWidth(32);
+    $sheet->getColumnDimension('D')->setWidth(24);
+    $sheet->getColumnDimension('E')->setWidth(32);
+    $sheet->getColumnDimension('F')->setWidth(22);
+
+    $row = 2;
+    CareerCandidate::query()
+      ->where('recruitment_stage', $stage)
+      ->where('is_talent_pool', false)
+      ->where('selection_status', '!=', 'rejected')
+      ->orderBy('id')
+      ->chunkById(500, function ($candidates) use ($sheet, &$row, $stage) {
+        foreach ($candidates as $candidate) {
+          $this->setSpreadsheetRow($sheet, $row++, [
+            $candidate->candidate_code,
+            $candidate->full_name,
+            $candidate->email,
+            $candidate->job_title,
+            self::STAGES[$stage],
+            optional($candidate->created_at)->format('d M Y H:i'),
+          ]);
+        }
+      });
+
+    $filename = 'kandidat-' . str_replace('_', '-', $stage) . '-' . now()->format('Ymd-His') . '.xlsx';
+
+    return $this->spreadsheetDownload($spreadsheet, $filename);
+  }
+
+  private function setSpreadsheetRow(Worksheet $sheet, int $row, array $values): void
+  {
+    foreach ($values as $column => $value) {
+      $sheet->setCellValueExplicit(
+        chr(65 + $column) . $row,
+        (string) ($value ?? ''),
+        DataType::TYPE_STRING,
+      );
+    }
+  }
+
+  private function spreadsheetDownload(Spreadsheet $spreadsheet, string $filename)
+  {
+    return response()->streamDownload(function () use ($spreadsheet) {
+      (new Xlsx($spreadsheet))->save('php://output');
+      $spreadsheet->disconnectWorksheets();
+    }, $filename, [
+      'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ]);
+  }
+
+  public function emailTemplates()
+  {
+    return view('pages.admin.career.email_templates_index', [
+      'templates' => CareerEmailTemplate::query()->orderByDesc('updated_at')->get(),
+    ]);
+  }
+
+  public function storeEmailTemplate(Request $request)
+  {
+    CareerEmailTemplate::create($request->validate([
+      'name' => ['required', 'string', 'max:120'],
+      'subject' => ['required', 'string', 'max:255'],
+      'body' => ['required', 'string', 'max:20000'],
+    ]));
+
+    return back()->with('success', 'Template email berhasil dibuat.');
+  }
+
+  public function updateEmailTemplate(Request $request, CareerEmailTemplate $template)
+  {
+    $template->update($request->validate([
+      'name' => ['required', 'string', 'max:120'],
+      'subject' => ['required', 'string', 'max:255'],
+      'body' => ['required', 'string', 'max:20000'],
+    ]));
+
+    return back()->with('success', 'Template email berhasil diperbarui.');
+  }
+
+  public function destroyEmailTemplate(CareerEmailTemplate $template)
+  {
+    $template->delete();
+
+    return back()->with('success', 'Template email berhasil dihapus.');
   }
 
   private function datatableResponse(Request $request, $query, ?string $stage, bool $isTalentPool, bool $isFailedCandidates = false): JsonResponse
@@ -188,6 +306,9 @@ class CareerCandidateController extends Controller
           : null,
         'delete_url' => $isFailedCandidates
           ? route('admin.career_candidates.destroy', $candidate)
+          : null,
+        'restore_url' => $isFailedCandidates
+          ? route('admin.career_candidates.restore', $candidate)
           : null,
         'is_talent_pool' => $isTalentPool,
         'is_failed_candidate' => $isFailedCandidates,
@@ -286,12 +407,10 @@ class CareerCandidateController extends Controller
     }
 
     foreach ($candidates as $candidate) {
-      if (!$this->rejectAndMinimize($candidate, $validated['rejection_reason'])) {
-        return back()->with('error', 'CV kandidat tidak dapat dihapus. Perubahan kandidat dibatalkan.');
-      }
+      $this->markRejected($candidate, $validated['rejection_reason']);
     }
 
-    return back()->with('success', count($candidateIds) . ' kandidat ditandai tidak lolos. CV dihapus dan data ringkas disimpan.');
+    return back()->with('success', count($candidateIds) . ' kandidat ditandai tidak lolos. CV dan data kandidat tetap disimpan agar dapat dipulihkan.');
   }
 
   public function reject(Request $request, CareerCandidate $candidate)
@@ -302,11 +421,84 @@ class CareerCandidateController extends Controller
       'rejection_reason' => ['required', 'string', 'max:3000'],
     ]);
 
-    if (!$this->rejectAndMinimize($candidate, $validated['rejection_reason'])) {
-      return back()->with('error', 'CV kandidat tidak dapat dihapus. Data kandidat tetap dipertahankan.');
+    $this->markRejected($candidate, $validated['rejection_reason']);
+
+    return back()->with('success', 'Kandidat ditandai tidak lolos. CV dan data kandidat tetap disimpan agar dapat dipulihkan.');
+  }
+
+  public function restore(Request $request, CareerCandidate $candidate)
+  {
+    abort_unless($candidate->selection_status === 'rejected', 404);
+
+    $hasStoredCv = $candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path);
+    $requiresJobTitle = blank($candidate->job_title);
+    $validated = $request->validate([
+      'job_title' => [$requiresJobTitle ? 'required' : 'nullable', 'string', 'max:160'],
+      'cv' => [
+        $hasStoredCv ? 'nullable' : 'required',
+        'file',
+        'max:2048',
+        'mimes:pdf',
+        'mimetypes:application/pdf',
+      ],
+    ], [
+      'job_title.required' => 'Masukkan posisi kandidat sebelum dipulihkan.',
+      'cv.required' => 'Unggah kembali CV PDF kandidat sebelum dipulihkan.',
+      'cv.max' => 'Ukuran CV maksimal 2 MB.',
+      'cv.mimes' => 'CV harus berupa file PDF.',
+      'cv.mimetypes' => 'CV harus berupa file PDF.',
+    ]);
+
+    $jobTitle = trim((string) ($validated['job_title'] ?? $candidate->job_title));
+    $attributes = [
+      'job_title' => $jobTitle !== '' ? $jobTitle : null,
+      'recruitment_stage' => 'screening_cv',
+      'selection_status' => 'in_process',
+      'stage_notes' => null,
+      'is_talent_pool' => false,
+      'talent_pool_notes' => null,
+      'processed_at' => now(),
+    ];
+
+    if (!$candidate->candidate_code) {
+      $baseCode = CareerCandidate::formatCandidateCode(
+        $jobTitle,
+        (string) $candidate->full_name,
+        (string) $candidate->phone,
+        $candidate->domicile,
+      );
+      $attributes['candidate_code'] = CareerCandidate::nextAvailableCandidateCode($baseCode);
     }
 
-    return back()->with('success', 'Kandidat ditandai tidak lolos. CV dihapus dan data ringkas disimpan.');
+    if ($request->hasFile('cv')) {
+      $cvFile = $request->file('cv');
+      if ((bool) config('career_security.antivirus.enabled')) {
+        $scan = app(CareerCvAntivirusScanner::class)->scan((string) $cvFile->getRealPath());
+        if ($scan === 'infected') {
+          return response()->json(['message' => 'CV ditolak karena terdeteksi malware.'], 422);
+        }
+        if ($scan === 'error' && (bool) config('career_security.antivirus.fail_closed')) {
+          return response()->json(['message' => 'CV gagal dipindai. Silakan coba lagi nanti.'], 422);
+        }
+      }
+
+      $originalName = trim(basename(str_replace("\0", '', (string) $cvFile->getClientOriginalName())));
+      $cvPath = $cvFile->storeAs('career/cv', Str::uuid() . '.pdf', 'local');
+      if ($cvPath === false) {
+        return back()->with('error', 'CV gagal disimpan. Kandidat belum dipulihkan.');
+      }
+
+      $attributes += [
+        'cv_path' => $cvPath,
+        'cv_original_name' => $originalName !== '' ? $originalName : 'cv.pdf',
+        'cv_mime' => $cvFile->getClientMimeType(),
+        'cv_size' => $cvFile->getSize(),
+      ];
+    }
+
+    $candidate->update($attributes);
+
+    return back()->with('success', 'Kandidat berhasil dipulihkan ke tahap Screening CV.');
   }
 
   public function destroy(CareerCandidate $candidate)
@@ -366,34 +558,15 @@ class CareerCandidateController extends Controller
     return back()->with('success', 'Kandidat dipindahkan ke Talent Pool.');
   }
 
-  private function rejectAndMinimize(CareerCandidate $candidate, string $reason): bool
+  private function markRejected(CareerCandidate $candidate, string $reason): void
   {
-    if ($candidate->cv_path && Storage::disk('local')->exists($candidate->cv_path)
-      && !Storage::disk('local')->delete($candidate->cv_path)) {
-      return false;
-    }
-
     $candidate->update([
-      'job_id' => null,
-      'job_title' => null,
-      'candidate_code' => null,
-      'linkedin_url' => null,
-      'portfolio_url' => null,
-      'message' => null,
-      'cv_path' => null,
-      'cv_original_name' => null,
-      'cv_mime' => null,
-      'cv_size' => null,
-      'ip_address' => null,
-      'user_agent' => null,
       'selection_status' => 'rejected',
       'stage_notes' => $reason,
       'is_talent_pool' => false,
       'talent_pool_notes' => null,
       'processed_at' => now(),
     ]);
-
-    return true;
   }
 
   public function downloadCv(CareerCandidate $candidate)

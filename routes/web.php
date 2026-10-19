@@ -461,10 +461,16 @@ Route::prefix('admin')->middleware([
     Route::get('/career-candidates/failed', [AdminCareerCandidateController::class, 'failedCandidates'])->middleware('menu:career')->name('admin.career_candidates.failed');
     Route::get('/career-candidates/failed/datatable', [AdminCareerCandidateController::class, 'failedDatatable'])->middleware('menu:career')->name('admin.career_candidates.failed.datatable');
     Route::get('/career-candidates/failed/export', [AdminCareerCandidateController::class, 'exportFailed'])->middleware('menu:career')->name('admin.career_candidates.failed.export');
+    Route::get('/career-candidates/{stage}/export', [AdminCareerCandidateController::class, 'exportStage'])->middleware('menu:career')->name('admin.career_candidates.export');
+    Route::get('/career-candidates/email-templates', [AdminCareerCandidateController::class, 'emailTemplates'])->middleware('menu:career')->name('admin.career_candidates.email_templates');
+    Route::post('/career-candidates/email-templates', [AdminCareerCandidateController::class, 'storeEmailTemplate'])->middleware('menu:career,update')->name('admin.career_candidates.email_templates.store');
+    Route::put('/career-candidates/email-templates/{template}', [AdminCareerCandidateController::class, 'updateEmailTemplate'])->middleware('menu:career,update')->name('admin.career_candidates.email_templates.update');
+    Route::delete('/career-candidates/email-templates/{template}', [AdminCareerCandidateController::class, 'destroyEmailTemplate'])->middleware('menu:career,delete')->name('admin.career_candidates.email_templates.destroy');
     Route::get('/career-candidates/datatable/{stage}', [AdminCareerCandidateController::class, 'datatable'])->middleware('menu:career')->name('admin.career_candidates.datatable');
     Route::put('/career-candidates/advance-bulk', [AdminCareerCandidateController::class, 'bulkAdvance'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_advance');
     Route::put('/career-candidates/reject-bulk', [AdminCareerCandidateController::class, 'bulkReject'])->middleware('menu:career,update')->name('admin.career_candidates.bulk_reject');
     Route::delete('/career-candidates/bulk-destroy', [AdminCareerCandidateController::class, 'bulkDestroy'])->middleware('menu:career,delete')->name('admin.career_candidates.bulk_destroy');
+    Route::put('/career-candidates/{candidate}/restore', [AdminCareerCandidateController::class, 'restore'])->middleware('menu:career,update')->name('admin.career_candidates.restore');
     Route::put('/career-candidates/{candidate}/advance', [AdminCareerCandidateController::class, 'advance'])->middleware('menu:career,update')->name('admin.career_candidates.advance');
     Route::put('/career-candidates/{candidate}/reject', [AdminCareerCandidateController::class, 'reject'])->middleware('menu:career,update')->name('admin.career_candidates.reject');
     Route::put('/career-candidates/{candidate}/talent-pool', [AdminCareerCandidateController::class, 'storeTalentPool'])->middleware('menu:career,update')->name('admin.career_candidates.talent_pool.store');

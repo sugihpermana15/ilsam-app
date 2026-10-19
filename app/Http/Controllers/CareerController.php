@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CareerCandidate;
 use App\Models\CareerOpening;
+use App\Services\CareerCvAntivirusScanner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -169,7 +170,7 @@ class CareerController extends Controller
 
     // Optional antivirus scan (ClamAV) BEFORE storing file.
     if ((bool) config('career_security.antivirus.enabled')) {
-      $scan = $this->scanWithClamav((string) $cvFile->getRealPath());
+      $scan = app(CareerCvAntivirusScanner::class)->scan((string) $cvFile->getRealPath());
       if ($scan === 'infected') {
         return back()->withInput()->withErrors([
           'cv' => 'CV file was rejected (malware detected).',
@@ -253,30 +254,6 @@ class CareerController extends Controller
     } catch (\Throwable $e) {
       return false;
     }
-  }
-
-  /**
-   * Returns: 'clean' | 'infected' | 'error'
-   * Exit codes for clamscan: 0=clean, 1=infected, 2=error
-   */
-  private function scanWithClamav(string $absoluteFilePath): string
-  {
-    $cmd = trim((string) config('career_security.antivirus.command'));
-    if ($cmd === '' || $absoluteFilePath === '') {
-      return 'error';
-    }
-
-    $command = $cmd . ' --no-summary ' . escapeshellarg($absoluteFilePath);
-
-    $output = [];
-    $exit = 2;
-    @exec($command, $output, $exit);
-
-    return match ((int) $exit) {
-      0 => 'clean',
-      1 => 'infected',
-      default => 'error',
-    };
   }
 
   private function loadData(): array

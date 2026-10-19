@@ -45,6 +45,9 @@
         <div class="text-muted small">
           {{ $isTalentPool ? 'Kandidat kompeten yang dapat dipanggil kembali untuk kebutuhan rekrutmen berikutnya.' : ($isFailedCandidates ? 'Riwayat kandidat tidak lolos beserta tahap dan alasan kegagalan.' : 'Kelola kandidat yang sedang berada pada tahap ini.') }}
         </div>
+        @if($isFailedCandidates)
+          <div class="text-warning small">Kandidat yang gagal sebelum fitur restore mungkin perlu posisi dan CV PDF diunggah ulang.</div>
+        @endif
       </div>
       <div class="d-flex gap-2 flex-wrap">
         @if(!$isTalentPool && !$isFailedCandidates && $nextStageLabel)
@@ -63,9 +66,11 @@
           </button>
         @endif
         <a href="{{ route('admin.careers.index') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-briefcase"></i> Job Openings</a>
+        <a href="{{ route('admin.career_candidates.email_templates') }}" class="btn btn-outline-info btn-sm"><i class="fas fa-envelope"></i> Template Email</a>
         @if($isFailedCandidates)
           <a href="{{ route('admin.career_candidates.failed.export') }}" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i> Export Excel</a>
         @elseif(!$isTalentPool)
+          <a href="{{ route('admin.career_candidates.export', ['stage' => $stage]) }}" class="btn btn-success btn-sm"><i class="fas fa-file-excel"></i> Export Excel</a>
           <a href="{{ route('admin.career_candidates.talent_pool') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-user-clock"></i> Talent Pool</a>
         @else
           <a href="{{ route('admin.career_candidates.index') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-file-alt"></i> Screening CV</a>
@@ -205,6 +210,9 @@
             if (row.delete_url) {
               html += ` <button class="btn btn-sm btn-danger js-delete-failed" data-url="${escapeHtml(row.delete_url)}"><i class="fas fa-trash"></i> Hapus</button>`;
             }
+            if (row.restore_url) {
+              html += ` <button class="btn btn-sm btn-outline-success js-restore-failed" data-url="${escapeHtml(row.restore_url)}" data-id="${escapeHtml(row.id)}" data-has-cv="${row.has_cv ? '1' : '0'}" data-needs-position="${row.job_title ? '0' : '1'}"><i class="fas fa-undo"></i> Restore</button>`;
+            }
             return html;
           } }
         ],
@@ -257,7 +265,7 @@
         const result = await careerAlert.fire({
           icon: 'warning',
           title: 'Tandai kandidat gagal?',
-          text: `${candidateIds.length} kandidat disimpan sebagai riwayat proses gagal. File CV dan data tambahan akan dihapus.`,
+          text: `${candidateIds.length} kandidat disimpan sebagai riwayat gagal. CV dan data tetap disimpan agar kandidat dapat dipulihkan.`,
           input: 'textarea',
           inputPlaceholder: 'Masukkan alasan kandidat tidak lolos.',
           inputAttributes: {
@@ -345,6 +353,93 @@
         form.appendTo('body').trigger('submit');
       });
 
+      $('#career-candidates-table').on('click', '.js-restore-failed', async function () {
+        const button = this;
+        const restoreUrl = button.dataset.url;
+        const hasCv = button.dataset.hasCv === '1';
+        const needsPosition = button.dataset.needsPosition === '1';
+        const restoreFields = [
+          needsPosition
+            ? '<div class="text-start mb-3"><label for="restore-job-title" class="form-label">Posisi kandidat</label><input id="restore-job-title" class="form-control" maxlength="160" required></div>'
+            : '',
+          hasCv
+            ? '<div class="alert alert-info text-start mb-0">CV tersimpan dan akan digunakan kembali.</div>'
+            : '<div class="text-start"><label for="restore-cv" class="form-label">Unggah CV PDF</label><input id="restore-cv" type="file" class="form-control" accept=".pdf,application/pdf" required><div class="form-text">PDF maksimal 2 MB.</div></div>'
+        ].join('');
+
+        const result = await careerAlert.fire({
+          icon: 'question',
+          title: 'Pulihkan ke Screening CV?',
+          html: `<div class="text-start"><p>Kandidat akan dikembalikan ke tahap Screening CV.</p>${restoreFields}</div>`,
+          showCancelButton: true,
+          confirmButtonText: 'Pulihkan kandidat',
+          cancelButtonText: 'Batal',
+          confirmButtonColor: '#198754',
+          showLoaderOnConfirm: true,
+          preConfirm: async () => {
+            const formData = new FormData();
+            formData.append('_token', csrfToken);
+            formData.append('_method', 'PUT');
+
+            if (needsPosition) {
+              const jobTitle = document.getElementById('restore-job-title').value.trim();
+              if (!jobTitle) {
+                careerAlert.showValidationMessage('Posisi kandidat wajib diisi.');
+                return false;
+              }
+              formData.append('job_title', jobTitle);
+            }
+
+            if (!hasCv) {
+              const cvFile = document.getElementById('restore-cv').files[0];
+              if (!cvFile) {
+                careerAlert.showValidationMessage('Unggah CV PDF sebelum memulihkan kandidat.');
+                return false;
+              }
+              formData.append('cv', cvFile);
+            }
+
+            try {
+              const response = await fetch(restoreUrl, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+              });
+
+              if (response.status === 422) {
+                const payload = await response.json();
+                const errors = Object.values(payload.errors || {}).flat();
+                careerAlert.showValidationMessage(errors.join(' ') || payload.message || 'Periksa data CV dan posisi kandidat.');
+                return false;
+              }
+              if (!response.ok) {
+                throw new Error(`Permintaan gagal (HTTP ${response.status}).`);
+              }
+              if (response.redirected && !new URL(response.url).pathname.includes('/career-candidates/failed')) {
+                throw new Error('Sesi admin berakhir. Silakan masuk kembali lalu coba lagi.');
+              }
+
+              return true;
+            } catch (error) {
+              careerAlert.showValidationMessage(error.message || 'Kandidat gagal dipulihkan.');
+              return false;
+            }
+          }
+        });
+
+        if (result.isConfirmed) {
+          selectedCandidateIds.delete(String(button.dataset.id));
+          candidateTable.ajax.reload(null, false);
+          await careerAlert.fire({
+            icon: 'success',
+            title: 'Kandidat dipulihkan',
+            text: 'Kandidat sekarang berada pada tahap Screening CV.',
+            timer: 1800,
+            showConfirmButton: false
+          });
+        }
+      });
+
       $('#career-candidates-table').on('click', '.js-advance', async function () {
         const result = await careerAlert.fire({
           icon: 'question',
@@ -384,7 +479,7 @@
         const result = await careerAlert.fire({
           icon: 'warning',
           title: 'Tandai kandidat gagal?',
-          text: 'Data ringkas dan tahap kegagalan disimpan. File CV serta data tambahan akan dihapus.',
+          text: 'CV dan data kandidat tetap disimpan agar kandidat dapat dipulihkan.',
           input: 'textarea',
           inputPlaceholder: 'Masukkan alasan kandidat tidak lolos.',
           inputAttributes: {
