@@ -121,6 +121,7 @@ return [
         'career_label' => '채용',
         'career_cta_title' => '다른 직무를 찾고 계신가요?',
         'career_closing_soon' => '마감 임박',
+        'rnd_capabilities_label' => '주요 역량',
         'pillars' => [
             'quality' => ['title' => '일관된 품질', 'desc' => '매 납품마다 믿을 수 있는 안정적인 품질.'],
             'supply' => ['title' => '안정적인 공급', 'desc' => '인도네시아 현지 생산으로 공급을 안정적으로 유지합니다.'],

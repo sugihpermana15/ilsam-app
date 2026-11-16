@@ -121,6 +121,7 @@ return [
         'career_label' => 'Karier',
         'career_cta_title' => 'Mencari posisi lain?',
         'career_closing_soon' => 'Segera ditutup',
+        'rnd_capabilities_label' => 'Yang kami kerjakan',
         'pillars' => [
             'quality' => ['title' => 'Kualitas Konsisten', 'desc' => 'Kualitas stabil yang dapat diandalkan di setiap pengiriman.'],
             'supply' => ['title' => 'Pasokan Andal', 'desc' => 'Produksi lokal di Indonesia menjaga pasokan tetap lancar.'],

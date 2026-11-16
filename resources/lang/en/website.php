@@ -121,6 +121,7 @@ return [
         'career_label' => 'Careers',
         'career_cta_title' => 'Looking for a different role?',
         'career_closing_soon' => 'Closing soon',
+        'rnd_capabilities_label' => 'What we do',
         'pillars' => [
             'quality' => ['title' => 'Consistent Quality', 'desc' => 'Stable quality you can rely on in every delivery.'],
             'supply' => ['title' => 'Reliable Supply', 'desc' => 'Local production in Indonesia keeps supply steady.'],
