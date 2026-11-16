@@ -574,25 +574,135 @@
 
 .dash-hero__art {
     flex: 0 0 auto;
-    width: min(34%, 300px);
+    width: min(42%, 400px);
     height: auto;
+    margin: -1rem -.5rem -1rem 0;
+    overflow: visible;
 }
 
-.dash-hero__art .art-blob { fill: rgba(var(--pe-primary-rgb), .1); }
-.dash-hero__art .art-panel,
-.dash-hero__art .art-card { fill: var(--ap-surface); stroke: var(--ap-line); }
-.dash-hero__art .art-line { fill: var(--ap-line); }
+/* Warna ilustrasi mengikuti tema */
+.dash-hero__art .art-glow-stop--in { stop-color: rgb(var(--pe-primary-rgb)); stop-opacity: .2; }
+.dash-hero__art .art-glow-stop--out { stop-color: rgb(var(--pe-primary-rgb)); stop-opacity: 0; }
+.dash-hero__art .art-area-stop--top { stop-color: rgb(var(--pe-primary-rgb)); stop-opacity: .32; }
+.dash-hero__art .art-area-stop--bottom { stop-color: rgb(var(--pe-primary-rgb)); stop-opacity: 0; }
+
+.dash-hero__art .art-surface {
+    fill: var(--ap-surface);
+    stroke: rgba(var(--pe-primary-rgb), .14);
+    filter: drop-shadow(0 10px 18px rgba(16, 24, 40, .1));
+}
+
+.dash-hero__art .art-line { fill: rgba(var(--pe-emphasis-color-rgb, 0, 0, 0), .09); }
+.dash-hero__art .art-line--strong { fill: rgba(var(--pe-emphasis-color-rgb, 0, 0, 0), .2); }
+.dash-hero__art .art-pill { fill: rgba(var(--pe-primary-rgb), .16); }
+.dash-hero__art .art-grid { fill: none; stroke: rgba(var(--pe-emphasis-color-rgb, 0, 0, 0), .07); stroke-dasharray: 3 5; }
 .dash-hero__art .art-dot { fill: rgb(var(--pe-danger-rgb)); }
 .dash-hero__art .art-dot--2 { fill: rgb(var(--pe-warning-rgb)); }
 .dash-hero__art .art-dot--3 { fill: rgb(var(--pe-success-rgb)); }
-.dash-hero__art .art-bar { fill: var(--pe-primary); }
-.dash-hero__art .art-bar--2 { fill: rgb(var(--pe-warning-rgb)); }
-.dash-hero__art .art-bar--3 { fill: rgba(var(--pe-primary-rgb), .4); }
-.dash-hero__art .art-ring { fill: none; stroke: rgba(var(--pe-primary-rgb), .18); stroke-width: 10; }
-.dash-hero__art .art-ring--fill { stroke: var(--pe-primary); stroke-linecap: round; }
+
+.dash-hero__art .art-trend {
+    fill: none;
+    stroke: var(--pe-primary);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 100;
+}
+
+.dash-hero__art .art-point { fill: var(--ap-surface); stroke: var(--pe-primary); stroke-width: 3; }
+.dash-hero__art .art-pulse { fill: rgba(var(--pe-primary-rgb), .28); transform-box: fill-box; transform-origin: center; }
+
+.dash-hero__art .art-ring { fill: none; stroke: rgba(var(--pe-success-rgb), .18); stroke-width: 7; }
+.dash-hero__art .art-ring--fill { stroke: rgb(var(--pe-success-rgb)); stroke-linecap: round; stroke-dasharray: 72 100; }
+
 .dash-hero__art .art-check { fill: var(--pe-primary); }
-.dash-hero__art .art-tick { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.dash-hero__art .art-stand { fill: var(--ap-line); }
+.dash-hero__art .art-tick { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 100; }
+
+.dash-hero__art .art-bar { transform-box: fill-box; transform-origin: 50% 100%; }
+.dash-hero__art .art-bar--1 { fill: rgba(var(--pe-primary-rgb), .45); }
+.dash-hero__art .art-bar--2 { fill: rgb(var(--pe-warning-rgb)); }
+.dash-hero__art .art-bar--3 { fill: var(--pe-primary); }
+.dash-hero__art .art-bar--4 { fill: rgba(var(--pe-info-rgb), .75); }
+
+.dash-hero__art .art-orbit { transform-origin: 225px 165px; }
+.dash-hero__art .art-orbit__ring { fill: none; stroke: rgba(var(--pe-primary-rgb), .22); stroke-dasharray: 2 9; stroke-linecap: round; stroke-width: 1.5; }
+.dash-hero__art .art-orbit__dot { fill: var(--pe-primary); }
+.dash-hero__art .art-orbit__dot--soft { fill: rgb(var(--pe-info-rgb)); }
+.dash-hero__art .art-spark { transform-box: fill-box; transform-origin: center; }
+.dash-hero__art .art-spark--1 { fill: rgb(var(--pe-warning-rgb)); }
+.dash-hero__art .art-spark--2 { fill: rgba(var(--pe-info-rgb), .8); }
+.dash-hero__art .art-spark--3 { fill: rgba(var(--pe-primary-rgb), .7); }
+
+/* Gerak: hanya bila pengguna tidak meminta animasi dikurangi */
+@media (prefers-reduced-motion: no-preference) {
+    .dash-hero__art .art-float { animation: dash-art-float 7s ease-in-out infinite; }
+    .dash-hero__art .art-float--a { animation-duration: 6s; animation-delay: -1.5s; }
+    .dash-hero__art .art-float--b { animation-duration: 6.5s; animation-delay: -3s; }
+    .dash-hero__art .art-float--c { animation-duration: 5.5s; animation-delay: -4s; }
+
+    .dash-hero__art .art-orbit { animation: dash-art-spin 48s linear infinite; }
+    .dash-hero__art .art-spark { animation: dash-art-twinkle 4s ease-in-out infinite; }
+    .dash-hero__art .art-spark--2 { animation-delay: -1.3s; }
+    .dash-hero__art .art-spark--3 { animation-delay: -2.6s; }
+
+    .dash-hero__art .art-trend { animation: dash-art-draw 1.8s cubic-bezier(.4, 0, .2, 1) .2s both; }
+    .dash-hero__art .art-area { animation: dash-art-fade 1.2s ease-out 1.2s both; }
+    .dash-hero__art .art-point { animation: dash-art-fade .4s ease-out 1.8s both; }
+    .dash-hero__art .art-pulse { animation: dash-art-pulse 2.4s ease-out 2s infinite both; }
+
+    .dash-hero__art .art-ring--fill { animation: dash-art-ring 1.6s cubic-bezier(.4, 0, .2, 1) .5s both; }
+    .dash-hero__art .art-tick { animation: dash-art-draw .6s ease-out 1s both; }
+
+    .dash-hero__art .art-bar { animation: dash-art-bar 3.2s ease-in-out infinite; }
+    .dash-hero__art .art-bar--2 { animation-delay: -.8s; }
+    .dash-hero__art .art-bar--3 { animation-delay: -1.6s; }
+    .dash-hero__art .art-bar--4 { animation-delay: -2.4s; }
+}
+
+@keyframes dash-art-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+@keyframes dash-art-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes dash-art-twinkle {
+    0%, 100% { opacity: .35; transform: scale(.7); }
+    50% { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes dash-art-draw {
+    from { stroke-dashoffset: 100; }
+    to { stroke-dashoffset: 0; }
+}
+
+@keyframes dash-art-ring {
+    from { stroke-dasharray: 0 100; }
+    to { stroke-dasharray: 72 100; }
+}
+
+@keyframes dash-art-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes dash-art-pulse {
+    0% { opacity: .9; transform: scale(.5); }
+    70%, 100% { opacity: 0; transform: scale(2.2); }
+}
+
+@keyframes dash-art-bar {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(.62); }
+}
+
+@media (max-width: 991.98px) {
+    .dash-hero__art {
+        width: min(38%, 300px);
+    }
+}
 
 @media (max-width: 767.98px) {
     .dash-hero {
