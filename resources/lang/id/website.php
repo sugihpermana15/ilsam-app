@@ -113,6 +113,11 @@ return [
         'values_label' => 'Nilai kami',
         'philosophy_label' => 'Filosofi kami',
         'slogan_label' => 'Cara kami bekerja',
+        'catalog_label' => 'Katalog produk',
+        'catalog_view' => 'Lihat di katalog',
+        'catalog_cta_title' => 'Butuh bantuan memilih produk?',
+        'catalog_cta_text' => 'Kirimkan aplikasi, warna target, dan detail proses Anda. Tim kami akan merekomendasikan lini dan kode yang sesuai.',
+        'catalog_cta_button' => 'Minta Penawaran',
         'pillars' => [
             'quality' => ['title' => 'Kualitas Konsisten', 'desc' => 'Kualitas stabil yang dapat diandalkan di setiap pengiriman.'],
             'supply' => ['title' => 'Pasokan Andal', 'desc' => 'Produksi lokal di Indonesia menjaga pasokan tetap lancar.'],

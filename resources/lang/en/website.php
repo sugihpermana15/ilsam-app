@@ -113,6 +113,11 @@ return [
         'values_label' => 'Our values',
         'philosophy_label' => 'Our philosophy',
         'slogan_label' => 'How we work',
+        'catalog_label' => 'Product catalog',
+        'catalog_view' => 'View in catalog',
+        'catalog_cta_title' => 'Need help choosing a product?',
+        'catalog_cta_text' => 'Send us your application, target colour and process details. Our team will recommend a suitable line and code.',
+        'catalog_cta_button' => 'Request a Quote',
         'pillars' => [
             'quality' => ['title' => 'Consistent Quality', 'desc' => 'Stable quality you can rely on in every delivery.'],
             'supply' => ['title' => 'Reliable Supply', 'desc' => 'Local production in Indonesia keeps supply steady.'],
