@@ -95,6 +95,37 @@ return [
         ],
     ],
 
+    // Teks tambahan untuk tampilan Home & About Us yang baru.
+    'pro' => [
+        'hero_lead' => '인도네시아 합성피혁 및 신발 제조업체를 위한 착색제, PU 수지, 첨가제, 표면 코팅제를 공급합니다.',
+        'cta_products' => '제품 보기',
+        'cta_contact' => '문의하기',
+        'scroll' => '스크롤',
+        'about_cta' => '회사 개요',
+        'learn_more' => '자세히 보기',
+        'all_products' => '전체 제품 보기',
+        'clients_label' => '고객사',
+        'history_label' => '연혁',
+        'history_title' => '1999년부터의 주요 발자취',
+        'profile_label' => '회사 소개',
+        'about_nav' => '회사 소개 섹션',
+        'letter_label' => 'CEO 인사말',
+        'values_label' => '핵심 가치',
+        'philosophy_label' => '경영 철학',
+        'slogan_label' => '일하는 방식',
+        'pillars' => [
+            'quality' => ['title' => '일관된 품질', 'desc' => '매 납품마다 믿을 수 있는 안정적인 품질.'],
+            'supply' => ['title' => '안정적인 공급', 'desc' => '인도네시아 현지 생산으로 공급을 안정적으로 유지합니다.'],
+            'support' => ['title' => '기술 지원', 'desc' => '적용 가이드와 SDS, COA 등 문서를 제공합니다.'],
+        ],
+        'products' => [
+            'colorants' => 'PU 및 PVC 합성피혁용 착색제.',
+            'surface_coating_agents' => '코팅 소재의 마감과 촉감을 위한 표면 처리제.',
+            'additive_coating' => '공정과 코팅 성능을 지원하는 첨가제.',
+            'pu_resin' => '합성피혁 및 신발 소재용 PU 수지.',
+        ],
+    ],
+
     'titles' => [
         'about_us' => 'Ilsam - 회사 소개',
         'company_overview' => 'Ilsam - 회사 개요',

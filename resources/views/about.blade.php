@@ -4,7 +4,7 @@
 
 @section('main')
   <!-- Breadcrumb area start  -->
-  <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
+  <div class="breadcrumb__area breadcrumb-space sp-page-hero overly theme-bg-heading-primary overflow-hidden">
     <div class="breadcrumb__background" data-background="{{ asset('assets/img/aboutus/img11.jpg') }}"></div>
     <div class="container">
       <div class="row align-items-center justify-content-between">
@@ -36,15 +36,30 @@
   </div>
   <!-- Breadcrumb area end  -->
 
-  <div class="page-service-details section-space">
+  <!-- Sub-navigasi About Us -->
+  @php
+    $aboutTabs = [
+      ['route' => 'aboutus', 'label' => __('website.nav.menu.company_overview'), 'icon' => 'bi-building'],
+      ['route' => 'ceo', 'label' => __('website.nav.menu.ceo_message'), 'icon' => 'bi-chat-quote'],
+      ['route' => 'philosophy', 'label' => __('website.nav.menu.management_philosophy'), 'icon' => 'bi-compass'],
+    ];
+  @endphp
+  <nav class="sp-subnav" aria-label="{{ __('website.pro.about_nav') }}">
     <div class="container">
-      <div class="row g-40">
-        <div class="col-12 col-lg-12">
-          <div class="about-details__content">
-            @yield('aboutus')
-          </div>
-        </div>
-      </div>
+      <ul class="sp-subnav__list">
+        @foreach($aboutTabs as $tab)
+          <li>
+            <a href="{{ route($tab['route']) }}" class="sp-subnav__link{{ request()->routeIs($tab['route']) ? ' is-active' : '' }}"
+              @if(request()->routeIs($tab['route'])) aria-current="page" @endif>
+              <i class="bi {{ $tab['icon'] }}" aria-hidden="true"></i> {{ $tab['label'] }}
+            </a>
+          </li>
+        @endforeach
+      </ul>
     </div>
+  </nav>
+
+  <div class="sp-about-page">
+    @yield('aboutus')
   </div>
 @endsection

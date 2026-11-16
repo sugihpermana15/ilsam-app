@@ -95,6 +95,37 @@ return [
         ],
     ],
 
+    // Teks tambahan untuk tampilan Home & About Us yang baru.
+    'pro' => [
+        'hero_lead' => 'Colorants, PU resin, additives and surface coating agents for synthetic leather and footwear manufacturers in Indonesia.',
+        'cta_products' => 'Explore Products',
+        'cta_contact' => 'Contact Us',
+        'scroll' => 'Scroll',
+        'about_cta' => 'Company Overview',
+        'learn_more' => 'Learn more',
+        'all_products' => 'View all products',
+        'clients_label' => 'Our customers',
+        'history_label' => 'Our journey',
+        'history_title' => 'Milestones since 1999',
+        'profile_label' => 'Who we are',
+        'about_nav' => 'About Us sections',
+        'letter_label' => 'A message from our CEO',
+        'values_label' => 'Our values',
+        'philosophy_label' => 'Our philosophy',
+        'slogan_label' => 'How we work',
+        'pillars' => [
+            'quality' => ['title' => 'Consistent Quality', 'desc' => 'Stable quality you can rely on in every delivery.'],
+            'supply' => ['title' => 'Reliable Supply', 'desc' => 'Local production in Indonesia keeps supply steady.'],
+            'support' => ['title' => 'Technical Support', 'desc' => 'Application guidance and documents such as SDS and COA.'],
+        ],
+        'products' => [
+            'colorants' => 'Colorants for PU and PVC synthetic leather applications.',
+            'surface_coating_agents' => 'Surface treatment agents for the finish and feel of coated materials.',
+            'additive_coating' => 'Additives that support processing and coating performance.',
+            'pu_resin' => 'PU resin for synthetic leather and footwear materials.',
+        ],
+    ],
+
     'titles' => [
         'about_us' => 'Ilsam - About Us',
         'company_overview' => 'Ilsam - Company Overview',

@@ -95,6 +95,37 @@ return [
         ],
     ],
 
+    // Teks tambahan untuk tampilan Home & About Us yang baru.
+    'pro' => [
+        'hero_lead' => 'Colorants, PU resin, aditif, dan surface coating agents untuk produsen kulit sintetis dan alas kaki di Indonesia.',
+        'cta_products' => 'Lihat Produk',
+        'cta_contact' => 'Hubungi Kami',
+        'scroll' => 'Gulir',
+        'about_cta' => 'Profil Perusahaan',
+        'learn_more' => 'Selengkapnya',
+        'all_products' => 'Lihat semua produk',
+        'clients_label' => 'Pelanggan kami',
+        'history_label' => 'Perjalanan kami',
+        'history_title' => 'Tonggak sejarah sejak 1999',
+        'profile_label' => 'Tentang kami',
+        'about_nav' => 'Bagian Tentang Kami',
+        'letter_label' => 'Pesan dari CEO kami',
+        'values_label' => 'Nilai kami',
+        'philosophy_label' => 'Filosofi kami',
+        'slogan_label' => 'Cara kami bekerja',
+        'pillars' => [
+            'quality' => ['title' => 'Kualitas Konsisten', 'desc' => 'Kualitas stabil yang dapat diandalkan di setiap pengiriman.'],
+            'supply' => ['title' => 'Pasokan Andal', 'desc' => 'Produksi lokal di Indonesia menjaga pasokan tetap lancar.'],
+            'support' => ['title' => 'Dukungan Teknis', 'desc' => 'Panduan aplikasi serta dokumen seperti SDS dan COA.'],
+        ],
+        'products' => [
+            'colorants' => 'Colorants untuk aplikasi kulit sintetis PU dan PVC.',
+            'surface_coating_agents' => 'Surface treatment agents untuk hasil akhir dan rasa permukaan material berlapis.',
+            'additive_coating' => 'Aditif yang mendukung proses dan performa coating.',
+            'pu_resin' => 'PU resin untuk material kulit sintetis dan alas kaki.',
+        ],
+    ],
+
     'titles' => [
         'about_us' => 'Ilsam - Tentang Kami',
         'company_overview' => 'Ilsam - Profil Perusahaan',
