@@ -15,7 +15,7 @@
   @endphp
 
   <!-- Breadcrumb area start  -->
-  <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
+  <div class="breadcrumb__area breadcrumb-space sp-page-hero overly theme-bg-heading-primary overflow-hidden">
     <div class="breadcrumb__background" data-background="{{ $breadcrumbBgUrl }}"></div>
     <div class="container">
       <div class="row align-items-center justify-content-between">
@@ -50,15 +50,22 @@
   </div>
   <!-- Breadcrumb area end  -->
 
-  <div class="page-service-details section-space">
-    <div class="container">
-      <div class="row g-40">
-        <div class="col-12">
-          <div class="ilsam-rnd">
-            @yield('rnd_content')
+  {{-- Halaman dengan section selebar layar mengisi `rnd_sections`; halaman lama tetap memakai `rnd_content`. --}}
+  @hasSection('rnd_sections')
+    <div class="sp-rnd-page">
+      @yield('rnd_sections')
+    </div>
+  @else
+    <div class="page-service-details section-space">
+      <div class="container">
+        <div class="row g-40">
+          <div class="col-12">
+            <div class="ilsam-rnd">
+              @yield('rnd_content')
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  @endif
 @endsection

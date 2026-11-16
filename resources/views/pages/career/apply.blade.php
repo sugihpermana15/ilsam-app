@@ -149,7 +149,7 @@
   </style>
 
   <!-- Breadcrumb area start  -->
-  <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
+  <div class="breadcrumb__area breadcrumb-space sp-page-hero overly theme-bg-heading-primary overflow-hidden">
     <div class="breadcrumb__background" data-background="{{ $fallbackHero }}"></div>
     <div class="container">
       <div class="row align-items-center justify-content-between">

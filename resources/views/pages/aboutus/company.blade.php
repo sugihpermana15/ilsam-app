@@ -25,71 +25,67 @@
 
 @section('meta_description', $metaDescription)
 @section('meta_image', $metaImage)
+@php
+  $aboutStats = [
+    ['value' => (int) data_get($ws, 'home.text.experience.established_value', 1999), 'label' => __('website.home.experience.established'), 'suffix' => ''],
+    ['value' => (int) data_get($ws, 'home.text.experience.clients_value', 20), 'label' => __('website.home.experience.clients'), 'suffix' => '+'],
+    ['value' => (int) data_get($ws, 'home.text.experience.years_experience_value', 27), 'label' => __('website.home.experience.years_experience'), 'suffix' => ''],
+  ];
+  $timelineYears = ['1999', '2001', '2005', '2024'];
+@endphp
 @section('aboutus')
-  <div class="service-details__content-media company-overview__media wow fadeInUp" data-wow-delay=".1s">
-    <img
-      src="{{ $mainImageUrl }}"
-      loading="lazy"
-      decoding="async"
-      alt="{{ __('website.about.company_overview.image_alt') }}"
-    >
-  </div>
-
-  <h2 class="heading text-50 wow fadeInUp" data-wow-delay=".2s">{{ __('website.about.company_overview.title') }}</h2>
-
-  <p class="text text-18 wow fadeInUp" data-wow-delay=".25s">{{ __('website.about.company_overview.p1') }}</p>
-
-  <p class="text text-18 wow fadeInUp" data-wow-delay=".3s">{{ __('website.about.company_overview.p2') }}</p>
-
-  <p class="text text-18 wow fadeInUp" data-wow-delay=".35s">{{ __('website.about.company_overview.p3') }}</p>
-
-  <p class="text text-18 mb-0 wow fadeInUp" data-wow-delay=".4s">{{ __('website.about.company_overview.p4') }}</p>
-
-  <div class="mt-4 wow fadeInUp" data-wow-delay=".45s">
-    <div class="about-timeline" role="list" aria-label="{{ __('website.about.company_overview.timeline_aria') }}">
-      <div class="about-timeline__item is-active" role="listitem">
-        <div class="about-timeline__node" aria-hidden="true">
-          <span class="about-timeline__number">01</span>
+  <section class="sp-section">
+    <div class="container">
+      <div class="row align-items-center gy-5 gx-xl-5">
+        <div class="col-lg-6">
+          <div class="sp-figure wow fadeInUp" data-wow-delay=".1s">
+            <img src="{{ $mainImageUrl }}" loading="lazy" decoding="async" alt="{{ __('website.about.company_overview.image_alt') }}">
+          </div>
         </div>
-        <div class="about-timeline__body">
-          <div class="about-timeline__meta">1999</div>
-          <h3 class="about-timeline__title">{{ __('website.about.company_overview.timeline.1999.title') }}</h3>
-          <p class="about-timeline__text mb-0">{{ __('website.about.company_overview.timeline.1999.desc') }}</p>
+        <div class="col-lg-6">
+          <span class="sp-eyebrow">{{ __('website.pro.profile_label') }}</span>
+          <h2 class="sp-title">{{ __('website.about.company_overview.title') }}</h2>
+          <p class="sp-lead">{{ __('website.about.company_overview.p1') }}</p>
+          <p class="sp-text">{{ __('website.about.company_overview.p2') }}</p>
+          <p class="sp-text">{{ __('website.about.company_overview.p3') }}</p>
+          <p class="sp-text mb-0">{{ __('website.about.company_overview.p4') }}</p>
         </div>
       </div>
 
-      <div class="about-timeline__item" role="listitem">
-        <div class="about-timeline__node" aria-hidden="true">
-          <span class="about-timeline__number">02</span>
-        </div>
-        <div class="about-timeline__body">
-          <div class="about-timeline__meta">2001</div>
-          <h3 class="about-timeline__title">{{ __('website.about.company_overview.timeline.2001.title') }}</h3>
-          <p class="about-timeline__text mb-0">{{ __('website.about.company_overview.timeline.2001.desc') }}</p>
-        </div>
-      </div>
-
-      <div class="about-timeline__item" role="listitem">
-        <div class="about-timeline__node" aria-hidden="true">
-          <span class="about-timeline__number">03</span>
-        </div>
-        <div class="about-timeline__body">
-          <div class="about-timeline__meta">2005</div>
-          <h3 class="about-timeline__title">{{ __('website.about.company_overview.timeline.2005.title') }}</h3>
-          <p class="about-timeline__text mb-0">{{ __('website.about.company_overview.timeline.2005.desc') }}</p>
-        </div>
-      </div>
-
-      <div class="about-timeline__item" role="listitem">
-        <div class="about-timeline__node" aria-hidden="true">
-          <span class="about-timeline__number">04</span>
-        </div>
-        <div class="about-timeline__body">
-          <div class="about-timeline__meta">2024</div>
-          <h3 class="about-timeline__title">{{ __('website.about.company_overview.timeline.2024.title') }}</h3>
-          <p class="about-timeline__text mb-0">{{ __('website.about.company_overview.timeline.2024.desc') }}</p>
-        </div>
+      <div class="sp-stats__card sp-stats__card--inline">
+        @foreach($aboutStats as $stat)
+          <div class="sp-stat">
+            <div>
+              <div class="sp-stat__value"><span class="odometer" data-count="{{ $stat['value'] }}">0</span>{{ $stat['suffix'] }}</div>
+              <div class="sp-stat__label">{{ $stat['label'] }}</div>
+            </div>
+          </div>
+        @endforeach
       </div>
     </div>
-  </div>
+  </section>
+
+  <section class="sp-section sp-section--alt">
+    <div class="container">
+      <div class="sp-section__head sp-section__head--center">
+        <div>
+          <span class="sp-eyebrow">{{ __('website.pro.history_label') }}</span>
+          <h2 class="sp-title mb-0">{{ __('website.pro.history_title') }}</h2>
+        </div>
+      </div>
+
+      <ol class="sp-timeline" aria-label="{{ __('website.about.company_overview.timeline_aria') }}">
+        @foreach($timelineYears as $i => $year)
+          <li class="sp-timeline__item wow fadeInUp" data-wow-delay="{{ 0.1 + $i * 0.1 }}s">
+            <span class="sp-timeline__year">{{ $year }}</span>
+            <span class="sp-timeline__dot" aria-hidden="true"></span>
+            <div class="sp-timeline__card">
+              <h3 class="sp-timeline__title">{{ __('website.about.company_overview.timeline.' . $year . '.title') }}</h3>
+              <p class="sp-timeline__text">{{ __('website.about.company_overview.timeline.' . $year . '.desc') }}</p>
+            </div>
+          </li>
+        @endforeach
+      </ol>
+    </div>
+  </section>
 @endsection

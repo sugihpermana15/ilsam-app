@@ -276,6 +276,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/image-reveal-hover.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/site-pro.css') }}?v={{ @filemtime(public_path('assets/css/site-pro.css')) }}">
 
     @stack('head')
 </head>

@@ -194,16 +194,7 @@
                 </div>
               @endif
             </div>
-            <svg class="dash-hero__art" viewBox="0 0 320 240" aria-hidden="true">
-              <ellipse cx="170" cy="130" rx="140" ry="100" class="art-blob" />
-              <rect x="70" y="50" width="190" height="130" rx="12" class="art-panel" />
-              <circle cx="86" cy="66" r="3.5" class="art-dot" /><circle cx="98" cy="66" r="3.5" class="art-dot art-dot--2" /><circle cx="110" cy="66" r="3.5" class="art-dot art-dot--3" />
-              <rect x="88" y="84" width="60" height="6" rx="3" class="art-line" /><rect x="88" y="97" width="38" height="6" rx="3" class="art-line" />
-              <rect x="92" y="136" width="13" height="30" rx="3" class="art-bar" /><rect x="111" y="124" width="13" height="42" rx="3" class="art-bar art-bar--2" /><rect x="130" y="112" width="13" height="54" rx="3" class="art-bar" /><rect x="149" y="130" width="13" height="36" rx="3" class="art-bar art-bar--3" />
-              <circle cx="212" cy="132" r="26" class="art-ring" /><circle cx="212" cy="132" r="26" class="art-ring art-ring--fill" stroke-dasharray="110 164" transform="rotate(-90 212 132)" />
-              <rect x="218" y="36" width="78" height="38" rx="10" class="art-card" /><circle cx="237" cy="55" r="9" class="art-check" /><path d="M233 55l3 3 5-6" class="art-tick" /><rect x="252" y="48" width="32" height="5" rx="2.5" class="art-line" /><rect x="252" y="58" width="22" height="5" rx="2.5" class="art-line" />
-              <rect x="150" y="180" width="30" height="16" class="art-stand" /><rect x="128" y="196" width="74" height="6" rx="3" class="art-stand" />
-            </svg>
+            @include('pages.admin.dashboard.partials.hero-art')
           </section>
         </div>
 
