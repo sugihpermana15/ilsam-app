@@ -118,6 +118,9 @@ return [
         'catalog_cta_title' => 'Need help choosing a product?',
         'catalog_cta_text' => 'Send us your application, target colour and process details. Our team will recommend a suitable line and code.',
         'catalog_cta_button' => 'Request a Quote',
+        'career_label' => 'Careers',
+        'career_cta_title' => 'Looking for a different role?',
+        'career_closing_soon' => 'Closing soon',
         'pillars' => [
             'quality' => ['title' => 'Consistent Quality', 'desc' => 'Stable quality you can rely on in every delivery.'],
             'supply' => ['title' => 'Reliable Supply', 'desc' => 'Local production in Indonesia keeps supply steady.'],

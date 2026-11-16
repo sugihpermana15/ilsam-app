@@ -118,6 +118,9 @@ return [
         'catalog_cta_title' => '제품 선택에 도움이 필요하신가요?',
         'catalog_cta_text' => '적용 분야, 목표 색상, 공정 정보를 보내주시면 적합한 라인과 코드를 추천해 드립니다.',
         'catalog_cta_button' => '견적 요청',
+        'career_label' => '채용',
+        'career_cta_title' => '다른 직무를 찾고 계신가요?',
+        'career_closing_soon' => '마감 임박',
         'pillars' => [
             'quality' => ['title' => '일관된 품질', 'desc' => '매 납품마다 믿을 수 있는 안정적인 품질.'],
             'supply' => ['title' => '안정적인 공급', 'desc' => '인도네시아 현지 생산으로 공급을 안정적으로 유지합니다.'],

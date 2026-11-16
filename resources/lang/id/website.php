@@ -118,6 +118,9 @@ return [
         'catalog_cta_title' => 'Butuh bantuan memilih produk?',
         'catalog_cta_text' => 'Kirimkan aplikasi, warna target, dan detail proses Anda. Tim kami akan merekomendasikan lini dan kode yang sesuai.',
         'catalog_cta_button' => 'Minta Penawaran',
+        'career_label' => 'Karier',
+        'career_cta_title' => 'Mencari posisi lain?',
+        'career_closing_soon' => 'Segera ditutup',
         'pillars' => [
             'quality' => ['title' => 'Kualitas Konsisten', 'desc' => 'Kualitas stabil yang dapat diandalkan di setiap pengiriman.'],
             'supply' => ['title' => 'Pasokan Andal', 'desc' => 'Produksi lokal di Indonesia menjaga pasokan tetap lancar.'],

@@ -59,572 +59,46 @@
     };
   @endphp
 
-  {{-- SweetAlert2 notification (match admin style) --}}
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      @if(session('success'))
-        Swal.fire({
-          icon: 'success',
-          title: @json(__('website.common.success')),
-          text: @json(session('success') . (session('candidate_code') ? ' Candidate code: ' . session('candidate_code') : '')),
-          timer: 2200,
-          showConfirmButton: false
-        });
-      @endif
-      @if(session('error'))
-        Swal.fire({
-          icon: 'error',
-          title: @json(__('website.common.error')),
-          text: @json(session('error')),
-          timer: 2600,
-          showConfirmButton: false
-        });
-      @endif
+  @php
+    $hasActiveFilters = collect($filters)->except('sort')->filter(fn ($value) => trim((string) $value) !== '')->isNotEmpty();
+    $filterSelects = [
+      ['name' => 'department', 'label' => __('website.career.filters.department'), 'all' => __('website.career.filters.all_departments'), 'options' => $filterOptions['departments'] ?? []],
+      ['name' => 'location', 'label' => __('website.career.filters.location'), 'all' => __('website.career.filters.all_locations'), 'options' => $filterOptions['locations'] ?? []],
+      ['name' => 'type', 'label' => __('website.career.filters.type'), 'all' => __('website.career.filters.all_types'), 'options' => $filterOptions['types'] ?? []],
+      ['name' => 'work_mode', 'label' => __('website.career.filters.work_mode'), 'all' => __('website.career.filters.all_work_modes'), 'options' => $filterOptions['work_modes'] ?? []],
+    ];
+  @endphp
 
-      const filterCard = document.querySelector('.filter-card');
-      const filterToggle = document.querySelector('.filter-toggle');
-      if (filterCard && filterToggle) {
-        filterToggle.addEventListener('click', function () {
-          const isOpen = filterCard.classList.toggle('is-open');
-          filterToggle.setAttribute('aria-expanded', String(isOpen));
-        });
-      }
+  {{-- Notifikasi hasil lamaran --}}
+  @if(session('success') || session('error'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (typeof Swal === 'undefined') return;
+        @if(session('success'))
+          Swal.fire({
+            icon: 'success',
+            title: @json(__('website.common.success')),
+            text: @json(session('success') . (session('candidate_code') ? ' Candidate code: ' . session('candidate_code') : '')),
+            timer: 2200,
+            showConfirmButton: false
+          });
+        @endif
+        @if(session('error'))
+          Swal.fire({
+            icon: 'error',
+            title: @json(__('website.common.error')),
+            text: @json(session('error')),
+            timer: 2600,
+            showConfirmButton: false
+          });
+        @endif
       });
-  </script>
-
-  <style>
-    .ilsam-career-board {
-      --cb-ink: #0b1220;
-      --cb-muted: rgba(11, 18, 32, 0.72);
-      --cb-muted-2: rgba(11, 18, 32, 0.56);
-      --cb-line: rgba(11, 18, 32, 0.14);
-      --cb-surface: rgba(255, 255, 255, 0.96);
-      --cb-surface-2: rgba(248, 250, 252, 0.98);
-      --cb-shadow: 0 22px 55px rgba(11, 18, 32, 0.14);
-      --cb-shadow-soft: 0 14px 34px rgba(11, 18, 32, 0.12);
-
-      /* Industrial palette */
-      --cb-navy: #0b1220;
-      --cb-steel: #1f2a44;
-      --cb-accent: #ffb020;
-      /* safety amber */
-      --cb-accent-2: #0ea5e9;
-      /* safety blue */
-      --cb-radius: 14px;
-
-      --cb-bg: #f4f7fb;
-    }
-
-    .ilsam-career-board {
-      padding: 56px 0 28px;
-      position: relative;
-      background: var(--cb-bg);
-    }
-
-    .ilsam-career-board .container {
-      position: relative;
-      z-index: 1;
-    }
-
-    .ilsam-career-board .board-header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-
-    .ilsam-career-board .board-title {
-      margin: 0;
-      font-size: 30px;
-      line-height: 1.2;
-      font-weight: 800;
-      color: var(--cb-ink);
-      letter-spacing: -0.02em;
-    }
-
-    .ilsam-career-board .board-title .accent {
-      color: var(--cb-navy);
-    }
-
-    .ilsam-career-board .board-subtitle {
-      margin: 8px 0 0;
-      color: var(--cb-muted);
-      font-size: 14px;
-    }
-
-    .ilsam-career-board .board-top {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    @media (max-width: 576px) {
-      .ilsam-career-board .board-top {
-        grid-template-columns: 1fr;
-        align-items: stretch;
-      }
-    }
-
-    .ilsam-career-board .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(11, 18, 32, 0.16);
-      background: var(--cb-surface);
-      box-shadow: 0 14px 30px rgba(11, 18, 32, 0.10);
-      color: rgba(11, 18, 32, 0.84);
-      font-size: 13px;
-    }
-
-    .ilsam-career-board .pill.pill-results {
-      width: fit-content;
-      box-shadow: 0 10px 20px rgba(11, 18, 32, 0.08);
-    }
-
-    @media (max-width: 576px) {
-      .ilsam-career-board .pill.pill-results {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-
-    .ilsam-career-board .board-controls {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      gap: 10px;
-    }
-
-    @media (max-width: 576px) {
-      .ilsam-career-board .board-controls {
-        grid-template-columns: 1fr;
-      }
-
-      .ilsam-career-board .board-controls .btn {
-        width: 100%;
-      }
-    }
-
-    .ilsam-career-board .input {
-      width: 100%;
-      border-radius: 12px;
-      border: 1px solid rgba(11, 18, 32, 0.18);
-      background: rgba(255, 255, 255, 0.99);
-      padding: 10px 12px;
-      outline: none;
-      transition: box-shadow 160ms ease, border-color 160ms ease;
-    }
-
-    .ilsam-career-board .input:focus {
-      border-color: rgba(14, 165, 233, 0.70);
-      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.18);
-    }
-
-    .ilsam-career-board .label {
-      font-size: 12px;
-      color: rgba(2, 6, 23, 0.58);
-      margin-bottom: 6px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .02em;
-    }
-
-    .ilsam-career-board .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      height: 42px;
-      padding: 0 16px;
-      border-radius: 12px;
-      border: 1px solid rgba(11, 18, 32, 0.18);
-      background: rgba(255, 255, 255, 0.98);
-      color: rgba(11, 18, 32, 0.90);
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: transform 120ms ease, box-shadow 160ms ease, border-color 160ms ease, background 160ms ease;
-    }
-
-    .ilsam-career-board .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 26px rgba(11, 18, 32, 0.12);
-      border-color: rgba(11, 18, 32, 0.28);
-    }
-
-    .ilsam-career-board .btn-primary {
-      background: var(--cb-accent);
-      border-color: rgba(255, 154, 31, 0.95);
-      color: #1f2937;
-      box-shadow: 0 18px 34px rgba(255, 154, 31, 0.22);
-    }
-
-    .ilsam-career-board .btn-primary:hover {
-      background: #ff9a1f;
-      border-color: rgba(255, 140, 26, 0.95);
-      color: #111827;
-    }
-
-    .ilsam-career-board .btn-outline:hover {
-      border-color: rgba(2, 6, 23, 0.24);
-    }
-
-    .ilsam-career-board .btn-secondary {
-      background: var(--cb-navy);
-      border-color: rgba(11, 18, 32, 0.85);
-      color: rgba(255, 255, 255, 0.92);
-      box-shadow: 0 18px 36px rgba(11, 18, 32, 0.22);
-    }
-
-    .ilsam-career-board .btn-secondary:hover {
-      background: var(--cb-steel);
-      border-color: rgba(11, 18, 32, 0.92);
-      color: rgba(255, 255, 255, 0.96);
-    }
-
-    .ilsam-career-board .board-layout {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      grid-template-areas: "filter jobs";
-      gap: 22px;
-      align-items: start;
-    }
-
-    .ilsam-career-board .filter-card {
-      grid-area: filter;
-    }
-
-    .ilsam-career-board .job-results {
-      grid-area: jobs;
-    }
-
-    @media (max-width: 992px) {
-      .ilsam-career-board .board-layout {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "filter"
-          "jobs";
-      }
-
-      .ilsam-career-board .filter-card {
-        margin-bottom: 14px;
-      }
-    }
-
-    .ilsam-career-board .filter-card {
-      border: 1px solid rgba(11, 18, 32, 0.14);
-      border-top: 4px solid var(--cb-accent);
-      border-radius: var(--cb-radius);
-      background: var(--cb-surface);
-      box-shadow: var(--cb-shadow);
-      padding: 18px;
-      position: sticky;
-      top: 110px;
-      overflow: hidden;
-    }
-
-    @media (max-width: 992px) {
-      .ilsam-career-board .filter-card {
-        position: static;
-      }
-    }
-
-    .ilsam-career-board .filter-toggle {
-      display: none;
-    }
-
-    @media (max-width: 768px) {
-      .ilsam-career-board .board-layout {
-        grid-template-areas:
-          "jobs"
-          "filter";
-      }
-
-      .ilsam-career-board .filter-toggle {
-        display: inline-flex;
-      }
-
-      .ilsam-career-board .filter-content {
-        display: none;
-      }
-
-      .ilsam-career-board .filter-card.is-open .filter-content {
-        display: block;
-      }
-
-      .ilsam-career-board .filter-card.is-open .filter-head {
-        margin-bottom: 12px;
-      }
-    }
-
-    .ilsam-career-board .filter-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .ilsam-career-board .filter-title {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--cb-ink);
-    }
-
-    .ilsam-career-board .filter-form {
-      display: grid;
-      gap: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .ilsam-career-board .filter-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 2px;
-    }
-
-    .ilsam-career-board .filter-note {
-      margin-top: 16px;
-      font-size: 13px;
-      color: rgba(11, 18, 32, 0.74);
-      position: relative;
-      z-index: 1;
-    }
-
-    .ilsam-career-board .jobs {
-      display: grid;
-      gap: 14px;
-    }
-
-    .ilsam-career-board .job-card {
-      border: 1px solid rgba(11, 18, 32, 0.14);
-      border-radius: var(--cb-radius);
-      background: var(--cb-surface);
-      padding: 16px 16px 14px;
-      box-shadow: var(--cb-shadow-soft);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .ilsam-career-board .job-card:before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: var(--cb-accent-2);
-      opacity: 0.90;
-    }
-
-    .ilsam-career-board .job-head {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .ilsam-career-board .job-title {
-      font-weight: 800;
-      font-size: 16px;
-      color: var(--cb-ink);
-      letter-spacing: -0.01em;
-    }
-
-    .ilsam-career-board .job-meta {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .ilsam-career-board .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(11, 18, 32, 0.16);
-      background: rgba(255, 255, 255, 0.92);
-      color: rgba(11, 18, 32, 0.86);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .ilsam-career-board .tag .t-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: rgba(11, 18, 32, 0.42);
-    }
-
-    .ilsam-career-board .tag.tag-type {
-      background: rgba(255, 176, 32, 0.12);
-      border-color: rgba(255, 176, 32, 0.30);
-      color: rgba(106, 64, 0, 0.95);
-    }
-
-    .ilsam-career-board .tag.tag-mode {
-      background: rgba(14, 165, 233, 0.10);
-      border-color: rgba(14, 165, 233, 0.26);
-      color: rgba(3, 87, 126, 0.95);
-    }
-
-    .ilsam-career-board .tag.tag-dept {
-      background: rgba(14, 165, 233, 0.10);
-      border-color: rgba(14, 165, 233, 0.26);
-      color: rgba(3, 87, 126, 0.95);
-    }
-
-    .ilsam-career-board .tag.tag-loc {
-      background: rgba(99, 102, 241, 0.10);
-      border-color: rgba(99, 102, 241, 0.26);
-      color: rgba(46, 48, 140, 0.95);
-    }
-
-    .ilsam-career-board .tag.tag-type .t-dot {
-      background: rgba(255, 176, 32, 0.95);
-      box-shadow: 0 0 0 4px rgba(255, 176, 32, 0.14);
-    }
-
-    .ilsam-career-board .tag.tag-mode .t-dot {
-      background: rgba(14, 165, 233, 0.95);
-      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
-    }
-
-    .ilsam-career-board .tag.tag-dept .t-dot {
-      background: rgba(14, 165, 233, 0.95);
-      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.14);
-    }
-
-    .ilsam-career-board .tag.tag-loc .t-dot {
-      background: rgba(99, 102, 241, 0.95);
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.14);
-    }
-
-    .ilsam-career-board .job-snippet {
-      margin-top: 10px;
-      color: rgba(11, 18, 32, 0.78);
-      font-size: 14px;
-      line-height: 1.55;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .ilsam-career-board .job-details {
-      margin-top: 12px;
-      border-top: 1px solid rgba(11, 18, 32, 0.12);
-      padding-top: 10px;
-    }
-
-    .ilsam-career-board .job-details summary {
-      cursor: pointer;
-      font-weight: 700;
-      color: rgba(2, 6, 23, 0.84);
-      user-select: none;
-      list-style: none;
-    }
-
-    .ilsam-career-board .job-details summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .ilsam-career-board .job-details summary:before {
-      content: "▸";
-      display: inline-block;
-      margin-right: 8px;
-      transform: translateY(-1px);
-      transition: transform 160ms ease;
-      color: rgba(2, 6, 23, 0.55);
-    }
-
-    .ilsam-career-board .job-details[open] summary:before {
-      transform: rotate(90deg) translateX(2px);
-    }
-
-    .ilsam-career-board .job-details-body {
-      margin-top: 10px;
-      display: grid;
-      gap: 12px;
-      color: rgba(2, 6, 23, 0.76);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .ilsam-career-board .job-section-title {
-      font-weight: 800;
-      color: rgba(2, 6, 23, 0.88);
-      margin-bottom: 6px;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .02em;
-    }
-
-    .ilsam-career-board .job-list {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    .ilsam-career-board .job-kv {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 12px;
-    }
-
-    .ilsam-career-board .kv {
-      display: inline-flex;
-      gap: 8px;
-      align-items: baseline;
-      padding: 6px 10px;
-      border: 1px solid rgba(2, 6, 23, 0.10);
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.70);
-    }
-
-    .ilsam-career-board .kv b {
-      font-weight: 800;
-      color: rgba(2, 6, 23, 0.88);
-    }
-
-    .ilsam-career-board .empty-state {
-      border: 1px dashed rgba(2, 6, 23, 0.24);
-      border-radius: var(--cb-radius);
-      background: var(--cb-surface);
-      padding: 26px;
-    }
-
-    .ilsam-career-board .empty-title {
-      margin: 0 0 8px;
-      font-size: 22px;
-      font-weight: 800;
-      color: rgba(2, 6, 23, 0.92);
-    }
-
-    .ilsam-career-board .empty-sub {
-      margin: 0;
-      color: rgba(2, 6, 23, 0.68);
-    }
-  </style>
+    </script>
+  @endif
 
   <!-- Breadcrumb area start  -->
-  <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
+  <div class="breadcrumb__area breadcrumb-space sp-page-hero overly theme-bg-heading-primary overflow-hidden">
     <div class="breadcrumb__background"
       data-background="{{ $company['hero_image'] ?? asset('assets/img/aboutus/img11.jpg') }}"></div>
     <div class="container">
@@ -660,222 +134,181 @@
   </div>
   <!-- Breadcrumb area end  -->
 
-  <section class="ilsam-career-board">
+  <section class="sp-section sp-section--alt sp-career">
     <div class="container">
-      <div class="board-header">
+      <div class="sp-section__head">
         <div>
-          <h2 class="board-title"><span class="accent">{{ __('website.career.open_positions') }}</span></h2>
-          <p class="board-subtitle">{{ __('website.career.subtitle') }}</p>
+          <span class="sp-eyebrow">{{ __('website.pro.career_label') }}</span>
+          <h2 class="sp-title">{{ __('website.career.open_positions') }}</h2>
+          <p class="sp-lead mb-0">{{ __('website.career.subtitle') }}</p>
         </div>
+        <p class="sp-career__count" aria-live="polite">
+          <strong>{{ $resultsCount }}</strong> {{ $resultsLabel }}
+          @if($resultsCount !== $openingsAllCount)
+            {{ __('website.common.of') }} {{ $openingsAllCount }}
+          @endif
+        </p>
       </div>
 
-      <div class="board-top">
-        <span class="pill pill-results">
-          {{ $resultsCount }} {{ $resultsLabel }} <span style="color: rgba(2, 6, 23, 0.48);">{{ __('website.common.of') }}</span>
-          {{ $openingsAllCount }}
-        </span>
+      {{-- Pencarian & filter --}}
+      <form method="GET" action="{{ route('career') }}" class="sp-filters">
+        <div class="sp-filters__search">
+          <label class="sp-form__label" for="career-q">{{ __('website.career.filters.search') }}</label>
+          <div class="sp-toolbar__search">
+            <i class="bi bi-search" aria-hidden="true"></i>
+            <input type="search" id="career-q" name="q" value="{{ $filters['q'] }}"
+              placeholder="{{ __('website.career.filters.search_placeholder') }}">
+          </div>
+        </div>
 
-        <form class="board-controls" method="GET" action="{{ route('career') }}">
-          <input type="hidden" name="q" value="{{ $filters['q'] }}">
-          <input type="hidden" name="department" value="{{ $filters['department'] }}">
-          <input type="hidden" name="location" value="{{ $filters['location'] }}">
-          <input type="hidden" name="type" value="{{ $filters['type'] }}">
-          <input type="hidden" name="work_mode" value="{{ $filters['work_mode'] }}">
+        @foreach($filterSelects as $select)
+          <div>
+            <label class="sp-form__label" for="career-{{ $select['name'] }}">{{ $select['label'] }}</label>
+            <select class="sp-select" id="career-{{ $select['name'] }}" name="{{ $select['name'] }}">
+              <option value="">{{ $select['all'] }}</option>
+              @foreach($select['options'] as $opt)
+                <option value="{{ $opt }}" @selected(($filters[$select['name']] ?? '') === $opt)>{{ $opt }}</option>
+              @endforeach
+            </select>
+          </div>
+        @endforeach
 
-          <select name="sort" class="input" style="min-width: 220px; height: 42px;">
+        <div>
+          <label class="sp-form__label" for="career-sort">{{ __('website.career.filters.sort') }}</label>
+          <select class="sp-select" id="career-sort" name="sort">
             @foreach(($filterOptions['sorts'] ?? []) as $opt)
-              <option value="{{ $opt['value'] }}" @selected(($filters['sort'] ?? 'title_asc') === $opt['value'])>
-                {{ $opt['label'] }}
-              </option>
+              <option value="{{ $opt['value'] }}" @selected(($filters['sort'] ?? 'title_asc') === $opt['value'])>{{ $opt['label'] }}</option>
             @endforeach
           </select>
+        </div>
 
-          <button class="btn btn-primary" type="submit">{{ __('website.career.actions.sort') }}</button>
-        </form>
-      </div>
-
-      <div class="board-layout">
-        <aside class="filter-card">
-          <div class="filter-head">
-            <h3 class="filter-title">{{ __('website.career.filters.title') }}</h3>
-            <button class="btn filter-toggle" type="button" aria-expanded="false" aria-controls="career-filter-content">
-              {{ __('website.career.filters.refine') }}
-            </button>
-          </div>
-
-          <div class="filter-content" id="career-filter-content">
-            <form method="GET" action="{{ route('career') }}" class="filter-form">
-            <div>
-              <div class="label">{{ __('website.career.filters.search') }}</div>
-              <input class="input" type="text" name="q" value="{{ $filters['q'] }}"
-                placeholder="{{ __('website.career.filters.search_placeholder') }}">
-            </div>
-
-            <div>
-              <div class="label">{{ __('website.career.filters.department') }}</div>
-              <select class="input" name="department" style="height: 42px;">
-                <option value="">{{ __('website.career.filters.all_departments') }}</option>
-                @foreach(($filterOptions['departments'] ?? []) as $opt)
-                  <option value="{{ $opt }}" @selected(($filters['department'] ?? '') === $opt)>{{ $opt }}</option>
-                @endforeach
-              </select>
-            </div>
-
-            <div>
-              <div class="label">{{ __('website.career.filters.location') }}</div>
-              <select class="input" name="location" style="height: 42px;">
-                <option value="">{{ __('website.career.filters.all_locations') }}</option>
-                @foreach(($filterOptions['locations'] ?? []) as $opt)
-                  <option value="{{ $opt }}" @selected(($filters['location'] ?? '') === $opt)>{{ $opt }}</option>
-                @endforeach
-              </select>
-            </div>
-
-            <div>
-              <div class="label">{{ __('website.career.filters.type') }}</div>
-              <select class="input" name="type" style="height: 42px;">
-                <option value="">{{ __('website.career.filters.all_types') }}</option>
-                @foreach(($filterOptions['types'] ?? []) as $opt)
-                  <option value="{{ $opt }}" @selected(($filters['type'] ?? '') === $opt)>{{ $opt }}</option>
-                @endforeach
-              </select>
-            </div>
-
-            <div>
-              <div class="label">{{ __('website.career.filters.work_mode') }}</div>
-              <select class="input" name="work_mode" style="height: 42px;">
-                <option value="">{{ __('website.career.filters.all_work_modes') }}</option>
-                @foreach(($filterOptions['work_modes'] ?? []) as $opt)
-                  <option value="{{ $opt }}" @selected(($filters['work_mode'] ?? '') === $opt)>{{ $opt }}</option>
-                @endforeach
-              </select>
-            </div>
-
-            <div>
-              <div class="label">{{ __('website.career.filters.sort') }}</div>
-              <select class="input" name="sort" style="height: 42px;">
-                @foreach(($filterOptions['sorts'] ?? []) as $opt)
-                  <option value="{{ $opt['value'] }}" @selected(($filters['sort'] ?? 'title_asc') === $opt['value'])>
-                    {{ $opt['label'] }}
-                  </option>
-                @endforeach
-              </select>
-            </div>
-
-            <div class="filter-actions">
-              <button class="btn btn-primary" type="submit">{{ __('website.career.actions.apply_filters') }}</button>
-              <a class="btn btn-outline" href="{{ route('career') }}">{{ __('website.career.actions.reset') }}</a>
-            </div>
-            </form>
-
-            <div class="filter-note">
-              {!! __('website.career.note_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}
-            </div>
-          </div>
-        </aside>
-
-        <div class="job-results">
-          @if($openings->isEmpty())
-            <div class="empty-state">
-              <div class="empty-title">{{ __('website.career.empty.title') }}</div>
-              <p class="empty-sub">{!! __('website.career.empty.desc_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}</p>
-            </div>
-          @else
-            <div class="jobs">
-              @foreach($openings as $job)
-                @php
-                  $title = data_get($job, 'title', __('website.career.default_position'));
-                  $dept = data_get($job, 'department', '');
-                  $loc = data_get($job, 'location', '');
-                  $type = data_get($job, 'type', '');
-                  $mode = data_get($job, 'work_mode', '');
-                  $jobId = (string) data_get($job, 'id', '');
-                  $applyUrl = route('career.apply', ['job' => $jobId !== '' ? $jobId : null]);
-
-                  $experience = trim((string) data_get($job, 'experience', ''));
-                  $responsibilities = trim((string) data_get($job, 'responsibilities', ''));
-                  $requirements = trim((string) data_get($job, 'requirements', ''));
-                  $deadlineRaw = data_get($job, 'deadline');
-                  $deadlineFormatted = '';
-                  if (!empty($deadlineRaw)) {
-                    try {
-                      $deadlineFormatted = \Carbon\Carbon::parse($deadlineRaw)->format('d M Y');
-                    } catch (\Throwable $e) {
-                      $deadlineFormatted = (string) $deadlineRaw;
-                    }
-                  }
-
-                  $responsibilityLines = $normalizeLines($responsibilities);
-                  $requirementLines = $normalizeLines($requirements);
-
-                  $hasDetails = !empty($responsibilityLines) || !empty($requirementLines) || ($experience !== '') || ($deadlineFormatted !== '');
-                @endphp
-                <div class="job-card">
-                  <div class="job-head">
-                    <div class="job-title">{{ $title }}</div>
-                    <a class="btn btn-primary" href="{{ $applyUrl }}">{{ __('website.career.actions.apply') }}</a>
-                  </div>
-                  <div class="job-meta">
-                    @if($type)
-                      <span class="tag tag-type"><span class="t-dot"></span>{{ $type }}</span>
-                    @endif
-                    @if($mode)
-                      <span class="tag tag-mode"><span class="t-dot"></span>{{ $mode }}</span>
-                    @endif
-                    @if($dept)
-                      <span class="tag tag-dept"><span class="t-dot"></span>{{ $dept }}</span>
-                    @endif
-                    @if($loc)
-                      <span class="tag tag-loc"><span class="t-dot"></span>{{ $loc }}</span>
-                    @endif
-                  </div>
-
-                  @if($hasDetails)
-                    <details class="job-details" open>
-                      <summary>{{ __('website.career.details.summary_toggle') }}</summary>
-                      <div class="job-details-body">
-                        @if($experience !== '' || $deadlineFormatted !== '')
-                          <div class="job-kv">
-                            @if($experience !== '')
-                              <span class="kv"><b>{{ __('website.career.details.experience') }}</b> <span>{{ $experience }}</span></span>
-                            @endif
-                            @if($deadlineFormatted !== '')
-                              <span class="kv"><b>{{ __('website.career.details.deadline') }}</b> <span>{{ $deadlineFormatted }}</span></span>
-                            @endif
-                          </div>
-                        @endif
-
-                        @if(!empty($requirementLines))
-                          <div>
-                            <div class="job-section-title">{{ __('website.career.details.requirements') }}</div>
-                            <ul class="job-list">
-                              @foreach($requirementLines as $line)
-                                <li>{{ $line }}</li>
-                              @endforeach
-                            </ul>
-                          </div>
-                        @endif
-
-                        @if(!empty($responsibilityLines))
-                          <div>
-                            <div class="job-section-title">{{ __('website.career.details.responsibilities') }}</div>
-                            <ul class="job-list">
-                              @foreach($responsibilityLines as $line)
-                                <li>{{ $line }}</li>
-                              @endforeach
-                            </ul>
-                          </div>
-                        @endif
-                      </div>
-                    </details>
-                  @endif
-                </div>
-              @endforeach
-            </div>
+        <div class="sp-filters__actions">
+          <button class="sp-btn sp-btn--primary" type="submit">{{ __('website.career.actions.apply_filters') }}</button>
+          @if($hasActiveFilters)
+            <a class="sp-btn sp-btn--outline" href="{{ route('career') }}">{{ __('website.career.actions.reset') }}</a>
           @endif
         </div>
-      </div>
+      </form>
+
+      {{-- Daftar lowongan --}}
+      @if($openings->isEmpty())
+        <div class="sp-empty">
+          <i class="bi bi-briefcase" aria-hidden="true"></i>
+          <h3>{{ __('website.career.empty.title') }}</h3>
+          <p>{!! __('website.career.empty.desc_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}</p>
+        </div>
+      @else
+        <div class="sp-jobs">
+          @foreach($openings as $job)
+            @php
+              $title = data_get($job, 'title', __('website.career.default_position'));
+              $jobId = (string) data_get($job, 'id', '');
+              $applyUrl = route('career.apply', ['job' => $jobId !== '' ? $jobId : null]);
+
+              $jobTags = array_filter([
+                'bi-briefcase' => data_get($job, 'type', ''),
+                'bi-laptop' => data_get($job, 'work_mode', ''),
+                'bi-diagram-3' => data_get($job, 'department', ''),
+                'bi-geo-alt' => data_get($job, 'location', ''),
+              ]);
+
+              $experience = trim((string) data_get($job, 'experience', ''));
+              $deadlineRaw = data_get($job, 'deadline');
+              $deadlineFormatted = '';
+              $closingSoon = false;
+              if (!empty($deadlineRaw)) {
+                try {
+                  $deadlineDate = \Carbon\Carbon::parse($deadlineRaw);
+                  $deadlineFormatted = $deadlineDate->format('d M Y');
+                  $closingSoon = $deadlineDate->startOfDay()->lte(today()->addDays(7));
+                } catch (\Throwable $e) {
+                  $deadlineFormatted = (string) $deadlineRaw;
+                }
+              }
+
+              $responsibilityLines = $normalizeLines(data_get($job, 'responsibilities', ''));
+              $requirementLines = $normalizeLines(data_get($job, 'requirements', ''));
+              $hasLists = !empty($responsibilityLines) || !empty($requirementLines);
+            @endphp
+            <article class="sp-job">
+              <div class="sp-job__head">
+                <div class="sp-job__main">
+                  <h3 class="sp-job__title">{{ $title }}</h3>
+                  <ul class="sp-job__tags">
+                    @foreach($jobTags as $tagIcon => $tagText)
+                      <li><i class="bi {{ $tagIcon }}" aria-hidden="true"></i> {{ $tagText }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+                <a class="sp-btn sp-btn--primary" href="{{ $applyUrl }}">{{ __('website.career.actions.apply') }} <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+              </div>
+
+              @if($experience !== '' || $deadlineFormatted !== '')
+                <dl class="sp-job__facts">
+                  @if($experience !== '')
+                    <div>
+                      <dt>{{ __('website.career.details.experience') }}</dt>
+                      <dd>{{ $experience }}</dd>
+                    </div>
+                  @endif
+                  @if($deadlineFormatted !== '')
+                    <div class="{{ $closingSoon ? 'is-soon' : '' }}">
+                      <dt>{{ __('website.career.details.deadline') }}</dt>
+                      <dd>
+                        {{ $deadlineFormatted }}
+                        @if($closingSoon)
+                          <span class="sp-job__soon">{{ __('website.pro.career_closing_soon') }}</span>
+                        @endif
+                      </dd>
+                    </div>
+                  @endif
+                </dl>
+              @endif
+
+              @if($hasLists)
+                <details class="sp-job__details" @if($loop->first) open @endif>
+                  <summary>{{ __('website.career.details.summary_toggle') }} <i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
+                  <div class="sp-job__lists">
+                    @if(!empty($requirementLines))
+                      <div>
+                        <h4>{{ __('website.career.details.requirements') }}</h4>
+                        <ul>
+                          @foreach($requirementLines as $line)
+                            <li>{{ $line }}</li>
+                          @endforeach
+                        </ul>
+                      </div>
+                    @endif
+                    @if(!empty($responsibilityLines))
+                      <div>
+                        <h4>{{ __('website.career.details.responsibilities') }}</h4>
+                        <ul>
+                          @foreach($responsibilityLines as $line)
+                            <li>{{ $line }}</li>
+                          @endforeach
+                        </ul>
+                      </div>
+                    @endif
+                  </div>
+                </details>
+              @endif
+            </article>
+          @endforeach
+        </div>
+      @endif
     </div>
   </section>
 
+  {{-- Kirim CV umum --}}
+  <section class="sp-cta">
+    <div class="container">
+      <div class="sp-cta__inner">
+        <div>
+          <h2 class="sp-title sp-title--light">{{ __('website.pro.career_cta_title') }}</h2>
+          <p class="sp-cta__text">{!! __('website.career.note_html', ['mailto' => 'mailto:' . $companyEmail, 'email' => e($companyEmail)]) !!}</p>
+        </div>
+        <a href="mailto:{{ $companyEmail }}" class="sp-btn sp-btn--light">{{ __('website.career.send_cv') }} <i class="bi bi-envelope" aria-hidden="true"></i></a>
+      </div>
+    </div>
+  </section>
 @endsection
