@@ -122,6 +122,10 @@ return [
         'career_cta_title' => 'Looking for a different role?',
         'career_closing_soon' => 'Closing soon',
         'rnd_capabilities_label' => 'What we do',
+        'contact_form_title' => 'Send us a message',
+        'contact_form_desc' => 'Tell us about your application and what you need. We will get back to you by email or phone.',
+        'contact_visit_title' => 'Visit our office',
+        'contact_map_open' => 'Open in Google Maps',
         'pillars' => [
             'quality' => ['title' => 'Consistent Quality', 'desc' => 'Stable quality you can rely on in every delivery.'],
             'supply' => ['title' => 'Reliable Supply', 'desc' => 'Local production in Indonesia keeps supply steady.'],

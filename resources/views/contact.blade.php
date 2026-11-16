@@ -54,7 +54,7 @@
 @section('meta_image', $metaImage)
 @section('main')
     <!-- Breadcrumb area start  -->
-    <div class="breadcrumb__area breadcrumb-space overly theme-bg-heading-primary overflow-hidden">
+    <div class="breadcrumb__area breadcrumb-space sp-page-hero overly theme-bg-heading-primary overflow-hidden">
         <div class="breadcrumb__background" data-background="{{ $breadcrumbBgUrl }}"></div>
         <div class="container">
             <div class="row align-items-center justify-content-between">
@@ -92,179 +92,163 @@
     </div>
     <!-- Breadcrumb area end  -->
 
-    <!-- lets-talk area start -->
-    <section class="lets-talk section-space-115 section-bg-2 overflow-hidden">
-        <div class="lets-talk-bg">
-            <div class="overlay"><img src="{{ $letsTalkBgUrl }}" alt=""></div>
-        </div>
+    @php
+        $companyNames = array_values(array_filter(array_map(fn ($c) => trim((string) $c), $companies), fn ($c) => $c !== ''));
+        $addressLines = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $contactAddressText) ?: [])));
+        if (empty($addressLines)) {
+            $addressLines = [$contactAddressShort];
+        }
+    @endphp
+
+    {{-- Pengantar & kartu kontak --}}
+    <section class="sp-section sp-contact-page">
         <div class="container">
-            <div class="row">
-                <div class="col-xl-2"></div>
-                <div class="col-xl-4">
-                    <div class="row pr-30 rr-pr-none-lg pl-80 rr-pl-none-xl mb-minus-30">
-                        <div class="col-xl-12 col-lg-4 col-md-6">
-                            <div
-                                class="contact-list__item contact-list__item-home2 d-flex align-items-center justify-content-center mb-30">
-                                <div class="contact-list__item-icon">
-                                    <i class="bi bi-envelope" aria-hidden="true"></i>
-                                </div>
-                                <div class="contact-list__item-text">
-                                    <h4 class="title">{{ __('website.home.contact.email_address') }}</h4>
-                                    @foreach($contactEmails as $contactEmail)
-                                        <a class="d-block" href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-4 col-md-6">
-                            <div
-                                class="contact-list__item contact-list__item-home2 d-flex align-items-center justify-content-center mb-30">
-                                <div class="contact-list__item-icon">
-                                    <i class="bi bi-telephone" aria-hidden="true"></i>
-                                </div>
-                                <div class="contact-list__item-text">
-                                    <h4 class="title">{{ __('website.home.contact.phone_number') }}</h4>
-                                    <a href="tel:{{ $contactPhoneTel }}">{{ $contactPhoneDisplay }}</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-4 col-md-6">
-                            <div
-                                class="contact-list__item contact-list__item-home2 d-flex align-items-center justify-content-center mb-30">
-                                <div class="contact-list__item-icon">
-                                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
-                                </div>
-                                <div class="contact-list__item-text">
-                                    <h4 class="title">{{ __('website.home.contact.our_location') }}</h4>
-                                    <a href="{{ $contactMapUrl }}">{{ $contactAddressShort }}</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-12 col-lg-4 col-md-6">
-                            <div
-                                class="contact-list__item contact-list__item-home2 d-flex align-items-center justify-content-center mb-30">
-                                <div class="contact-list__item-icon">
-                                    <i class="bi bi-clock" aria-hidden="true"></i>
-                                </div>
-                                <div class="contact-list__item-text">
-                                    <h4 class="title">{{ __('website.home.contact.opening_hour') }}</h4>
-                                    <span>{{ $openingHours }}</span>
-                                </div>
-                            </div>
-                        </div>
+            <div class="sp-section__head sp-section__head--center">
+                <div>
+                    <span class="sp-eyebrow">{{ __('website.home.contact.subtitle') }}</span>
+                    <h2 class="sp-title">{{ __('website.home.contact.title_line1') }} {{ __('website.home.contact.title_line2') }}</h2>
+                    <p class="sp-lead mb-0">{{ __('website.home.contact.desc') }}</p>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="sp-contact-card wow fadeInUp" data-wow-delay=".05s">
+                        <span class="sp-pillar__icon"><i class="bi bi-envelope" aria-hidden="true"></i></span>
+                        <h3 class="sp-contact-card__title">{{ __('website.home.contact.email_address') }}</h3>
+                        @foreach($contactEmails as $contactEmail)
+                            <a href="mailto:{{ $contactEmail }}">{{ $contactEmail }}</a>
+                        @endforeach
                     </div>
                 </div>
-                <div class="col-xl-6">
-                    <div class="section__title-wrapper text-center text-xl-start mb-40 mb-xs-35 rr-mt-60-lg">
-                        <span class="section__subtitle justify-content-start mb-13"><span data-width="40px"
-                                class="left-separetor"></span>{{ __('website.home.contact.subtitle') }}</span>
-                        <h2 class="section__title title-animation text-capitalize mb-15 rr-br-hidden-md"
-                            data-cursor="-opaque">{{ __('website.home.contact.title_line1') }} {{ __('website.home.contact.title_line2') }}</h2>
-                        <p class="des mb-0">{{ __('website.home.contact.desc') }}</p>
+                <div class="col-xl-3 col-md-6">
+                    <div class="sp-contact-card wow fadeInUp" data-wow-delay=".13s">
+                        <span class="sp-pillar__icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
+                        <h3 class="sp-contact-card__title">{{ __('website.home.contact.phone_number') }}</h3>
+                        <a href="tel:{{ $contactPhoneTel }}">{{ $contactPhoneDisplay }}</a>
                     </div>
-
-                    <form id="contact-form" class="request-a-quote__form home-2" method="POST" action="{{ route('contact.send') }}">
-                        @csrf
-                        <div class="row">
-                            <div class="col-xl-6">
-                                <div class="request-a-quote__form-input">
-                                    <div class="validation__wrapper-up position-relative">
-                                        <input name="name" id="name" type="text" placeholder="{{ __('website.home.contact.form.name') }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="request-a-quote__form-input">
-                                    <div class="validation__wrapper-up position-relative">
-                                        <input name="tel" id="tel" type="tel" placeholder="{{ __('website.home.contact.form.tel') }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="request-a-quote__form-input">
-                                    <div class="validation__wrapper-up position-relative">
-                                        <input name="email" id="email" type="email" placeholder="{{ __('website.home.contact.form.email') }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-6">
-                                <div class="request-a-quote__form-input">
-                                    <div class="validation__wrapper-up position-relative">
-                                        <input name="inquiries" id="inquiries" type="text" placeholder="{{ __('website.home.contact.form.inquiries') }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="request-a-quote__form-input textarea">
-                                    <div class="validation__wrapper-up position-relative">
-                                        <textarea name="textarea" id="textarea" placeholder="{{ __('website.home.contact.form.details') }}"></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <button type="submit" class="rr-btn w-auto">
-                                    <span class="btn-wrap">
-                                        <span class="text-one">{{ __('website.home.contact.form.send') }}</span>
-                                        <span class="text-two">{{ __('website.home.contact.form.send') }}</span>
-                                    </span>
-                                </button>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="ajax-response mt-3">
-                                    @if (session('success'))
-                                        <div class="success">{{ session('success') }}</div>
-                                    @endif
-
-                                    @if ($errors->any())
-                                        <ul class="error mb-0">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </form>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="sp-contact-card wow fadeInUp" data-wow-delay=".21s">
+                        <span class="sp-pillar__icon"><i class="bi bi-geo-alt" aria-hidden="true"></i></span>
+                        <h3 class="sp-contact-card__title">{{ __('website.home.contact.our_location') }}</h3>
+                        <a href="{{ $contactMapUrl }}" target="_blank" rel="noopener">{{ $contactAddressShort }}</a>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="sp-contact-card wow fadeInUp" data-wow-delay=".29s">
+                        <span class="sp-pillar__icon"><i class="bi bi-clock" aria-hidden="true"></i></span>
+                        <h3 class="sp-contact-card__title">{{ __('website.home.contact.opening_hour') }}</h3>
+                        <span>{{ $openingHours }}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-    <!-- lets-talk area end -->
 
-    <!--contact-map-->
-    <div class="contact-map">
-        <iframe
-            src="{{ $mapEmbedSrc }}"
-            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
-    <!--contact-map-->
+    {{-- Formulir & peta --}}
+    <section class="sp-section sp-section--alt">
+        <div class="container">
+            <div class="row g-4 align-items-stretch">
+                <div class="col-lg-7">
+                    <div class="sp-panel">
+                        <h2 class="sp-panel__title">{{ __('website.pro.contact_form_title') }}</h2>
+                        <p class="sp-text">{{ __('website.pro.contact_form_desc') }}</p>
 
-    <!-- text-slider area start -->
-    <section class="text-slider text-slider__section-space position-relative theme-bg-primary overflow-hidden">
-        <div class="text-slider__slider carouselTicker carouselTicker-nav">
-            <ul class="carouselTicker__list">
-                @foreach($companies as $company)
-                    @php
-                        $company = trim((string) $company);
-                        if ($company === '') {
-                            continue;
-                        }
-                    @endphp
-                    <li>
-                        <h3 data-cursor="-opaque" class="title">{{ $company }}</h3>
-                    </li>
-                    @if(!$loop->last)
-                        <li>
-                            <h4 class="title bar">//</h4>
-                        </li>
-                    @endif
-                @endforeach
-            </ul>
+                        <form id="contact-form" class="request-a-quote__form home-2 sp-form" method="POST" action="{{ route('contact.send') }}">
+                            @csrf
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="sp-form__label" for="name">{{ __('website.home.contact.form.name') }}</label>
+                                    <div class="validation__wrapper-up position-relative">
+                                        <input name="name" id="name" type="text" autocomplete="name" value="{{ old('name') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="sp-form__label" for="tel">{{ __('website.home.contact.form.tel') }}</label>
+                                    <div class="validation__wrapper-up position-relative">
+                                        <input name="tel" id="tel" type="tel" autocomplete="tel" value="{{ old('tel') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="sp-form__label" for="email">{{ __('website.home.contact.form.email') }}</label>
+                                    <div class="validation__wrapper-up position-relative">
+                                        <input name="email" id="email" type="email" autocomplete="email" value="{{ old('email') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="sp-form__label" for="inquiries">{{ __('website.home.contact.form.inquiries') }}</label>
+                                    <div class="validation__wrapper-up position-relative">
+                                        <input name="inquiries" id="inquiries" type="text" value="{{ old('inquiries') }}">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label class="sp-form__label" for="textarea">{{ __('website.home.contact.form.details') }}</label>
+                                    <div class="validation__wrapper-up position-relative">
+                                        <textarea name="textarea" id="textarea" rows="6">{{ old('textarea') }}</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="sp-btn sp-btn--primary">{{ __('website.home.contact.form.send') }} <i class="bi bi-send" aria-hidden="true"></i></button>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="ajax-response">
+                                        @if (session('success'))
+                                            <div class="success">{{ session('success') }}</div>
+                                        @endif
+
+                                        @if ($errors->any())
+                                            <ul class="error mb-0">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="sp-panel sp-map">
+                        <div class="sp-map__frame">
+                            <iframe src="{{ $mapEmbedSrc }}" title="{{ __('website.home.contact.our_location') }}" allowfullscreen loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                        <div class="sp-map__body">
+                            <h2 class="sp-panel__title">{{ __('website.pro.contact_visit_title') }}</h2>
+                            <address class="sp-map__address">
+                                @foreach($addressLines as $addressLine)
+                                    {{ $addressLine }}@if(!$loop->last)<br>@endif
+                                @endforeach
+                            </address>
+                            <a href="{{ $contactMapUrl }}" target="_blank" rel="noopener" class="sp-btn sp-btn--outline">
+                                {{ __('website.pro.contact_map_open') }} <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
-    <!-- text-slider area end -->
+
+    {{-- Pelanggan --}}
+    @if(!empty($companyNames))
+        <section class="sp-clients text-slider overflow-hidden" aria-label="{{ __('website.pro.clients_label') }}">
+            <div class="container">
+                <p class="sp-clients__label">{{ __('website.pro.clients_label') }}</p>
+            </div>
+            <div class="text-slider__slider carouselTicker carouselTicker-nav">
+                <ul class="carouselTicker__list">
+                    @foreach($companyNames as $company)
+                        <li><span class="sp-clients__name">{{ $company }}</span></li>
+                    @endforeach
+                </ul>
+            </div>
+        </section>
+    @endif
 @endsection

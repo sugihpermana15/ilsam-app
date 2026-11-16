@@ -122,6 +122,10 @@ return [
         'career_cta_title' => '다른 직무를 찾고 계신가요?',
         'career_closing_soon' => '마감 임박',
         'rnd_capabilities_label' => '주요 역량',
+        'contact_form_title' => '메시지 보내기',
+        'contact_form_desc' => '적용 분야와 필요한 사항을 알려주세요. 이메일 또는 전화로 연락드리겠습니다.',
+        'contact_visit_title' => '오시는 길',
+        'contact_map_open' => 'Google 지도에서 열기',
         'pillars' => [
             'quality' => ['title' => '일관된 품질', 'desc' => '매 납품마다 믿을 수 있는 안정적인 품질.'],
             'supply' => ['title' => '안정적인 공급', 'desc' => '인도네시아 현지 생산으로 공급을 안정적으로 유지합니다.'],

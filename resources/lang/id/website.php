@@ -122,6 +122,10 @@ return [
         'career_cta_title' => 'Mencari posisi lain?',
         'career_closing_soon' => 'Segera ditutup',
         'rnd_capabilities_label' => 'Yang kami kerjakan',
+        'contact_form_title' => 'Kirim pesan kepada kami',
+        'contact_form_desc' => 'Ceritakan aplikasi dan kebutuhan Anda. Kami akan menghubungi Anda melalui email atau telepon.',
+        'contact_visit_title' => 'Kunjungi kantor kami',
+        'contact_map_open' => 'Buka di Google Maps',
         'pillars' => [
             'quality' => ['title' => 'Kualitas Konsisten', 'desc' => 'Kualitas stabil yang dapat diandalkan di setiap pengiriman.'],
             'supply' => ['title' => 'Pasokan Andal', 'desc' => 'Produksi lokal di Indonesia menjaga pasokan tetap lancar.'],
