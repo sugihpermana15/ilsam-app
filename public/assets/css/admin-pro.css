@@ -1,0 +1,819 @@
+/*
+ * Admin UI polish — dimuat setelah app.min.css (lihat layouts/master.blade.php).
+ * Memakai variabel tema (--pe-*) agar mengikuti mode terang/gelap dan warna tema.
+ *
+ * 1. Token   2. Sidebar 3 tingkat   3. Header & judul halaman
+ * 4. Komponen umum (kartu, tabel, form)   5. Dashboard
+ */
+
+/* ---------- 1. Token ---------- */
+:root {
+    --pe-app-sidebar-width: 16.5rem;
+    --ap-radius: .75rem;
+    --ap-radius-sm: .5rem;
+    --ap-line: var(--pe-border-color, #e9ecef);
+    --ap-muted: var(--pe-secondary-color, #6b7785);
+    --ap-surface: var(--pe-secondary-bg, #fff);
+    --ap-hover: rgba(var(--pe-emphasis-color-rgb, 0, 0, 0), .045);
+    --ap-primary-soft: rgba(var(--pe-primary-rgb), .1);
+    --ap-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 1px 3px rgba(16, 24, 40, .06);
+    --ap-shadow-lg: 0 10px 24px -8px rgba(16, 24, 40, .16);
+}
+
+/* ---------- 2. Sidebar 3 tingkat ---------- */
+.pe-app-sidebar .pe-app-sidebar-menu {
+    height: calc(100% - var(--pe-app-header-height) - 3.25rem);
+    padding-bottom: .75rem;
+}
+
+.pe-app-sidebar.has-profile .pe-app-sidebar-menu {
+    height: calc(100% - var(--pe-app-header-height) - 3.25rem - 76px);
+}
+
+/* Pencarian menu */
+.pe-sidebar-search {
+    position: relative;
+    height: 3.25rem;
+    padding: .375rem .875rem .5rem;
+}
+
+.pe-sidebar-search > i {
+    position: absolute;
+    top: 50%;
+    left: 1.625rem;
+    transform: translateY(-60%);
+    font-size: .8125rem;
+    color: var(--ap-muted);
+    pointer-events: none;
+}
+
+.pe-sidebar-search .form-control {
+    height: 2.375rem;
+    padding-left: 2.125rem;
+    font-size: .8125rem;
+    border-radius: var(--ap-radius-sm);
+    border-color: var(--ap-line);
+    background-color: var(--ap-hover);
+}
+
+.pe-sidebar-search .form-control:focus {
+    background-color: var(--ap-surface);
+    border-color: rgba(var(--pe-primary-rgb), .55);
+    box-shadow: 0 0 0 3px rgba(var(--pe-primary-rgb), .14);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-sidebar-search-empty {
+    padding: 1rem 1.5rem;
+    font-size: .8125rem;
+    color: var(--ap-muted);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-title {
+    padding: .5rem 1.5rem .375rem;
+    font-size: .6875rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    color: var(--ap-muted);
+}
+
+/* Tingkat 1 — area kerja */
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-1 > .pe-nav-link {
+    margin: 1px .75rem;
+    padding: .625rem .75rem;
+    gap: .75rem;
+    border-radius: var(--ap-radius-sm);
+    font-weight: 500;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-1 > .pe-nav-link .pe-nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 20px;
+    font-size: 1rem;
+    opacity: .85;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-nav-link .pe-nav-content {
+    min-width: 0;
+    line-height: 1.25;
+    white-space: normal;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-nav-link:hover {
+    background-color: var(--ap-hover);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-1.active > .pe-nav-link {
+    color: var(--pe-app-sidebar-menu-item-color-active);
+    font-weight: 600;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-1 > a.pe-nav-link.active {
+    background-color: var(--ap-primary-soft);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-1.active > .pe-nav-link .pe-nav-icon {
+    opacity: 1;
+}
+
+/* Tingkat 2 & 3 — garis pemandu menggantikan titik bawaan tema */
+.pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu::after,
+.pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu .pe-nav-link::before {
+    content: none;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-1 > .pe-slide-menu {
+    margin: .125rem .75rem .375rem 1.9375rem;
+    padding-left: .5rem;
+    border-left: 1px solid var(--ap-line);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu .pe-nav-link {
+    margin: 1px 0;
+    padding: .4375rem .625rem;
+    gap: .5rem;
+    border-radius: var(--ap-radius-sm);
+    font-size: .84375rem;
+    line-height: 1.3;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-2 > .pe-nav-link .pe-nav-content {
+    font-size: .84375rem;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-2.pe-has-sub.active > .pe-nav-link {
+    color: var(--pe-body-color);
+    font-weight: 600;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-2 > .pe-slide-menu {
+    margin: .125rem 0 .25rem .625rem;
+    padding-left: .5rem;
+    border-left: 1px solid var(--ap-line);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-3 > .pe-nav-link {
+    padding: .375rem .625rem;
+    font-size: .8125rem;
+    color: var(--ap-muted);
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-menu-level-3 > .pe-nav-link:hover {
+    color: var(--pe-app-sidebar-menu-item-color-hover);
+}
+
+/* Halaman aktif (tingkat 2/3): latar lembut + penanda pada garis pemandu */
+.pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu a.pe-nav-link.active {
+    position: relative;
+    color: var(--pe-app-sidebar-menu-item-color-active);
+    background-color: var(--ap-primary-soft);
+    font-weight: 600;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu a.pe-nav-link.active::before {
+    content: "";
+    position: absolute;
+    top: 20%;
+    left: calc(-.5rem - 1.5px);
+    width: 2px;
+    height: 60%;
+    border-radius: 2px;
+    background-color: var(--pe-app-sidebar-menu-item-color-active) !important;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-nav-link .pe-nav-arrow {
+    font-size: 1.0625rem;
+    opacity: .55;
+}
+
+.pe-app-sidebar .pe-app-sidebar-menu .pe-nav-link:focus-visible {
+    outline: 2px solid rgba(var(--pe-primary-rgb), .6);
+    outline-offset: -2px;
+}
+
+/* Mode ikon (sidebar diciutkan): submenu tampil sebagai flyout */
+[data-sidebar="icon"] .pe-sidebar-search,
+[data-sidebar="icon"] .pe-sidebar-profile-copy,
+[data-sidebar="icon"] .pe-sidebar-profile-arrow {
+    display: none !important;
+}
+
+/* Logo berposisi fixed pada mode ikon, jadi menu harus mulai di bawahnya */
+[data-sidebar="icon"] .pe-app-sidebar .pe-app-sidebar-menu {
+    height: calc(100% - var(--pe-app-header-height));
+    margin-top: var(--pe-app-header-height);
+    padding-top: .5rem;
+}
+
+[data-sidebar="icon"] .pe-app-sidebar.has-profile .pe-app-sidebar-menu {
+    height: calc(100% - var(--pe-app-header-height) - 76px);
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu > .pe-slide > .pe-nav-link {
+    justify-content: center;
+    gap: 0;
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu > .pe-slide > .pe-nav-link .pe-nav-content,
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu > .pe-slide > .pe-nav-link .pe-nav-arrow {
+    display: none !important;
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu .pe-slide.pe-has-sub .pe-slide-menu {
+    width: 13rem;
+    margin: 0;
+    padding: .375rem;
+    border: 1px solid var(--ap-line);
+    border-radius: var(--ap-radius-sm);
+    box-shadow: var(--ap-shadow-lg);
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu .pe-slide.pe-has-sub .pe-slide-menu .pe-slide .pe-slide-menu {
+    left: 12.75rem;
+    top: 0;
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu .pe-slide-menu .pe-has-sub > .pe-nav-link .pe-nav-content,
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu .pe-slide-menu .pe-has-sub > .pe-nav-link .pe-nav-arrow {
+    display: flex !important;
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu .pe-slide-menu .pe-has-sub > .pe-nav-link .pe-nav-arrow {
+    transform: rotate(-90deg);
+}
+
+[data-sidebar="icon"] .pe-app-sidebar .pe-slide-menu a.pe-nav-link.active::before {
+    content: none;
+}
+
+/* Profil di kaki sidebar */
+.pe-sidebar-profile {
+    position: relative;
+    z-index: 1010;
+    height: 76px;
+    padding: .75rem;
+    border-top: 1px solid var(--pe-app-sidebar-border-color);
+    background: var(--pe-app-sidebar-bg);
+}
+
+.pe-sidebar-profile-toggle {
+    min-width: 0;
+    height: 100%;
+    padding: .25rem .5rem;
+    border-radius: var(--ap-radius-sm);
+    color: var(--pe-app-sidebar-menu-item-color);
+    text-align: left;
+}
+
+.pe-sidebar-profile-toggle:hover,
+.pe-sidebar-profile-toggle:focus {
+    background-color: var(--ap-hover);
+    color: var(--pe-app-sidebar-menu-item-color-hover);
+}
+
+.pe-sidebar-profile-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: 0 0 2.25rem;
+    object-fit: cover;
+}
+
+.pe-sidebar-profile-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.pe-sidebar-profile-copy > * {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pe-sidebar-profile .dropdown-menu {
+    width: calc(100% - 1rem);
+    min-width: 15rem;
+    max-width: calc(100vw - 1rem);
+    margin: 0 .5rem .35rem;
+}
+
+[data-sidebar="icon"] .pe-sidebar-profile-toggle {
+    justify-content: center;
+}
+
+/* ---------- 3. Header & judul halaman ---------- */
+.app-header .header-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ap-line);
+    border-radius: 50%;
+    background-color: var(--ap-surface);
+    color: var(--ap-muted);
+}
+
+.app-header .header-btn:hover {
+    color: var(--pe-primary);
+    border-color: rgba(var(--pe-primary-rgb), .4);
+}
+
+.app-header .dark-mode-btn .header-btn {
+    border: 0;
+    background-color: transparent;
+}
+
+.app-header .dark-mode-btn .header-btn.active {
+    background-color: var(--ap-surface);
+    box-shadow: var(--ap-shadow);
+}
+
+.header-greeting #navbarSalam {
+    font-size: .9375rem;
+}
+
+.ap-page-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5rem 1rem;
+    margin: 1rem 0 1.25rem;
+}
+
+.ap-page-title h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.ap-page-title .breadcrumb {
+    margin: 0;
+    font-size: .8125rem;
+}
+
+.ap-page-title .breadcrumb-item,
+.ap-page-title .breadcrumb-item a {
+    color: var(--ap-muted);
+}
+
+.ap-page-title .breadcrumb-item.active {
+    color: var(--pe-body-color);
+    font-weight: 500;
+}
+
+/* ---------- 4. Komponen umum ---------- */
+.app-wrapper .card {
+    border: 1px solid var(--ap-line);
+    border-radius: var(--ap-radius);
+    box-shadow: var(--ap-shadow);
+}
+
+.app-wrapper .card > .card-header {
+    padding: .875rem 1.25rem;
+    background-color: transparent;
+    border-bottom: 1px solid var(--ap-line);
+}
+
+.app-wrapper .card > .card-header:first-child {
+    border-radius: var(--ap-radius) var(--ap-radius) 0 0;
+}
+
+.app-wrapper .card-title,
+.app-wrapper .card-header h5,
+.app-wrapper .card-header h6 {
+    font-weight: 600;
+    letter-spacing: -.005em;
+}
+
+.app-wrapper .table > thead > tr > th {
+    padding-top: .625rem;
+    padding-bottom: .625rem;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--ap-muted);
+    background-color: var(--ap-hover);
+    border-bottom-width: 1px;
+}
+
+.app-wrapper .table > tbody > tr > td {
+    vertical-align: middle;
+}
+
+.app-wrapper .table-hover > tbody > tr:hover > * {
+    --pe-table-bg-state: rgba(var(--pe-primary-rgb), .04);
+}
+
+.app-wrapper .btn {
+    border-radius: var(--ap-radius-sm);
+    font-weight: 500;
+}
+
+.app-wrapper .btn.rounded-pill,
+.app-wrapper .btn.rounded-circle {
+    border-radius: 50rem;
+}
+
+.app-wrapper .form-control,
+.app-wrapper .form-select {
+    border-radius: var(--ap-radius-sm);
+}
+
+.app-wrapper .form-control:focus,
+.app-wrapper .form-select:focus {
+    border-color: rgba(var(--pe-primary-rgb), .55);
+    box-shadow: 0 0 0 3px rgba(var(--pe-primary-rgb), .14);
+}
+
+.app-wrapper .form-label {
+    font-size: .8125rem;
+    font-weight: 500;
+}
+
+.app-wrapper .badge {
+    font-weight: 600;
+    letter-spacing: .01em;
+}
+
+.app-wrapper .modal-content,
+.app-wrapper .dropdown-menu,
+.app-header .dropdown-menu,
+.pe-sidebar-profile .dropdown-menu {
+    border: 1px solid var(--ap-line);
+    border-radius: var(--ap-radius);
+    box-shadow: var(--ap-shadow-lg);
+}
+
+.app-wrapper .nav-tabs .nav-link {
+    font-weight: 500;
+}
+
+/* ---------- 5. Dashboard ---------- */
+.dash .tone-primary { --tone: var(--pe-primary-rgb); }
+.dash .tone-success { --tone: var(--pe-success-rgb); }
+.dash .tone-danger { --tone: var(--pe-danger-rgb); }
+.dash .tone-warning { --tone: var(--pe-warning-rgb); }
+.dash .tone-info { --tone: var(--pe-info-rgb); }
+.dash .tone-secondary { --tone: var(--pe-secondary-rgb); }
+
+.dash-heading {
+    margin: 0 0 .75rem;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+}
+
+.dash-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    color: #fff;
+    background-color: rgb(var(--tone, var(--pe-primary-rgb)));
+}
+
+.dash-icon--sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: .8125rem;
+    border-radius: var(--ap-radius-sm);
+    color: rgb(var(--tone, var(--pe-primary-rgb)));
+    background-color: rgba(var(--tone, var(--pe-primary-rgb)), .12);
+}
+
+/* Hero */
+.dash-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 2.25rem;
+    overflow: hidden;
+    border: 1px solid rgba(var(--pe-primary-rgb), .18);
+    border-radius: 1rem;
+    background:
+        radial-gradient(120% 140% at 100% 0%, rgba(var(--pe-info-rgb), .1) 0%, transparent 55%),
+        linear-gradient(135deg, rgba(var(--pe-primary-rgb), .1) 0%, rgba(var(--pe-primary-rgb), .03) 60%),
+        var(--ap-surface);
+}
+
+.dash-hero__body {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.dash-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .3125rem .75rem;
+    font-size: .8125rem;
+    font-weight: 500;
+    border-radius: 50rem;
+    background-color: var(--ap-surface);
+    box-shadow: var(--ap-shadow);
+}
+
+.dash-chip i {
+    color: var(--pe-primary);
+}
+
+.dash-hero__title {
+    margin: 1.125rem 0 .75rem;
+    font-size: clamp(1.625rem, 1.2rem + 1.4vw, 2.375rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+}
+
+.dash-hero__title span {
+    color: var(--pe-primary);
+}
+
+.dash-hero__lead {
+    max-width: 34rem;
+    margin-bottom: 1rem;
+    font-size: .9375rem;
+    color: var(--ap-muted);
+}
+
+.dash-tag {
+    padding: .25rem .75rem;
+    font-size: .8125rem;
+    font-weight: 500;
+    border-radius: 50rem;
+    color: var(--pe-primary);
+    background-color: rgba(var(--pe-primary-rgb), .12);
+}
+
+.dash .dash-btn {
+    padding: .625rem 1.25rem;
+    border-radius: 50rem;
+    font-weight: 600;
+}
+
+.dash .dash-btn--ghost {
+    color: var(--pe-body-color);
+    border: 1px solid var(--ap-line);
+    background-color: var(--ap-surface);
+}
+
+.dash .dash-btn--ghost:hover {
+    border-color: rgba(var(--pe-primary-rgb), .5);
+    color: var(--pe-primary);
+}
+
+.dash-hero__art {
+    flex: 0 0 auto;
+    width: min(34%, 300px);
+    height: auto;
+}
+
+.dash-hero__art .art-blob { fill: rgba(var(--pe-primary-rgb), .1); }
+.dash-hero__art .art-panel,
+.dash-hero__art .art-card { fill: var(--ap-surface); stroke: var(--ap-line); }
+.dash-hero__art .art-line { fill: var(--ap-line); }
+.dash-hero__art .art-dot { fill: rgb(var(--pe-danger-rgb)); }
+.dash-hero__art .art-dot--2 { fill: rgb(var(--pe-warning-rgb)); }
+.dash-hero__art .art-dot--3 { fill: rgb(var(--pe-success-rgb)); }
+.dash-hero__art .art-bar { fill: var(--pe-primary); }
+.dash-hero__art .art-bar--2 { fill: rgb(var(--pe-warning-rgb)); }
+.dash-hero__art .art-bar--3 { fill: rgba(var(--pe-primary-rgb), .4); }
+.dash-hero__art .art-ring { fill: none; stroke: rgba(var(--pe-primary-rgb), .18); stroke-width: 10; }
+.dash-hero__art .art-ring--fill { stroke: var(--pe-primary); stroke-linecap: round; }
+.dash-hero__art .art-check { fill: var(--pe-primary); }
+.dash-hero__art .art-tick { fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.dash-hero__art .art-stand { fill: var(--ap-line); }
+
+@media (max-width: 767.98px) {
+    .dash-hero {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .dash-hero__art {
+        display: none;
+    }
+}
+
+/* Perlu perhatian */
+.dash-attention {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .625rem .5rem;
+    font-size: .875rem;
+    color: var(--pe-body-color);
+    text-decoration: none;
+    border-radius: var(--ap-radius-sm);
+}
+
+.dash-attention:hover {
+    background-color: var(--ap-hover);
+    color: var(--pe-body-color);
+}
+
+.dash-attention + .dash-attention {
+    margin-top: .125rem;
+}
+
+.dash-empty {
+    display: flex;
+    align-items: center;
+    gap: .625rem;
+    font-size: .9375rem;
+    color: var(--ap-muted);
+}
+
+/* Pintasan */
+.dash-shortcuts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .875rem;
+}
+
+@media (min-width: 768px) {
+    .dash-shortcuts {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1600px) {
+    .dash-shortcuts {
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 479.98px) {
+    .dash-shortcuts {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.dash-shortcut {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+    padding: 1rem;
+    color: var(--pe-body-color);
+    text-decoration: none;
+    border: 1px solid rgba(var(--tone), .16);
+    border-radius: var(--ap-radius);
+    background-color: rgba(var(--tone), .07);
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.dash-shortcut:hover {
+    color: var(--pe-body-color);
+    border-color: rgba(var(--tone), .45);
+    box-shadow: var(--ap-shadow-lg);
+    transform: translateY(-2px);
+}
+
+.dash-shortcut__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.3;
+}
+
+.dash-shortcut__text strong {
+    display: block;
+    font-weight: 600;
+}
+
+.dash-shortcut__text small {
+    color: var(--ap-muted);
+}
+
+.dash-shortcut__arrow {
+    font-size: .8125rem;
+    color: var(--ap-muted);
+    transition: transform .15s ease;
+}
+
+.dash-shortcut:hover .dash-shortcut__arrow {
+    transform: translateX(3px);
+}
+
+/* Tab modul (pil) */
+.dash-tabs {
+    gap: .25rem;
+    padding: .3125rem;
+    border: 1px solid var(--ap-line);
+    border-radius: 50rem;
+    background-color: var(--ap-surface);
+    max-width: 100%;
+}
+
+/* Layar sempit: tab membungkus ke baris berikutnya, bukan melebarkan halaman */
+@media (max-width: 1199.98px) {
+    .dash-tabs {
+        width: 100%;
+        border-radius: var(--ap-radius);
+    }
+}
+
+.dash-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4375rem .9375rem;
+    font-size: .875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--ap-muted);
+    border: 0;
+    border-radius: 50rem;
+    background: transparent;
+}
+
+.dash-tabs .nav-link:hover {
+    color: var(--pe-body-color);
+    background-color: var(--ap-hover);
+}
+
+.dash-tabs .nav-link.active {
+    color: #fff;
+    background-color: var(--pe-primary);
+    box-shadow: 0 4px 10px -4px rgba(var(--pe-primary-rgb), .6);
+}
+
+/* Isi tab: KPI, kartu, tabel */
+.dash .tab-pane hr {
+    margin: 1rem 0 !important;
+    border: 0;
+    opacity: 0;
+}
+
+.dash .kpi-card {
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.dash .kpi-card:hover {
+    border-color: rgba(var(--pe-primary-rgb), .4);
+    box-shadow: var(--ap-shadow-lg);
+}
+
+.dash .kpi-card .kpi-bg-img {
+    display: none;
+}
+
+.dash .kpi-card .card-body {
+    padding: 1.125rem 1.25rem;
+}
+
+.dash .kpi-card .text-muted {
+    font-size: .8125rem;
+    font-weight: 500;
+}
+
+.dash .kpi-card .fs-4 {
+    margin-top: .125rem;
+    font-size: 1.625rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2;
+    letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.dash .kpi-card .fs-3 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.125rem !important;
+    border-radius: var(--ap-radius);
+    background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.dash .table {
+    --pe-table-striped-bg: transparent;
+    margin-bottom: 0;
+}
+
+.dash .table-bordered > :not(caption) > * > * {
+    border-width: 0 0 1px;
+}
+
+.dash .table > tbody > tr:last-child > td {
+    border-bottom: 0;
+}
+
+.dash .card .card {
+    box-shadow: none;
+}
+
+/* Mode ikon: submenu aktif tidak boleh terbuka permanen, hanya saat di-hover */
+[data-sidebar="icon"] .pe-app-sidebar .pe-main-menu > .pe-slide:not(:hover) > .pe-slide-menu {
+    display: none !important;
+}

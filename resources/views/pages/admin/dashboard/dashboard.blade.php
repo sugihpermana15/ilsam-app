@@ -13,21 +13,6 @@
 
 @section('css')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    .kpi-card {
-      border: 1px solid rgba(15, 23, 42, 0.14) !important;
-      box-shadow: none;
-    }
-
-    .kpi-card:hover {
-      border-color: rgba(15, 23, 42, 0.22) !important;
-    }
-
-    .kpi-bg-img {
-      opacity: .08;
-      pointer-events: none;
-    }
-  </style>
 @endsection
 
 @section('content')
@@ -129,80 +114,163 @@
       $activeTab = in_array(($tab ?? ''), $tabs, true) ? $tab : ($tabs[0] ?? null);
     @endphp
 
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div
-            class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-            <h5 class="card-title mb-0">Dashboard</h5>
-          </div>
+    @php
+      $dashUser = auth()->user();
+      $dashNow = now();
+      $dashHour = (int) $dashNow->format('G');
+      $dashGreeting = match (true) {
+        $dashHour < 11 => 'Selamat pagi',
+        $dashHour < 15 => 'Selamat siang',
+        $dashHour < 18 => 'Selamat sore',
+        default => 'Selamat malam',
+      };
+      $dashCan = fn (string $key): bool => $dashUser && \App\Support\MenuAccess::can($dashUser, $key, 'read');
 
-          <div class="card-body">
-            @if(!$showAsset && !$showStamps && !$showUniforms && !$showStock && !$showEmployee && !$showDocuments && !$showCareer)
-              <div class="alert alert-warning mb-0">
-                Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
+      $tabMeta = [
+        'asset' => ['Aset', 'fa-chart-line'],
+        'stamps' => ['Materai', 'fa-stamp'],
+        'uniforms' => ['Seragam', 'fa-shirt'],
+        'stock' => ['Stok', 'fa-boxes-stacked'],
+        'employee' => ['Karyawan', 'fa-users'],
+        'documents' => ['Arsip Berkas', 'fa-folder-open'],
+        'career' => ['Career', 'fa-briefcase'],
+      ];
+
+      // Pintasan: hanya modul yang boleh dibuka pengguna.
+      $dashShortcuts = [];
+      foreach ([
+        ['assets_data', 'admin.assets.index', [], 'Data Aset', 'Aset & IT', 'fa-hard-drive', 'primary'],
+        ['stock', 'admin.stock.master.index', ['category' => 'atk'], 'Stok ATK', 'Persediaan', 'fa-boxes-stacked', 'success'],
+        ['stamps_transactions', 'admin.stamps.transactions.index', [], 'Ledger Materai', 'General Affairs', 'fa-stamp', 'danger'],
+        ['uniforms_stock', 'admin.uniforms.stock.index', [], 'Stok Seragam', 'General Affairs', 'fa-shirt', 'warning'],
+        ['employees_index', 'admin.employees.index', [], 'Karyawan', 'SDM', 'fa-users', 'info'],
+        ['daily_tasks', 'admin.daily_tasks.index', [], 'Daily Tasks', 'Produktivitas', 'fa-clipboard-check', 'secondary'],
+        ['career', 'admin.career_candidates.index', [], 'Screening CV', 'Rekrutmen', 'fa-briefcase', 'primary'],
+        ['documents_archive', 'admin.documents.index', [], 'Arsip Berkas', 'Aset & IT', 'fa-folder-open', 'success'],
+      ] as [$scKey, $scRoute, $scParams, $scTitle, $scArea, $scIcon, $scTone]) {
+        if (count($dashShortcuts) < 6 && $dashCan($scKey) && \Illuminate\Support\Facades\Route::has($scRoute)) {
+          $dashShortcuts[] = ['url' => route($scRoute, $scParams), 'title' => $scTitle, 'area' => $scArea, 'icon' => $scIcon, 'tone' => $scTone];
+        }
+      }
+
+      // Perlu perhatian: dirangkum dari data yang sudah dimuat untuk tiap tab.
+      $dashAttention = [];
+      $lowStockCount = (int) ($stock['kpi']['low_stock_items'] ?? 0);
+      if ($showStock && $lowStockCount > 0) {
+        $dashAttention[] = ['tone' => 'danger', 'icon' => 'fa-triangle-exclamation', 'text' => number_format($lowStockCount, 0, ',', '.') . ' item stok di bawah batas minimum', 'tab' => 'stock'];
+      }
+      $expiringDocs = $showDocuments ? count($documents['expiring'] ?? []) : 0;
+      if ($expiringDocs > 0) {
+        $dashAttention[] = ['tone' => 'warning', 'icon' => 'fa-file-contract', 'text' => number_format($expiringDocs, 0, ',', '.') . ' dokumen segera berakhir (≤ 90 hari)', 'tab' => 'documents'];
+      }
+      $expiringOpenings = $showCareer ? (int) ($career['stats']['expiring_openings'] ?? 0) : 0;
+      if ($expiringOpenings > 0) {
+        $dashAttention[] = ['tone' => 'warning', 'icon' => 'fa-hourglass-half', 'text' => number_format($expiringOpenings, 0, ',', '.') . ' lowongan mendekati deadline (7 hari)', 'tab' => 'career'];
+      }
+      $newCandidates = $showCareer ? (int) ($career['stats']['new_today'] ?? 0) : 0;
+      if ($newCandidates > 0) {
+        $dashAttention[] = ['tone' => 'info', 'icon' => 'fa-user-plus', 'text' => number_format($newCandidates, 0, ',', '.') . ' kandidat baru hari ini', 'tab' => 'career'];
+      }
+    @endphp
+
+    <div class="dash">
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-xl-8">
+          <section class="dash-hero h-100">
+            <div class="dash-hero__body">
+              <span class="dash-chip"><i class="far fa-calendar"></i> {{ $dashNow->locale('id')->translatedFormat('l, j F Y') }}</span>
+              <h1 class="dash-hero__title">{{ $dashGreeting }},<br><span>{{ $dashUser->name ?? $dashUser->username }}</span></h1>
+              <p class="dash-hero__lead">Ringkasan operasional dari modul yang dapat Anda akses, diperbarui setiap kali halaman dibuka.</p>
+              <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="dash-tag">{{ $dashUser->role?->role_name ?? 'Admin' }}</span>
+                <span class="dash-tag">{{ count($tabs) }} modul aktif</span>
               </div>
-            @else
-              @if(count($tabs) > 1)
-                <ul class="nav nav-tabs mb-3" role="tablist">
-                  @if($showAsset)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'asset' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-asset" type="button" role="tab">
-                        <i class="fas fa-chart-line me-1"></i> Asset
-                      </button>
-                    </li>
-                  @endif
-                  @if($showStamps)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'stamps' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-stamps" type="button" role="tab">
-                        <i class="fas fa-stamp me-1"></i> Materai
-                      </button>
-                    </li>
-                  @endif
-                  @if($showUniforms)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'uniforms' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-uniforms" type="button" role="tab">
-                        <i class="fas fa-shirt me-1"></i> Seragam
-                      </button>
-                    </li>
-                  @endif
-                  @if($showStock)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'stock' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-stock" type="button" role="tab">
-                        <i class="fas fa-boxes-stacked me-1"></i> Stock
-                      </button>
-                    </li>
-                  @endif
-                  @if($showEmployee)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'employee' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-employee" type="button" role="tab">
-                        <i class="fas fa-users me-1"></i> Karyawan
-                      </button>
-                    </li>
-                  @endif
-                  @if($showDocuments)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'documents' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-documents" type="button" role="tab">
-                        <i class="fas fa-folder-open me-1"></i> Arsip Berkas
-                      </button>
-                    </li>
-                  @endif
-                  @if($showCareer)
-                    <li class="nav-item" role="presentation">
-                      <button class="nav-link {{ $activeTab === 'career' ? 'active' : '' }}" data-bs-toggle="tab"
-                        data-bs-target="#tab-career" type="button" role="tab">
-                        <i class="fas fa-briefcase me-1"></i> Career
-                      </button>
-                    </li>
-                  @endif
-                </ul>
+              @if(!empty($dashShortcuts))
+                <div class="d-flex flex-wrap gap-2">
+                  <a href="{{ $dashShortcuts[0]['url'] }}" class="btn btn-primary dash-btn">Buka {{ $dashShortcuts[0]['title'] }} <i class="fas fa-arrow-right ms-1"></i></a>
+                  @isset($dashShortcuts[1])
+                    <a href="{{ $dashShortcuts[1]['url'] }}" class="btn dash-btn dash-btn--ghost">Buka {{ $dashShortcuts[1]['title'] }}</a>
+                  @endisset
+                </div>
               @endif
+            </div>
+            <svg class="dash-hero__art" viewBox="0 0 320 240" aria-hidden="true">
+              <ellipse cx="170" cy="130" rx="140" ry="100" class="art-blob" />
+              <rect x="70" y="50" width="190" height="130" rx="12" class="art-panel" />
+              <circle cx="86" cy="66" r="3.5" class="art-dot" /><circle cx="98" cy="66" r="3.5" class="art-dot art-dot--2" /><circle cx="110" cy="66" r="3.5" class="art-dot art-dot--3" />
+              <rect x="88" y="84" width="60" height="6" rx="3" class="art-line" /><rect x="88" y="97" width="38" height="6" rx="3" class="art-line" />
+              <rect x="92" y="136" width="13" height="30" rx="3" class="art-bar" /><rect x="111" y="124" width="13" height="42" rx="3" class="art-bar art-bar--2" /><rect x="130" y="112" width="13" height="54" rx="3" class="art-bar" /><rect x="149" y="130" width="13" height="36" rx="3" class="art-bar art-bar--3" />
+              <circle cx="212" cy="132" r="26" class="art-ring" /><circle cx="212" cy="132" r="26" class="art-ring art-ring--fill" stroke-dasharray="110 164" transform="rotate(-90 212 132)" />
+              <rect x="218" y="36" width="78" height="38" rx="10" class="art-card" /><circle cx="237" cy="55" r="9" class="art-check" /><path d="M233 55l3 3 5-6" class="art-tick" /><rect x="252" y="48" width="32" height="5" rx="2.5" class="art-line" /><rect x="252" y="58" width="22" height="5" rx="2.5" class="art-line" />
+              <rect x="150" y="180" width="30" height="16" class="art-stand" /><rect x="128" y="196" width="74" height="6" rx="3" class="art-stand" />
+            </svg>
+          </section>
+        </div>
+
+        <div class="col-12 col-xl-4">
+          <section class="card dash-card h-100 mb-0">
+            <div class="card-header d-flex align-items-center gap-2">
+              <span class="dash-icon dash-icon--sm tone-danger"><i class="fas fa-clipboard-list"></i></span>
+              <h6 class="mb-0">Perlu perhatian</h6>
+              @if(!empty($dashAttention))
+                <span class="badge rounded-pill text-bg-danger ms-auto">{{ count($dashAttention) }}</span>
+              @endif
+            </div>
+            <div class="card-body">
+              @forelse($dashAttention as $attention)
+                <a href="{{ route('admin.dashboard', ['tab' => $attention['tab']]) }}" class="dash-attention">
+                  <span class="dash-icon dash-icon--sm tone-{{ $attention['tone'] }}"><i class="fas {{ $attention['icon'] }}"></i></span>
+                  <span class="flex-grow-1">{{ $attention['text'] }}</span>
+                  <i class="fas fa-chevron-right small text-muted"></i>
+                </a>
+              @empty
+                <div class="dash-empty">
+                  <i class="far fa-circle-check text-success"></i>
+                  <span>Tidak ada pekerjaan yang menunggu.</span>
+                </div>
+              @endforelse
+            </div>
+          </section>
+        </div>
+      </div>
+
+      @if(!empty($dashShortcuts))
+        <h2 class="dash-heading">Pintasan</h2>
+        <div class="dash-shortcuts mb-4">
+          @foreach($dashShortcuts as $shortcut)
+            <a href="{{ $shortcut['url'] }}" class="dash-shortcut tone-{{ $shortcut['tone'] }}">
+              <span class="dash-icon"><i class="fas {{ $shortcut['icon'] }}"></i></span>
+              <span class="dash-shortcut__text">
+                <strong>{{ $shortcut['title'] }}</strong>
+                <small>{{ $shortcut['area'] }}</small>
+              </span>
+              <i class="fas fa-arrow-right dash-shortcut__arrow"></i>
+            </a>
+          @endforeach
+        </div>
+      @endif
+
+      @if(!$showAsset && !$showStamps && !$showUniforms && !$showStock && !$showEmployee && !$showDocuments && !$showCareer)
+        <div class="alert alert-warning mb-0">
+          Anda tidak memiliki akses untuk melihat KPI/Chart Dashboard.
+        </div>
+      @else
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+          <h2 class="dash-heading mb-0">Ringkasan modul</h2>
+          @if(count($tabs) > 1)
+            <ul class="nav dash-tabs" role="tablist">
+              @foreach($tabs as $tabKey)
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link {{ $activeTab === $tabKey ? 'active' : '' }}" data-bs-toggle="tab"
+                    data-bs-target="#tab-{{ $tabKey }}" type="button" role="tab"
+                    aria-selected="{{ $activeTab === $tabKey ? 'true' : 'false' }}">
+                    <i class="fas {{ $tabMeta[$tabKey][1] }}"></i> {{ $tabMeta[$tabKey][0] }}
+                  </button>
+                </li>
+              @endforeach
+            </ul>
+          @endif
+        </div>
 
               <div class="tab-content">
                 @if($showAsset)
@@ -214,7 +282,7 @@
                             <div class="card-body position-relative z-1">
                               <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                  <div class="text-muted">Total Assets</div>
+                                  <div class="text-muted">Total Aset</div>
                                   <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['total_assets'] ?? 0) }}</div>
                                 </div>
                                 <div class="text-primary fs-3"><i class="fas fa-boxes-stacked"></i></div>
@@ -230,7 +298,7 @@
                             <div class="card-body position-relative z-1">
                               <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                  <div class="text-muted">Active</div>
+                                  <div class="text-muted">Aktif</div>
                                   <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['active_assets'] ?? 0) }}</div>
                                 </div>
                                 <div class="text-success fs-3"><i class="fas fa-circle-check"></i></div>
@@ -246,7 +314,7 @@
                             <div class="card-body position-relative z-1">
                               <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                  <div class="text-muted">Inactive / Sold / Disposed</div>
+                                  <div class="text-muted">Nonaktif / Terjual / Dihapus</div>
                                   <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['inactive_assets'] ?? 0) }}</div>
                                 </div>
                                 <div class="text-warning fs-3"><i class="fas fa-circle-minus"></i></div>
@@ -262,7 +330,7 @@
                             <div class="card-body position-relative z-1">
                               <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                  <div class="text-muted">Total Value</div>
+                                  <div class="text-muted">Total Nilai</div>
                                   <div class="fs-4 fw-semibold">Rp
                                     {{ number_format((float) ($asset['kpi']['total_value'] ?? 0), 0, ',', '.') }}
                                   </div>
@@ -280,10 +348,10 @@
                             <div class="card-body position-relative z-1">
                               <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                  <div class="text-muted">New (30 days)</div>
+                                  <div class="text-muted">Baru (30 hari)</div>
                                   <div class="fs-4 fw-semibold">{{ number_format($asset['kpi']['new_assets_30d'] ?? 0) }}</div>
                                 </div>
-                                <div class="text-primary fs-3"><i class="fas fa-sparkles"></i></div>
+                                <div class="text-primary fs-3"><i class="fas fa-wand-magic-sparkles"></i></div>
                               </div>
                             </div>
                             <img src="{{ asset('assets/img/dashboard/academy-bg5.png') }}" alt=""
@@ -300,7 +368,7 @@
                         <div class="col-12 col-xl-6">
                           <div class="card">
                             <div class="card-header">
-                              <h6 class="mb-0">Assets by Status</h6>
+                              <h6 class="mb-0">Aset per Status</h6>
                             </div>
                             <div class="card-body">
                               <div id="assetByStatus" style="min-height: 320px;"></div>
@@ -310,7 +378,7 @@
                         <div class="col-12 col-xl-6">
                           <div class="card">
                             <div class="card-header">
-                              <h6 class="mb-0">Assets by Location</h6>
+                              <h6 class="mb-0">Aset per Lokasi</h6>
                             </div>
                             <div class="card-body">
                               <div id="assetByLocation" style="min-height: 320px;"></div>
@@ -320,7 +388,7 @@
                         <div class="col-12">
                           <div class="card">
                             <div class="card-header">
-                              <h6 class="mb-0">New Assets (Monthly)</h6>
+                              <h6 class="mb-0">Aset Baru (Bulanan)</h6>
                             </div>
                             <div class="card-body">
                               <div id="assetMonthlyNew" style="min-height: 320px;"></div>
@@ -335,8 +403,8 @@
                     @if(!empty($permissions['asset']['recent']))
                       <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                          <h6 class="mb-0">Recently Updated Assets</h6>
-                          <a href="{{ route('admin.assets.index') }}" class="btn btn-outline-secondary btn-sm">Open Assets</a>
+                          <h6 class="mb-0">Aset Terakhir Diperbarui</h6>
+                          <a href="{{ route('admin.assets.index') }}" class="btn btn-outline-secondary btn-sm">Buka Data Aset</a>
                         </div>
                         <div class="card-body table-responsive">
                           <table class="table table-striped table-bordered">
@@ -1047,9 +1115,6 @@
                 @endif
               </div>
             @endif
-          </div>
-        </div>
-      </div>
     </div>
   @endif
 @endsection

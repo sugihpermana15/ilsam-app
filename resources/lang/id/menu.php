@@ -11,6 +11,18 @@ return [
         'web_pages' => 'Halaman Web',
         'settings_ui' => 'Pengaturan & UI',
     ],
+    'section' => [
+        'general_affairs' => 'General Affairs',
+        'inventory' => 'Persediaan',
+        'assets_it' => 'Aset & IT',
+        'hr' => 'SDM & Rekrutmen',
+        'productivity' => 'Produktivitas',
+        'website' => 'Website',
+        'settings' => 'Pengaturan',
+        'other' => 'Lainnya',
+    ],
+    'search_placeholder' => 'Cari menu…',
+    'search_empty' => 'Menu tidak ditemukan.',
 
     'dashboard' => 'Dashboard',
 

@@ -13,96 +13,6 @@
         }
     @endphp
 
-    <style>
-        /* Fix mode sidebar icon: sembunyikan teks menu level-1 agar tidak "miss" */
-        [data-sidebar="icon"] .pe-app-sidebar .pe-main-menu>.pe-slide>.pe-nav-link {
-            justify-content: center;
-            gap: 0;
-        }
-
-        [data-sidebar="icon"] .pe-app-sidebar .pe-main-menu>.pe-slide>.pe-nav-link .pe-nav-content,
-        [data-sidebar="icon"] .pe-app-sidebar .pe-main-menu>.pe-slide>.pe-nav-link .pe-nav-arrow {
-            display: none !important;
-        }
-
-        [data-sidebar="icon"] .pe-app-sidebar .pe-main-menu>.pe-slide>.pe-nav-link .pe-nav-icon {
-            margin: 0 auto;
-        }
-
-        .pe-stock-menu-heading {
-            color: #98a2b3;
-            font-size: .6875rem;
-            font-weight: 700;
-            letter-spacing: .04em;
-            padding: .875rem 1rem .25rem 2.5rem;
-            text-transform: uppercase;
-        }
-
-        .pe-app-sidebar .pe-app-sidebar-menu .pe-slide-menu .pe-slide-menu {
-            margin-left: 1rem;
-        }
-
-        .pe-app-sidebar.has-profile .pe-app-sidebar-menu {
-            height: calc(100% - var(--pe-app-header-height) - 76px);
-        }
-
-        .pe-sidebar-profile {
-            position: relative;
-            z-index: 1010;
-            height: 76px;
-            padding: .75rem;
-            border-top: 1px solid var(--pe-app-sidebar-border-color);
-            background: var(--pe-app-sidebar-bg);
-        }
-
-        .pe-sidebar-profile-toggle {
-            min-width: 0;
-            height: 100%;
-            padding: .25rem;
-            color: var(--pe-app-sidebar-menu-item-color);
-            text-align: left;
-        }
-
-        .pe-sidebar-profile-toggle:hover,
-        .pe-sidebar-profile-toggle:focus {
-            color: var(--pe-app-sidebar-menu-item-color-hover);
-        }
-
-        .pe-sidebar-profile-avatar {
-            width: 2.25rem;
-            height: 2.25rem;
-            flex: 0 0 2.25rem;
-            object-fit: cover;
-        }
-
-        .pe-sidebar-profile-copy {
-            flex: 1 1 auto;
-            min-width: 0;
-        }
-
-        .pe-sidebar-profile-copy > * {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .pe-sidebar-profile .dropdown-menu {
-            width: calc(100% - 1rem);
-            min-width: 15rem;
-            max-width: calc(100vw - 1rem);
-            margin: 0 .5rem .35rem;
-        }
-
-        [data-sidebar="icon"] .pe-sidebar-profile-toggle {
-            justify-content: center;
-        }
-
-        [data-sidebar="icon"] .pe-sidebar-profile-copy,
-        [data-sidebar="icon"] .pe-sidebar-profile-arrow {
-            display: none !important;
-        }
-    </style>
     <div class="pe-app-sidebar-logo px-6 d-flex align-items-center position-relative">
         <!--begin::Brand Image-->
         <a href="{{ $sidebarHomeUrl }}" class="fs-18 fw-semibold">
@@ -2034,25 +1944,60 @@
             ],
         ];
 
-        $masterDataPermissionKeys = [
-            'devices',
-            'employees',
-            'master_hr',
-            'master_assets',
-            'master_accounts',
-            'master_daily_task',
+        /*
+        |----------------------------------------------------------------------
+        | Struktur menu 3 tingkat
+        |----------------------------------------------------------------------
+        | Tingkat 1: Area kerja (General Affairs, Persediaan, Aset & IT, ...)
+        | Tingkat 2: Modul (Materai, Seragam, ATK, Karyawan, ...)
+        | Tingkat 3: Halaman (Ledger, Permintaan, Master, ...)
+        |
+        | Definisi per-role di atas tetap menjadi sumber item & permission key;
+        | blok ini hanya menyusun ulang item tersebut ke dalam area kerja.
+        */
+        $menuSections = [
+            'ga' => ['title' => __('menu.section.general_affairs'), 'icon' => 'fas fa-building'],
+            'inventory' => ['title' => __('menu.section.inventory'), 'icon' => 'fas fa-boxes-stacked'],
+            'assets' => ['title' => __('menu.section.assets_it'), 'icon' => 'fas fa-laptop'],
+            'hr' => ['title' => __('menu.section.hr'), 'icon' => 'fas fa-users'],
+            'work' => ['title' => __('menu.section.productivity'), 'icon' => 'fas fa-list-check'],
+            'website' => ['title' => __('menu.section.website'), 'icon' => 'fas fa-globe'],
+            'settings' => ['title' => __('menu.section.settings'), 'icon' => 'fas fa-gear', 'permission_key' => 'settings'],
+            'other' => ['title' => __('menu.section.other'), 'icon' => 'fas fa-layer-group'],
         ];
-        $groupOrder = ['Main', 'Application', 'Master Data', 'Web Pages', 'Settings & UI'];
-        $menuGroupDefinitions = [
-            'Application' => ['title' => 'Operasional', 'icon' => 'fas fa-layer-group'],
-            'Master Data' => ['title' => 'Master Data', 'icon' => 'fas fa-database'],
-            'Web Pages' => ['title' => 'Website', 'icon' => 'fas fa-globe'],
-            'Settings & UI' => [
-                'title' => 'Settings',
-                'icon' => 'fas fa-gear',
-                'permission_key' => 'settings',
-            ],
+        $sectionByPermissionKey = [
+            'stock' => 'inventory',
+            'assets' => 'assets',
+            'devices' => 'assets',
+            'master_assets' => 'assets',
+            'master_accounts' => 'assets',
+            'employees' => 'hr',
+            'master_hr' => 'hr',
+            'recruitment' => 'hr',
+            'career' => 'hr',
+            'daily_tasks' => 'work',
+            'notes' => 'work',
+            'master_daily_task' => 'work',
+            'certificate' => 'website',
+            'website_products' => 'website',
+            'website_settings' => 'website',
+            'website_contact_page' => 'website',
+            'website_home_sections' => 'website',
+            'stamps_requests' => 'ga',
+            'stamps_validation' => 'ga',
+            'settings' => 'settings',
         ];
+        $sectionByTitle = [
+            'Manajemen Materai' => 'ga',
+            'Manajemen Seragam' => 'ga',
+        ];
+        // Urutan modul di dalam area (yang tidak terdaftar mengikuti urutan definisi).
+        $moduleOrder = [
+            'employees', 'master_hr', 'recruitment', 'career',
+            'assets', 'devices', 'master_assets', 'master_accounts',
+            'daily_tasks', 'notes', 'master_daily_task',
+        ];
+
         $collectMenuRoutes = function (array $item) use (&$collectMenuRoutes): array {
             $routes = (array) ($item['active_routes'] ?? []);
             if (!empty($item['route'])) {
@@ -2066,70 +2011,81 @@
             return array_values(array_unique(array_filter($routes, 'is_string')));
         };
 
-        foreach ($menus as $role => $groups) {
-            $normalizedGroups = [];
+        // Daftar datar ber-heading (ATK / Material / APD) -> modul bersarang.
+        $nestByHeadings = function (array $children): array {
+            $hasHeading = false;
+            foreach ($children as $child) {
+                if (!empty($child['is_heading'])) {
+                    $hasHeading = true;
+                    break;
+                }
+            }
+            if (!$hasHeading) {
+                return $children;
+            }
 
+            $nested = [];
+            $current = null;
+            foreach ($children as $child) {
+                if (!empty($child['is_heading'])) {
+                    if ($current !== null && !empty($current['children'])) {
+                        $nested[] = $current;
+                    }
+                    $current = [
+                        'title' => $child['title'] ?? '',
+                        'permission_key' => $child['permission_key'] ?? null,
+                        'children' => [],
+                    ];
+                    continue;
+                }
+                if ($current === null) {
+                    $nested[] = $child;
+                    continue;
+                }
+                $current['children'][] = $child;
+            }
+            if ($current !== null && !empty($current['children'])) {
+                $nested[] = $current;
+            }
+
+            return $nested;
+        };
+
+        foreach ($menus as $role => $groups) {
+            // 1) Gabungkan item duplikat antar grup lama.
+            $flatItems = [];
             foreach ($groups as $group) {
                 foreach ($group['items'] as $item) {
-                    $titleGroup = in_array($item['permission_key'] ?? null, $masterDataPermissionKeys, true)
-                        ? 'Master Data'
-                        : $group['title_group'];
-                    $normalizedGroups[$titleGroup] ??= [
-                        'title_group' => $titleGroup,
-                        'items' => [],
-                    ];
-
                     $itemIdentity = implode('|', [
                         $item['title'] ?? '',
                         $item['permission_key'] ?? '',
                         $item['route'] ?? '',
                     ]);
-                    $existingIndex = null;
 
-                    foreach ($normalizedGroups[$titleGroup]['items'] as $index => $existingItem) {
-                        $existingIdentity = implode('|', [
-                            $existingItem['title'] ?? '',
-                            $existingItem['permission_key'] ?? '',
-                            $existingItem['route'] ?? '',
-                        ]);
-
-                        if ($existingIdentity === $itemIdentity) {
-                            $existingIndex = $index;
-                            break;
-                        }
-                    }
-
-                    if ($existingIndex === null) {
-                        $normalizedGroups[$titleGroup]['items'][] = $item;
+                    if (!isset($flatItems[$itemIdentity])) {
+                        $flatItems[$itemIdentity] = $item;
                         continue;
                     }
 
-                    $existingItem = &$normalizedGroups[$titleGroup]['items'][$existingIndex];
+                    $existingItem = &$flatItems[$itemIdentity];
                     $existingItem['active_routes'] = array_values(array_unique(array_merge(
                         (array) ($existingItem['active_routes'] ?? []),
                         (array) ($item['active_routes'] ?? []),
                     )));
 
-                    foreach ((array) ($item['children'] ?? []) as $child) {
-                        $childIdentity = serialize([
+                    $childIdentity = function (array $child): string {
+                        return serialize([
                             $child['title'] ?? null,
                             $child['route'] ?? null,
                             $child['params'] ?? [],
                             $child['is_heading'] ?? false,
                             $child['permission_key'] ?? null,
                         ]);
+                    };
+                    foreach ((array) ($item['children'] ?? []) as $child) {
                         $matchingChildIndex = null;
-
                         foreach ((array) ($existingItem['children'] ?? []) as $childIndex => $existingChild) {
-                            $existingChildIdentity = serialize([
-                                $existingChild['title'] ?? null,
-                                $existingChild['route'] ?? null,
-                                $existingChild['params'] ?? [],
-                                $existingChild['is_heading'] ?? false,
-                                $existingChild['permission_key'] ?? null,
-                            ]);
-
-                            if ($existingChildIdentity === $childIdentity) {
+                            if ($childIdentity($existingChild) === $childIdentity($child)) {
                                 $matchingChildIndex = $childIndex;
                                 break;
                             }
@@ -2140,55 +2096,74 @@
                             continue;
                         }
 
-                        $existingChild = &$existingItem['children'][$matchingChildIndex];
-                        $existingChild['active_routes'] = array_values(array_unique(array_merge(
-                            (array) ($existingChild['active_routes'] ?? []),
+                        $existingItem['children'][$matchingChildIndex]['active_routes'] = array_values(array_unique(array_merge(
+                            (array) ($existingItem['children'][$matchingChildIndex]['active_routes'] ?? []),
                             (array) ($child['active_routes'] ?? []),
                         )));
-                        unset($existingChild);
                     }
                     unset($existingItem);
                 }
             }
 
-            uksort($normalizedGroups, function (string $left, string $right) use ($groupOrder): int {
-                return array_search($left, $groupOrder, true) <=> array_search($right, $groupOrder, true);
-            });
-
-            $topLevelItems = [];
-            foreach ($normalizedGroups as $group) {
-                if ($group['title_group'] === 'Main') {
-                    $topLevelItems = array_merge($topLevelItems, $group['items']);
+            // 2) Tempatkan setiap item ke area kerja.
+            $rootItems = [];
+            $sectionModules = [];
+            foreach ($flatItems as $item) {
+                $permissionKey = $item['permission_key'] ?? null;
+                $isDashboard = in_array($item['route'] ?? null, ['admin.dashboard', 'user.dashboard'], true);
+                if ($isDashboard) {
+                    $rootItems[] = $item;
                     continue;
                 }
 
-                $definition = $menuGroupDefinitions[$group['title_group']] ?? null;
-                if ($definition === null || empty($group['items'])) {
-                    continue;
-                }
+                $sectionKey = $sectionByTitle[$item['title'] ?? ''] ?? ($sectionByPermissionKey[$permissionKey] ?? 'other');
 
-                $groupItems = $group['items'];
-                if ($group['title_group'] === 'Settings & UI') {
-                    $groupItems = [];
-                    foreach ($group['items'] as $item) {
-                        $groupItems = array_merge($groupItems, (array) ($item['children'] ?? [$item]));
+                if ($sectionKey === 'inventory' || $sectionKey === 'settings') {
+                    // Modul tunggal: anaknya langsung menjadi tingkat 2.
+                    $children = $nestByHeadings((array) ($item['children'] ?? [$item]));
+                    foreach ($children as $child) {
+                        $sectionModules[$sectionKey][] = $child;
                     }
+                    continue;
                 }
+
+                $sectionModules[$sectionKey][] = $item;
+            }
+
+            // 3) Bentuk pohon akhir: Dashboard + area kerja.
+            $topLevelItems = $rootItems;
+            foreach ($menuSections as $sectionKey => $definition) {
+                $modules = $sectionModules[$sectionKey] ?? [];
+                if (empty($modules)) {
+                    continue;
+                }
+
+                $orderOf = function (array $module) use ($moduleOrder): int {
+                    $position = array_search($module['permission_key'] ?? null, $moduleOrder, true);
+                    return $position === false ? -1 : $position;
+                };
+                $indexed = [];
+                foreach ($modules as $index => $module) {
+                    $indexed[] = [$orderOf($module), $index, $module];
+                }
+                usort($indexed, fn(array $a, array $b): int => [$a[0], $a[1]] <=> [$b[0], $b[1]]);
+                $modules = array_column($indexed, 2);
 
                 $activeRoutes = [];
-                foreach ($groupItems as $item) {
-                    $activeRoutes = array_merge($activeRoutes, $collectMenuRoutes($item));
+                foreach ($modules as $module) {
+                    $activeRoutes = array_merge($activeRoutes, $collectMenuRoutes($module));
                 }
 
-                $topLevelItems[] = [
+                $section = [
                     'title' => $definition['title'],
                     'icon' => $definition['icon'],
                     'active_routes' => array_values(array_unique($activeRoutes)),
-                    'children' => $groupItems,
+                    'children' => $modules,
                 ];
                 if (!empty($definition['permission_key'])) {
-                    $topLevelItems[array_key_last($topLevelItems)]['permission_key'] = $definition['permission_key'];
+                    $section['permission_key'] = $definition['permission_key'];
                 }
+                $topLevelItems[] = $section;
             }
 
             $menus[$role] = [[
@@ -2570,278 +2545,196 @@
             return $item['permission_key'] ?? $inferPermissionKey($item);
         };
     @endphp
+    @php
+        $currentRoute = Route::currentRouteName();
+
+        $leafMatches = function (array $node) use ($currentRoute): bool {
+            $nodeRoute = $node['route'] ?? null;
+            $nodeActiveRoutes = (array) ($node['active_routes'] ?? []);
+            $nodeParams = (array) ($node['params'] ?? []);
+
+            // Assets index dengan query lokasi harus menyorot submenu lokasi
+            // (Jababeka/Karawang), bukan "Data Asset" yang generik.
+            if (
+                $nodeRoute === 'admin.assets.index' &&
+                empty($nodeParams) &&
+                in_array(request()->query('location'), ['Jababeka', 'Karawang'], true)
+            ) {
+                return false;
+            }
+
+            if ($currentRoute !== $nodeRoute && !in_array($currentRoute, $nodeActiveRoutes, true)) {
+                return false;
+            }
+
+            foreach ($nodeParams as $key => $value) {
+                if (request()->query($key, request()->route($key)) != $value) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+        // Susun pohon menu yang sudah difilter hak akses + status aktif (maks. 3 tingkat).
+        $buildMenuNode = function (array $item, int $level, string $id) use (
+            &$buildMenuNode,
+            $isMenuAllowed,
+            $resolvePermissionKey,
+            $leafMatches,
+            $currentRoute,
+            $tMenu,
+        ): ?array {
+            if (!empty($item['is_heading'])) {
+                return null;
+            }
+
+            $node = [
+                'id' => $id,
+                'level' => $level,
+                'title' => $tMenu($item['title'] ?? ''),
+                'icon' => $item['icon'] ?? null,
+                'url' => null,
+                'active' => false,
+                'is_default' => !empty($item['default']),
+                'children' => [],
+            ];
+
+            if (!empty($item['children']) && is_array($item['children']) && $level < 3) {
+                if (!empty($item['permission_key']) && !$isMenuAllowed($item['permission_key'])) {
+                    return null;
+                }
+
+                foreach (array_values($item['children']) as $index => $child) {
+                    $childNode = $buildMenuNode($child, $level + 1, $id . '_' . $index);
+                    if ($childNode !== null) {
+                        $node['children'][] = $childNode;
+                    }
+                }
+                if (empty($node['children'])) {
+                    return null;
+                }
+
+                $activeIndex = null;
+                foreach ($node['children'] as $index => $childNode) {
+                    if (!$childNode['active']) {
+                        continue;
+                    }
+                    if ($activeIndex === null) {
+                        $activeIndex = $index;
+                    } else {
+                        $node['children'][$index]['active'] = false;
+                    }
+                }
+
+                $node['active'] = $activeIndex !== null
+                    || in_array($currentRoute, (array) ($item['active_routes'] ?? []), true);
+
+                if ($node['active'] && $activeIndex === null) {
+                    foreach ($node['children'] as $index => $childNode) {
+                        if ($childNode['is_default'] && empty($childNode['children'])) {
+                            $node['children'][$index]['active'] = true;
+                            break;
+                        }
+                    }
+                }
+
+                return $node;
+            }
+
+            if (empty($item['route']) || !$isMenuAllowed($resolvePermissionKey($item))) {
+                return null;
+            }
+
+            $node['url'] = route($item['route'], $item['params'] ?? []);
+            $node['active'] = $leafMatches($item);
+
+            return $node;
+        };
+
+        $menuTree = [];
+        if ($roleId && isset($menus[$roleId])) {
+            foreach ($menus[$roleId] as $group) {
+                foreach (array_values($group['items']) as $index => $item) {
+                    $menuNode = $buildMenuNode($item, 1, 'sidebarMenu_' . $index);
+                    if ($menuNode !== null) {
+                        $menuTree[] = $menuNode;
+                    }
+                }
+            }
+        }
+    @endphp
+    <div class="pe-sidebar-search">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search" id="sidebarMenuSearch" class="form-control" autocomplete="off"
+            placeholder="{{ __('menu.search_placeholder') }}" aria-label="{{ __('menu.search_placeholder') }}">
+    </div>
     <nav class="pe-app-sidebar-menu nav nav-pills" data-simplebar id="sidebar-simplebar">
-        <ul class="pe-main-menu list-unstyled">
-            @if ($roleId && isset($menus[$roleId]))
-                @foreach ($menus[$roleId] as $group)
-                    @php
-                        $filteredItems = array_values(
-                            array_filter($group['items'], function ($item) use ($isMenuAllowed, $resolvePermissionKey) {
-                                if (isset($item['children']) && is_array($item['children'])) {
-                                    // If a parent menu explicitly declares a permission key (group access), enforce it.
-                                    if (
-                                        !empty($item['permission_key']) &&
-                                        !$isMenuAllowed($resolvePermissionKey($item))
-                                    ) {
-                                        return false;
-                                    }
-                                    foreach ($item['children'] as $child) {
-                                        if ($isMenuAllowed($resolvePermissionKey($child))) {
-                                            return true;
-                                        }
-                                    }
-                                    return false;
-                                }
-                                return $isMenuAllowed($resolvePermissionKey($item));
-                            }),
-                        );
-                    @endphp
-
-                    @if (empty($filteredItems))
-                        @continue
-                    @endif
-
-                    <li class="pe-menu-title">{{ $tGroup($group['title_group']) }}</li>
-                    @foreach ($filteredItems as $itemIndex => $item)
-                        @php
-                            $collapseId =
-                                'collapseMenu_' .
-                                preg_replace('/[^a-zA-Z0-9]/', '', $group['title_group']) .
-                                '_' .
-                                $itemIndex;
-                        @endphp
-                        @if (isset($item['children']))
-                            @php
-                                $currentRoute = Route::currentRouteName();
-
-                                $childrenFiltered = array_values(
-                                    array_filter($item['children'], function ($child) use (
-                                        $isMenuAllowed,
-                                        $resolvePermissionKey,
-                                    ) {
-                                        return $isMenuAllowed($resolvePermissionKey($child));
-                                    }),
-                                );
-
-                                if (empty($childrenFiltered)) {
-                                    continue;
-                                }
-
-                                $childMatches = function ($child) use ($currentRoute) {
-                                    $childRoute = $child['route'] ?? null;
-                                    $childActiveRoutes = (array) ($child['active_routes'] ?? []);
-
-                                    // Special-case: Assets index with location query should highlight the
-                                    // dedicated location submenu (Jababeka/Karawang), not the generic "Data Asset".
-                                    $childParams = $child['params'] ?? [];
-                                    $location = request()->query('location');
-                                    if (
-                                        $childRoute === 'admin.assets.index' &&
-                                        empty($childParams) &&
-                                        in_array($location, ['Jababeka', 'Karawang'], true)
-                                    ) {
-                                        return false;
-                                    }
-
-                                    $routeMatched = $currentRoute === $childRoute;
-                                    if (!$routeMatched && !empty($childActiveRoutes)) {
-                                        $routeMatched = in_array($currentRoute, $childActiveRoutes, true);
-                                    }
-                                    if (!$routeMatched) {
-                                        return false;
-                                    }
-
-                                    if (empty($childParams)) {
-                                        return true;
-                                    }
-                                    foreach ($childParams as $key => $value) {
-                                        $actual = request()->query($key, request()->route($key));
-                                        if ($actual != $value) {
-                                            return false;
-                                        }
-                                    }
-                                    return true;
-                                };
-
-                                $isAnyChildActive = false;
-                                $hasExactChildMatch = false;
-                                foreach ($childrenFiltered as $child) {
-                                    if ($childMatches($child)) {
-                                        $isAnyChildActive = true;
-                                        $hasExactChildMatch = true;
-                                        break;
-                                    }
-                                }
-                                if (
-                                    !$isAnyChildActive &&
-                                    !empty($item['active_routes']) &&
-                                    in_array($currentRoute, (array) $item['active_routes'], true)
-                                ) {
-                                    $isAnyChildActive = true;
-                                }
-                            @endphp
-                            <li class="pe-slide pe-has-sub{{ $isAnyChildActive ? ' active' : '' }}">
-                                <a href="#{{ $collapseId }}" class="pe-nav-link" data-bs-toggle="collapse"
-                                    aria-expanded="{{ $isAnyChildActive ? 'true' : 'false' }}"
-                                    aria-controls="{{ $collapseId }}">
-                                    <i class="{{ $item['icon'] }} pe-nav-icon"></i>
-                                    <span class="pe-nav-content">{{ $tMenu($item['title'] ?? '') }}</span>
-                                    <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
-                                </a>
-                                <ul class="pe-slide-menu collapse{{ $isAnyChildActive ? ' show' : '' }}"
-                                    id="{{ $collapseId }}">
-                                    @php
-                                        $alreadyMarkedActive = false;
-                                    @endphp
-                                    @foreach ($childrenFiltered as $child)
-                                        @php
-                                            $childParams = $child['params'] ?? [];
-                                            $isActive = false;
-                                            if (!$alreadyMarkedActive && $childMatches($child)) {
-                                                $isActive = true;
-                                                $alreadyMarkedActive = true;
-                                            }
-
-                                            if (
-                                                !$alreadyMarkedActive &&
-                                                $isAnyChildActive &&
-                                                !$hasExactChildMatch &&
-                                                !empty($child['default'])
-                                            ) {
-                                                $isActive = true;
-                                                $alreadyMarkedActive = true;
-                                            }
-                                        @endphp
-                                        @if (!empty($child['is_heading']))
-                                            <li class="pe-slide-item">
-                                                <div class="pe-stock-menu-heading">{{ $tMenu($child['title'] ?? '') }}</div>
-                                            </li>
-                                        @elseif (!empty($child['children']))
-                                            @php
-                                                $nestedCollapseId = $collapseId . '_child_' . $loop->index;
-                                                $nestedChildrenFiltered = array_values(
-                                                    array_filter($child['children'], function ($nestedChild) use (
-                                                        $isMenuAllowed,
-                                                        $resolvePermissionKey,
-                                                    ) {
-                                                        return $isMenuAllowed($resolvePermissionKey($nestedChild));
-                                                    }),
-                                                );
-                                                $nestedIsActive = false;
-                                                $nestedHasExactMatch = false;
-                                                foreach ($nestedChildrenFiltered as $nestedChild) {
-                                                    if ($childMatches($nestedChild)) {
-                                                        $nestedIsActive = true;
-                                                        $nestedHasExactMatch = true;
-                                                        break;
-                                                    }
-                                                }
-                                                if (
-                                                    !$nestedIsActive &&
-                                                    !empty($child['active_routes']) &&
-                                                    in_array($currentRoute, (array) $child['active_routes'], true)
-                                                ) {
-                                                    $nestedIsActive = true;
-                                                }
-                                            @endphp
-                                            @if (!empty($nestedChildrenFiltered))
-                                                <li class="pe-slide pe-has-sub{{ $nestedIsActive ? ' active' : '' }}">
-                                                    <a href="#{{ $nestedCollapseId }}" class="pe-nav-link"
-                                                        data-bs-toggle="collapse"
-                                                        aria-expanded="{{ $nestedIsActive ? 'true' : 'false' }}"
-                                                        aria-controls="{{ $nestedCollapseId }}">
-                                                        <span class="pe-nav-content">{{ $tMenu($child['title'] ?? '') }}</span>
-                                                        <i class="ri-arrow-down-s-line pe-nav-arrow"></i>
-                                                    </a>
-                                                    <ul class="pe-slide-menu collapse{{ $nestedIsActive ? ' show' : '' }}"
-                                                        id="{{ $nestedCollapseId }}">
-                                                        @php
-                                                            $nestedAlreadyMarkedActive = false;
-                                                        @endphp
-                                                        @foreach ($nestedChildrenFiltered as $nestedChild)
-                                                            @php
-                                                                $nestedChildActive = false;
-                                                                if (
-                                                                    !$nestedAlreadyMarkedActive &&
-                                                                    $childMatches($nestedChild)
-                                                                ) {
-                                                                    $nestedChildActive = true;
-                                                                    $nestedAlreadyMarkedActive = true;
-                                                                }
-                                                                if (
-                                                                    !$nestedAlreadyMarkedActive &&
-                                                                    $nestedIsActive &&
-                                                                    !$nestedHasExactMatch &&
-                                                                    !empty($nestedChild['default'])
-                                                                ) {
-                                                                    $nestedChildActive = true;
-                                                                    $nestedAlreadyMarkedActive = true;
-                                                                }
-                                                            @endphp
-                                                            <li class="pe-slide-item">
-                                                                @if (!empty($nestedChild['is_heading']))
-                                                                    <div class="pe-stock-menu-heading">
-                                                                        {{ $tMenu($nestedChild['title'] ?? '') }}
-                                                                    </div>
-                                                                @else
-                                                                    <a href="{{ route($nestedChild['route'], $nestedChild['params'] ?? []) }}"
-                                                                        class="pe-nav-link{{ $nestedChildActive ? ' active' : '' }}">
-                                                                        {{ $tMenu($nestedChild['title'] ?? '') }}
-                                                                    </a>
-                                                                @endif
-                                                            </li>
-                                                        @endforeach
-                                                    </ul>
-                                                </li>
-                                            @endif
-                                        @else
-                                            <li class="pe-slide-item">
-                                                <a href="{{ route($child['route'], $childParams) }}"
-                                                    class="pe-nav-link{{ $isActive ? ' active' : '' }}">
-                                                    {{ $tMenu($child['title'] ?? '') }}
-                                                </a>
-                                            </li>
-                                        @endif
-                                    @endforeach
-                                </ul>
-                            </li>
-                        @else
-                            @php
-                                $currentRoute = Route::currentRouteName();
-                                $isActive = false;
-                                if (
-                                    !empty($item['active_routes']) &&
-                                    in_array($currentRoute, (array) $item['active_routes'], true)
-                                ) {
-                                    $isActive = true;
-                                }
-                                if (!$isActive && !empty($item['route']) && $currentRoute === $item['route']) {
-                                    $isActive = true;
-                                }
-
-                                // Optional query-param match for leaf items
-                                if ($isActive && !empty($item['params']) && is_array($item['params'])) {
-                                    foreach ($item['params'] as $key => $value) {
-                                        if (request()->query($key) != $value) {
-                                            $isActive = false;
-                                            break;
-                                        }
-                                    }
-                                }
-                            @endphp
-                            <li class="pe-slide">
-                                <a href="{{ isset($item['route']) ? route($item['route'], $item['params'] ?? []) : '#' }}"
-                                    class="pe-nav-link{{ $isActive ? ' active' : '' }}">
-                                    <i class="{{ $item['icon'] }} pe-nav-icon"></i>
-                                    <span class="pe-nav-content">{{ $tMenu($item['title'] ?? '') }}</span>
-                                </a>
-                            </li>
-                        @endif
-                    @endforeach
+        <ul class="pe-main-menu list-unstyled" id="sidebarMainMenu">
+            @if (!empty($menuTree))
+                <li class="pe-menu-title">{{ $tGroup('Menu') }}</li>
+                @foreach ($menuTree as $menuNode)
+                    @include('partials.admin.sidebar-node', ['node' => $menuNode, 'parentId' => 'sidebarMainMenu'])
                 @endforeach
+                <li class="pe-sidebar-search-empty d-none">{{ __('menu.search_empty') }}</li>
             @endif
         </ul>
     </nav>
+    <script>
+        // Filter menu sidebar. Memakai event delegation karena skrip tema dapat
+        // membangun ulang elemen sidebar setelah halaman dimuat.
+        document.addEventListener('input', function (event) {
+            const input = event.target;
+            if (!(input instanceof HTMLInputElement) || input.id !== 'sidebarMenuSearch') return;
+
+            const menu = document.getElementById('sidebarMainMenu');
+            if (!menu) return;
+
+            const empty = menu.querySelector('.pe-sidebar-search-empty');
+            const nodes = Array.from(menu.querySelectorAll('li[data-menu-node]'));
+            const text = (li) => (li.querySelector(':scope > .pe-nav-link')?.textContent || '').trim().toLowerCase();
+            const setOpen = (li, open) => {
+                const list = li.querySelector(':scope > .pe-slide-menu');
+                const link = li.querySelector(':scope > .pe-nav-link');
+                if (!list || !link) return;
+                list.classList.toggle('show', open);
+                link.setAttribute('aria-expanded', open ? 'true' : 'false');
+                link.classList.toggle('collapsed', !open);
+            };
+
+            const query = input.value.trim().toLowerCase();
+            menu.classList.toggle('is-searching', query !== '');
+
+            if (query === '') {
+                nodes.forEach((li) => {
+                    li.classList.remove('d-none');
+                    setOpen(li, li.classList.contains('active'));
+                });
+                empty?.classList.add('d-none');
+                return;
+            }
+
+            // Node tampil bila dirinya, leluhurnya, atau salah satu turunannya cocok.
+            const selfMatch = new Map(nodes.map((li) => [li, text(li).includes(query)]));
+            let visibleCount = 0;
+            nodes.forEach((li) => {
+                const descendantMatch = Array.from(li.querySelectorAll('li[data-menu-node]'))
+                    .some((child) => selfMatch.get(child));
+                let ancestorMatch = false;
+                for (let parent = li.parentElement?.closest('li[data-menu-node]'); parent; parent = parent.parentElement?.closest('li[data-menu-node]')) {
+                    if (selfMatch.get(parent)) {
+                        ancestorMatch = true;
+                        break;
+                    }
+                }
+                const visible = selfMatch.get(li) || descendantMatch || ancestorMatch;
+                li.classList.toggle('d-none', !visible);
+                setOpen(li, descendantMatch);
+                if (visible) visibleCount++;
+            });
+            empty?.classList.toggle('d-none', visibleCount > 0);
+        });
+    </script>
     @if (auth()->check())
         <div class="dropdown dropup pe-sidebar-profile">
             <button class="pe-sidebar-profile-toggle btn w-100 d-flex align-items-center gap-2" type="button"
