@@ -11,6 +11,18 @@ return [
         'web_pages' => 'Web Pages',
         'settings_ui' => 'Settings & UI',
     ],
+    'section' => [
+        'general_affairs' => 'General Affairs',
+        'inventory' => 'Inventory',
+        'assets_it' => 'Assets & IT',
+        'hr' => 'HR & Recruitment',
+        'productivity' => 'Productivity',
+        'website' => 'Website',
+        'settings' => 'Settings',
+        'other' => 'Others',
+    ],
+    'search_placeholder' => 'Search menu…',
+    'search_empty' => 'No menu found.',
 
     'dashboard' => 'Dashboard',
 

@@ -11,6 +11,18 @@ return [
         'web_pages' => '웹 페이지',
         'settings_ui' => '설정 & UI',
     ],
+    'section' => [
+        'general_affairs' => '총무',
+        'inventory' => '재고',
+        'assets_it' => '자산 & IT',
+        'hr' => '인사 & 채용',
+        'productivity' => '업무 관리',
+        'website' => '웹사이트',
+        'settings' => '설정',
+        'other' => '기타',
+    ],
+    'search_placeholder' => '메뉴 검색…',
+    'search_empty' => '메뉴를 찾을 수 없습니다.',
 
     'dashboard' => '대시보드',
 

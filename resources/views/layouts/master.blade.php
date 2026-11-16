@@ -20,6 +20,8 @@
 @endphp
 <link rel="shortcut icon" href="{{ $faviconUrl }}">
 @include('partials.head-css')
+<!-- Admin UI polish (sidebar 3 tingkat, header, kartu, dashboard) -->
+<link href="{{ asset('assets/css/admin-pro.css') }}?v={{ @filemtime(public_path('assets/css/admin-pro.css')) }}" rel="stylesheet" type="text/css">
 
 <style>
     body {

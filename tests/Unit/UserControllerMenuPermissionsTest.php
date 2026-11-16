@@ -88,13 +88,14 @@ class UserControllerMenuPermissionsTest extends TestCase
         try {
             $sidebar = view('partials.sidebar')->render();
 
-            $this->assertStringContainsString('Manajemen Stok', $sidebar);
+            $this->assertStringContainsString(__('menu.section.inventory'), $sidebar);
+            $this->assertStringContainsString('pe-menu-level-2', $sidebar);
         } finally {
             Auth::logout();
         }
     }
 
-    public function test_admin_sidebar_groups_master_data_and_shows_stock_menu_once(): void
+    public function test_admin_sidebar_uses_three_level_sections_and_shows_stock_once(): void
     {
         foreach ([1 => 'Super Admin', 2 => 'Admin'] as $roleId => $roleName) {
             $user = new User(['role_id' => $roleId]);
@@ -104,16 +105,29 @@ class UserControllerMenuPermissionsTest extends TestCase
 
             try {
                 $sidebar = view('partials.sidebar')->render();
-                $operationsPosition = strpos($sidebar, __('menu.group.operations'));
-                $masterDataPosition = strpos($sidebar, __('menu.master_data'));
+                $inventoryPosition = strpos($sidebar, __('menu.section.inventory'));
+                $assetsPosition = strpos($sidebar, e(__('menu.section.assets_it')));
+                $hrPosition = strpos($sidebar, e(__('menu.section.hr')));
                 $masterHrPosition = strpos($sidebar, __('menu.master_groups.hr'));
 
-                $this->assertSame(1, substr_count($sidebar, 'Manajemen Stok'));
-                $this->assertNotFalse($operationsPosition);
-                $this->assertNotFalse($masterDataPosition);
+                // Level 1 = area kerja, level 2 = modul, level 3 = halaman.
+                $this->assertStringContainsString('pe-menu-level-1', $sidebar);
+                $this->assertStringContainsString('pe-menu-level-2', $sidebar);
+                $this->assertStringContainsString('pe-menu-level-3', $sidebar);
+                $this->assertStringNotContainsString('pe-menu-level-4', $sidebar);
+
+                // Stok muncul sekali sebagai area, dengan tiga kategori sebagai modul.
+                $this->assertSame(1, substr_count($sidebar, __('menu.section.inventory')));
+                $this->assertStringNotContainsString('Manajemen Stok', $sidebar);
+                $this->assertSame(3, preg_match_all('/category=|stock\/(atk|material|apd)\/master"/', $sidebar));
+
+                $this->assertNotFalse($inventoryPosition);
+                $this->assertNotFalse($assetsPosition);
+                $this->assertNotFalse($hrPosition);
                 $this->assertNotFalse($masterHrPosition);
-                $this->assertTrue($operationsPosition < $masterDataPosition);
-                $this->assertTrue($masterDataPosition < $masterHrPosition);
+                $this->assertTrue($inventoryPosition < $assetsPosition);
+                $this->assertTrue($assetsPosition < $hrPosition);
+                $this->assertTrue($hrPosition < $masterHrPosition);
             } finally {
                 Auth::logout();
             }
